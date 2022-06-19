@@ -1,11 +1,14 @@
 package com.example.ofn.settings
 
-import android.Manifest
+import android.content.ContentResolver
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
-import androidx.activity.compose.ManagedActivityResultLauncher
+import android.os.Build
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -17,12 +20,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -33,11 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import com.example.ofn.R
 import com.example.ofn.components.FormTextField
 import com.example.ofn.settings.account.AccountFormViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 
+
+@RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel = AccountFormViewModel()) {
@@ -49,17 +56,52 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
             modifier = Modifier
                 .padding(30.dp)
         ){
-            Text("Edit Account", fontSize = 30.sp)
+            Text(
+                "Edit Account",
+                fontSize = 30.sp,
+                modifier = Modifier.padding(0.dp)
+            )
+
             val focusManager = LocalFocusManager.current
             Column(
                 modifier = Modifier
-                    .padding(top = 30.dp)
-                    .wrapContentHeight()
+                    .padding(top = 10.dp)
+                    .wrapContentHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                var imageUri = remember { mutableStateOf<Uri?>(null) }
+                val context = LocalContext.current
+                val galleryLanucher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()){
+                    uri: Uri? -> imageUri.value = uri
+                }
+                val placeHolderImage = "https://tedblob.com/wp-content/uploads/2021/09/android.png"
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(context)
+                            .crossfade(false)
+                            .data(imageUri.value?:placeHolderImage)
+                            .build(),
+                        filterQuality = FilterQuality.High
+                    ),
+                    contentDescription = "Profile Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .size(150.dp)
+                        .padding(4.dp)
+                        .clip(CircleShape)
+                        .border(BorderStroke(2.dp, Color.Blue), CircleShape)
+                )
+                Button(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.padding(5.dp).height(35.dp)
+                ) {
+                    Text(text = "Update Profile Picture")
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 15.dp),
+                        .padding(top = 20.dp, bottom = 15.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ){
@@ -122,34 +164,13 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
                         )
                     )
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 15.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    var imageUri = remember { mutableStateOf<Uri?>(null) }
-                    val context = LocalContext.current
-                    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){
-                            uri -> imageUri.value = uri
-                    }
-                    val placeHolderImage = "https://image.shutterstock.com/image-vector/ui-image-placeholder-wireframes-apps-260nw-1037719204.jpg"
 
-                    Text("Picture")
-                    Icon(Icons.Outlined.Face, contentDescription = "Picture Icon")
-                    Button(
-                        onClick = { galleryLauncher.launch("image/*") },
-                        modifier = Modifier.width(250.dp)
-                    ) {
-                        Text("Choose File")
-                    }
-                }
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class)
 
 @Preview(showBackground = true)
