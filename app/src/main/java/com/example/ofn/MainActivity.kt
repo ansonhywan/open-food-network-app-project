@@ -6,8 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -21,10 +19,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.ofn.ui.theme.OFNTheme
-import com.example.ofn.Screen
 import com.example.ofn.dashboard.DashboardScreen
 import com.example.ofn.inventory.InventoryScreen
 import com.example.ofn.platform.PlatformScreen
+import com.example.ofn.settings.AccountScreen
 import com.example.ofn.settings.SettingsScreen
 
 class MainActivity : ComponentActivity() {
@@ -65,12 +63,7 @@ fun MainApplication(){
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
+                                navController.popBackStack()
                                 // Avoid multiple copies of the same destination when
                                 // reselecting the same item
                                 launchSingleTop = true
@@ -88,6 +81,7 @@ fun MainApplication(){
             composable(Screen.Inventory.route) { InventoryScreen(navController) }
             composable(Screen.Platform.route) { PlatformScreen(navController) }
             composable(Screen.Settings.route) { SettingsScreen(navController) }
+            composable(Screen.Account.route) { AccountScreen(navController) }
         }
     }
 }

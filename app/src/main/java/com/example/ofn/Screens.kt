@@ -5,4 +5,5 @@ sealed class Screen(var title:String, var icon:Int, var route:String){
     object Inventory: Screen("Inventory",R.drawable.bag,"inventory")
     object Platform: Screen("Platform",R.drawable.coin,"platform")
     object Settings: Screen("Settings",R.drawable.settings,"settings")
+    object Account: Screen("Account",R.drawable.account,"account")
 }
