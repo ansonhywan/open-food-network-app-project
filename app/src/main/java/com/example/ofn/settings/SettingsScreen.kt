@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.example.ofn.MainApplication
 import com.example.ofn.R
 import com.example.ofn.Screen
+import com.example.ofn.components.NavigationPanel
 import com.example.ofn.ui.theme.OFNTheme
 
 @Composable
@@ -59,23 +60,7 @@ fun SettingsScreen(navController: NavController?) {
     }
 }
 
-@Composable
-fun NavigationPanel(text:String, clickAction: ()->Unit){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.Cyan)
-            .clickable { clickAction.invoke() },
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ){
-        Text(
-            text = text,
-            textAlign = TextAlign.Start
-        )
-        Icon(Icons.Outlined.ArrowForward, contentDescription = "Next")
-    }
-}
+
 @Composable
 fun ProfileCard() {
     Card(
