@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
+import com.example.ofn.components.*
 import java.math.BigInteger
 import com.example.ofn.ui.theme.OFNButtonColors
 
@@ -33,24 +34,24 @@ import com.example.ofn.ui.theme.OFNButtonColors
 fun InventoryScreen(navController: NavController) {
     var exampleCategories = listOf(
         Category(
-            name = "Cat 1",
-            produceList = listOf(Produce("1","produce 0",1), Produce("12","produce 0",0), Produce("13","produce 0",0))
+            name = "Category 1",
+            produceList = listOf(Produce("1","Produce 0",1), Produce("12","Produce 0",0), Produce("13","Produce 0",0))
         ),
         Category(
-            name = "Cat 2",
-            produceList = listOf(Produce("2","produce 0",0), Produce("3","produce 0",0), Produce("4","produce 0",0))
+            name = "Category 2",
+            produceList = listOf(Produce("2","Produce 0",0), Produce("3","Produce 0",0), Produce("4","Produce 0",0))
         ),
         Category(
-            name = "Cat 3",
-            produceList = listOf(Produce("5","produce 0",0), Produce("6","produce 0",0), Produce("7","produce 0",0), Produce("19","produce 0",0))
+            name = "Category 3",
+            produceList = listOf(Produce("5","Produce 0",0), Produce("6","Produce 0",0), Produce("7","Produce 0",0), Produce("19","Produce 0",0))
         ),
         Category(
-            name = "Cat 4",
-            produceList = listOf(Produce("14","produce 0",0), Produce("15","produce 0",0), Produce("16","produce 0",0))
+            name = "Category 4",
+            produceList = listOf(Produce("14","Produce 0",0), Produce("15","Produce 0",0), Produce("16","Produce 0",0))
         ),
         Category(
-            name = "Cat 5",
-            produceList = listOf(Produce("17","produce 0",0), Produce("18","produce 0",0), Produce("19","produce 0",0))
+            name = "Category 5",
+            produceList = listOf(Produce("17","Produce 0",0), Produce("18","Produce 0",0), Produce("19","Produce 0",0))
         )
     )
 
@@ -74,7 +75,8 @@ fun InventoryScreen(navController: NavController) {
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                placeholderText = "Search product..."
             ) {
                 // todo: function to search inventory
             }
@@ -83,52 +85,11 @@ fun InventoryScreen(navController: NavController) {
                 modifier = Modifier
                     .padding(vertical = 5.dp),
             ) {
-                SortDropdown()
+                SortDropdown(listOf("Name", "Price", "Amount"))
                 Spacer(modifier = Modifier.size(24.dp))
-                FilterDropdown(exampleCategories)
+                FilterDropdown(exampleCategories.map{ category -> category.name })
             }
         }
-    }
-}
-
-@Composable
-fun SearchBar(
-    modifier: Modifier = Modifier,
-    onSearch: (String) -> Unit = {}
-) {
-    var text by remember {
-        mutableStateOf("")
-    }
-
-    Box(modifier = modifier) {
-        TextField(
-            value = text,
-            onValueChange = {
-                text = it
-                onSearch(it)
-            },
-            placeholder = { Text("Search for item...") },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-                disabledTextColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                cursorColor = MaterialTheme.colors.onPrimary,
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(5.dp, CircleShape)
-                .background(MaterialTheme.colors.background, CircleShape)
-                .padding(horizontal = 20.dp, vertical = 5.dp),
-            maxLines = 1,
-            singleLine = true,
-            leadingIcon = { Icon(
-                Icons.Filled.Search,
-                contentDescription = "",
-                modifier = Modifier
-            ) },
-        )
     }
 }
 
@@ -384,145 +345,6 @@ fun save(sections: List<Category>) {
     sections.forEach{ category: Category ->
         category.produceList.forEach{ produce: Produce ->
             produce.amount += produce.addNum
-        }
-    }
-}
-
-@Composable
-fun SortDropdown() {
-    val options = listOf("Name", "Price", "Amount")
-    var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(0) }
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Box (
-        modifier = Modifier
-            .clickable(
-                onClick = {
-                    expanded = !expanded
-                }
-            )
-            .width(180.dp)
-    ) {
-        TextField(
-            value = options[selectedOption],
-            onValueChange = {},
-            readOnly = true,
-            enabled = false,
-            label = { Text("Sort By") },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-                disabledTextColor = MaterialTheme.colors.onSecondary,
-                disabledLabelColor = MaterialTheme.colors.onSecondary,
-                disabledTrailingIconColor = MaterialTheme.colors.onSecondary,
-                cursorColor = Color.Transparent,
-            ),
-            trailingIcon = {
-                Icon(
-                    icon,
-                    contentDescription = "",
-                    modifier = Modifier
-                )
-            },
-        )
-    }
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = {
-            expanded = false
-        },
-        modifier = Modifier.width(180.dp)
-    ) {
-        options.forEachIndexed() { i, option ->
-            DropdownMenuItem(
-                onClick = {
-                    selectedOption = i
-                    expanded = false
-                    //todo: sort results
-                }
-            ) {
-                Text(
-                    text = option
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun FilterDropdown(options: List<Category>) {
-    val optionCheckedState = remember { options.map { true }.toMutableStateList() }
-    var expanded by remember { mutableStateOf(false) }
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
-
-    Box(
-        modifier = Modifier
-            .clickable(
-                onClick = {
-                    expanded = !expanded
-                }
-            )
-            .width(180.dp)
-    ) {
-        TextField(
-            value = "Filter By",
-            onValueChange = {},
-            readOnly = true,
-            enabled = false,
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-                disabledTextColor = MaterialTheme.colors.onSecondary,
-                disabledTrailingIconColor = MaterialTheme.colors.onSecondary,
-                disabledIndicatorColor = Color.Transparent,
-                cursorColor = Color.Transparent,
-            ),
-            trailingIcon = {
-                Icon(
-                    icon,
-                    contentDescription = "",
-                    modifier = Modifier
-                )
-            },
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-            },
-            modifier = Modifier
-                .width(180.dp)
-        ) {
-            options.forEachIndexed() { i, option ->
-                DropdownMenuItem(
-                    onClick = {
-                        optionCheckedState[i] = !optionCheckedState[i]
-                    },
-                ) {
-                    Row {
-                        Checkbox(
-                            checked = optionCheckedState[i],
-                            onCheckedChange = {
-                                optionCheckedState[i] = !optionCheckedState[i]
-                                // todo: filter results
-                            },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = MaterialTheme.colors.onPrimary,
-                                uncheckedColor = MaterialTheme.colors.onSecondary,
-                                checkmarkColor = MaterialTheme.colors.onSecondary,
-                            )
-                        )
-                        Text(
-                            text = option.name
-                        )
-                    }
-                }
-            }
         }
     }
 }
