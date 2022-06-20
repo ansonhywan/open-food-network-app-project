@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1035877902320",
+    "firebase_url": "https://open-food-network-app-project-default-rtdb.firebaseio.com",
+    "project_id": "open-food-network-app-project",
+    "storage_bucket": "open-food-network-app-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035877902320:android:a5aa70bc05bda7ee51df35",
+        "android_client_info": {
+          "package_name": "com.example.ofn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035877902320-oj09drg07umbnus47arcj8ii76oqqstg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvE8c5ZEa0O3hL4bJeeUHcuyU7H9UoiE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035877902320-oj09drg07umbnus47arcj8ii76oqqstg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
