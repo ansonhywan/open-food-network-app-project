@@ -22,6 +22,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,33 +50,32 @@ import com.example.ofn.components.FormTextField
 import com.example.ofn.components.bottomsheet.BottomSheetContent
 import com.example.ofn.settings.account.AccountFormViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.P)
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel = AccountFormViewModel()) {
+fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFormViewModel, scope: CoroutineScope) {
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val scope = rememberCoroutineScope()
-    var isCameraSelected by rememberSaveable{ mutableStateOf<Boolean>(false) }
-    var imageUri by rememberSaveable{ mutableStateOf<Uri?>(null) }
-    var bitmap by rememberSaveable{ mutableStateOf<Bitmap?>(null) }
+    val name:String by accountFormViewModel.name.observeAsState("")
+    val email:String by accountFormViewModel.email.observeAsState("")
+    val phone:String by accountFormViewModel.phone.observeAsState("")
+    val imageUri:Uri? by accountFormViewModel.imageUri.observeAsState(null)
+    val bitmap:Bitmap? by accountFormViewModel.bitmap.observeAsState(null)
+    val isCameraSelected:Boolean by accountFormViewModel.isCameraSelected.observeAsState(false)
 
     val context = LocalContext.current
     val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-            imageUri = uri
-            bitmap = null
+        accountFormViewModel.onImageUriChange(uri)
+        accountFormViewModel.onBitmapChange(null)
     }
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { btm: Bitmap? ->
-        bitmap = btm
-        imageUri = null
+    val cameraLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { btm: Bitmap? ->
+        accountFormViewModel.onImageUriChange(null)
+        accountFormViewModel.onBitmapChange(btm)
     }
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
+    val permissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
             if (isCameraSelected) {
                 cameraLauncher.launch()
@@ -103,7 +103,7 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
                             }
                         }
                         else -> {
-                            isCameraSelected = true
+                            accountFormViewModel.onCameraSelected(true)
                             permissionLauncher.launch(Manifest.permission.CAMERA)
                         }
                     }
@@ -118,7 +118,7 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
                             }
                         }
                         else -> {
-                            isCameraSelected = false
+                            accountFormViewModel.onCameraSelected(false)
                             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                         }
                     }
@@ -181,7 +181,7 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
                     imageUri?.let {
                         if (!isCameraSelected) {
                             val source = ImageDecoder.createSource(context.contentResolver, it)
-                            bitmap = ImageDecoder.decodeBitmap(source)
+                            accountFormViewModel.onBitmapChange(ImageDecoder.decodeBitmap(source))
                         }
                     }
 
@@ -230,9 +230,9 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
                         Text("Name")
                         Icon(Icons.Outlined.Person, contentDescription = "Name Icon")
                         FormTextField(
-                            text = viewModel.name,
+                            text = name,
                             placeholder = "Name",
-                            onChange = { viewModel.onNameChange(it) },
+                            onChange = { accountFormViewModel.onNameChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
                             keyBoardActions = KeyboardActions(
@@ -252,9 +252,9 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
                         Text("Phone")
                         Icon(Icons.Outlined.Phone, contentDescription = "Phone Icon")
                         FormTextField(
-                            text = viewModel.phone,
+                            text = phone,
                             placeholder = "Phone",
-                            onChange = { viewModel.onPhoneChange(it) },
+                            onChange = { accountFormViewModel.onPhoneChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
                             keyBoardActions = KeyboardActions(
@@ -274,9 +274,9 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
                         Text("Email")
                         Icon(Icons.Outlined.Email, contentDescription = "Email Icon")
                         FormTextField(
-                            text = viewModel.email,
+                            text = email,
                             placeholder = "Email",
-                            onChange = { viewModel.onEmailChange(it) },
+                            onChange = { accountFormViewModel.onEmailChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
                             keyBoardActions = KeyboardActions(
@@ -292,12 +292,4 @@ fun AccountScreen(navController: NavController?, viewModel:AccountFormViewModel 
         }
     }
 
-}
-
-@RequiresApi(Build.VERSION_CODES.P)
-@OptIn(ExperimentalPermissionsApi::class)
-@Preview(showBackground = true)
-@Composable
-fun AccountPreview() {
-    AccountScreen(navController = null)
 }

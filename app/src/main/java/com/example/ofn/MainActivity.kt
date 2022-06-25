@@ -1,13 +1,16 @@
 package com.example.ofn
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,8 +29,11 @@ import com.example.ofn.settings.AccountScreen
 import com.example.ofn.settings.ManageProductsAndCategoriesScreen
 import com.example.ofn.settings.ManageScreen
 import com.example.ofn.settings.SettingsScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ofn.settings.account.AccountFormViewModel
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -38,6 +44,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun MainApplication(){
     val screens = listOf<Screen>(
@@ -47,6 +54,8 @@ fun MainApplication(){
         Screen.Settings
     )
     val navController = rememberNavController()
+    val scope = rememberCoroutineScope()
+    val accountFormViewModel: AccountFormViewModel = viewModel()
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -65,7 +74,7 @@ fun MainApplication(){
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {
-                                navController.popBackStack()
+                                popUpTo(screen.route)
                                 // Avoid multiple copies of the same destination when
                                 // reselecting the same item
                                 launchSingleTop = true
@@ -83,7 +92,7 @@ fun MainApplication(){
             composable(Screen.Inventory.route) { InventoryScreen(navController) }
             composable(Screen.Platform.route) { PlatformScreen(navController) }
             composable(Screen.Settings.route) { SettingsScreen(navController) }
-            composable(Screen.Account.route) { AccountScreen(navController) }
+            composable(Screen.Account.route) { AccountScreen(navController, accountFormViewModel, scope) }
             composable(Screen.ManageProductsAndCategories.route) { ManageProductsAndCategoriesScreen(
                 navController = navController
             ) }
@@ -91,6 +100,7 @@ fun MainApplication(){
         }
     }
 }
+@RequiresApi(Build.VERSION_CODES.P)
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
