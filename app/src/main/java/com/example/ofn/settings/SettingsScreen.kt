@@ -52,7 +52,7 @@ fun SettingsScreen(navController: NavController?) {
                 NavigationPanel(
                     text = "Manage Product & Categories"
                 ) {
-                    navController?.navigate(Screen.Account.route)
+                    navController?.navigate(Screen.ManageProductsAndCategories.route)
                 }
             }
 
