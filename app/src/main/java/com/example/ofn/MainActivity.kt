@@ -23,6 +23,8 @@ import com.example.ofn.dashboard.DashboardScreen
 import com.example.ofn.inventory.InventoryScreen
 import com.example.ofn.platform.PlatformScreen
 import com.example.ofn.settings.AccountScreen
+import com.example.ofn.settings.ManageProductsAndCategoriesScreen
+import com.example.ofn.settings.ManageScreen
 import com.example.ofn.settings.SettingsScreen
 
 class MainActivity : ComponentActivity() {
@@ -82,6 +84,10 @@ fun MainApplication(){
             composable(Screen.Platform.route) { PlatformScreen(navController) }
             composable(Screen.Settings.route) { SettingsScreen(navController) }
             composable(Screen.Account.route) { AccountScreen(navController) }
+            composable(Screen.ManageProductsAndCategories.route) { ManageProductsAndCategoriesScreen(
+                navController = navController
+            ) }
+            composable(Screen.ManageProduct.route) { ManageScreen(navController = navController) }
         }
     }
 }

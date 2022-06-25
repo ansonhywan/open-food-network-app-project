@@ -56,7 +56,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun manageScreen(navController: NavController?, viewModel:ManageViewModel = ManageViewModel()) {
+fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = ManageViewModel()) {
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
     var isCameraSelected by rememberSaveable{ mutableStateOf<Boolean>(false) }
@@ -363,6 +363,6 @@ fun manageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
 @OptIn(ExperimentalPermissionsApi::class)
 @Preview(showBackground = true)
 @Composable
-fun managePreview() {
-    manageScreen(navController = null)
+fun ManagePreview() {
+    ManageScreen(navController = null)
 }

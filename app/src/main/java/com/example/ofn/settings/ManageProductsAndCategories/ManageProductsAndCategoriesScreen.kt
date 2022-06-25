@@ -53,6 +53,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.ofn.R
+import com.example.ofn.Screen
 import com.example.ofn.components.FilterDropdown
 import com.example.ofn.components.FormTextField
 import com.example.ofn.components.SearchBar
@@ -71,28 +72,31 @@ import java.math.BigInteger
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ManageCategoriesAndProducts(navController: NavController?, viewModel:ManageProductsAndCategoriesViewModel = ManageProductsAndCategoriesViewModel()) {
+fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel:ManageProductsAndCategoriesViewModel = ManageProductsAndCategoriesViewModel()) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        cycats(
-            categories = viewModel.getCategories(),
-            modifier = Modifier
-                .padding(16.dp)
-        ) {
-            Text(
-                modifier = Modifier.padding(16.dp),
-                text = "Manage",
-                fontSize = 35.sp,
-                fontWeight = FontWeight.Medium
-            )
-            SearchBar(
+        if (navController != null) {
+            Categories(
+                navController = navController,
+                categories = viewModel.getCategories(),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                placeholderText = "Search ..."
+                    .padding(16.dp)
             ) {
+                Text(
+                    modifier = Modifier.padding(16.dp),
+                    text = "Manage",
+                    fontSize = 35.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                SearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    placeholderText = "Search ..."
+                ) {
+                }
             }
         }
     }
@@ -100,7 +104,8 @@ fun ManageCategoriesAndProducts(navController: NavController?, viewModel:ManageP
 }
 
 @Composable
-fun cycats(
+fun Categories(
+    navController: NavController,
     categories: List<Category>,
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
@@ -165,7 +170,7 @@ fun cycats(
                 if (expanded) {
                     categoryItem.produceList.forEach { produce ->
                         item(key = produce.id) {
-                            productcy(produce)
+                            CategoryProducts(produce)
                         }
                     }
                 }
@@ -176,7 +181,7 @@ fun cycats(
                         modifier = Modifier
                             .size(300.dp)
                     )
-                    AddNewCategoryButton()
+                    addNewProductButton(navController)
                 }
             }
         }
@@ -184,16 +189,16 @@ fun cycats(
 }
 
 @Composable
-fun AddNewCategoryButton() {
+fun addNewProductButton(navController: NavController) {
     // Add new category button
-    val onClick = { addNewCategory() }
+    val onClick = { addNewProduct(navController ) }
     FloatingActionButton(onClick = onClick) {
         Icon(Icons.Filled.Add,"")
     }
 }
 
 @Composable
-fun productcy(produce: Produce) {
+fun CategoryProducts(produce: Produce) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -222,14 +227,15 @@ fun productcy(produce: Produce) {
     Divider()
 }
 
-fun addNewCategory() {
-    //do a pop up to do a enter text and add new category gr
+fun addNewProduct(navController: NavController) {
+    navController?.navigate(Screen.ManageProduct.route)
+
 }
 
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class)
 @Preview(showBackground = true)
 @Composable
-fun ManageCategoriesAndProductsPreview() {
-    ManageCategoriesAndProducts(navController = null)
+fun ManageProductsAndCategoriesPreview() {
+    ManageProductsAndCategoriesScreen(navController = null)
 }
