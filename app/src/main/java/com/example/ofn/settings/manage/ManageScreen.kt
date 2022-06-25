@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.ofn.R
+import com.example.ofn.Screen
 import com.example.ofn.components.FormTextField
 import com.example.ofn.components.bottomsheet.BottomSheetContent
 import com.example.ofn.settings.manage.ManageViewModel
@@ -293,8 +294,21 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                         ){
                             Button(
                                 onClick = {
-                                    viewModel.onProductDelete();
-                                    Toast.makeText(context, "Product Deleted!", Toast.LENGTH_SHORT).show()
+                                    val retval = viewModel.onProductDelete();
+                                    if (retval) {
+                                        Toast.makeText(
+                                            context,
+                                            "Product Deleted!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Product was not Deleted. Try Again",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
                                     //return
                                 },
                                 modifier = Modifier
@@ -305,7 +319,7 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                                     Icons.Outlined.DeleteOutline,
                                     contentDescription = "Delete Icon"
                                 )
-                                Text(text = "Discard")
+                                Text(text = "Delete")
                             }
                         }
                         Column(
@@ -316,8 +330,13 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                         ){
                             Button(
                                 onClick = {
-                                    viewModel.onProductSaved()
-                                    Toast.makeText(context, "Product Saved!", Toast.LENGTH_SHORT).show()
+                                    val retval = viewModel.onProductSaved();
+                                    if (retval) {
+                                        Toast.makeText(context, "Product Saved!", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, "Product was not Saved.", Toast.LENGTH_SHORT).show()
+                                    }
+                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
                                 },
                                 modifier = Modifier
                                     .padding(5.dp)
@@ -338,6 +357,7 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                         ){
                             Button(
                                 onClick = {
+                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
                                 },
                                 modifier = Modifier
                                     .padding(5.dp)

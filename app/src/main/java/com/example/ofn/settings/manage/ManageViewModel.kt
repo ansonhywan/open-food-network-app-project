@@ -27,15 +27,17 @@ class ManageViewModel : ViewModel() {
         category = newText
     }
 
-    fun onProductSaved() {
+    fun onProductSaved():Boolean {
         //save product into databae
+        //find avialble id 
+        //add information to db
         //return a bool to say if successful
-
+        return true;
     }
 
-    fun onProductDelete() {
+    fun onProductDelete():Boolean {
         //go into database and delete using the id that is loaded into the model
-
+        return true;
     }
 
 }
