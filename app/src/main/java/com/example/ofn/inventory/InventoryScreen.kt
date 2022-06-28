@@ -1,5 +1,6 @@
 package com.example.ofn.inventory
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,11 +28,45 @@ import androidx.navigation.NavController
 import com.example.ofn.components.*
 import java.math.BigInteger
 import com.example.ofn.ui.theme.OFNButtonColors
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 // todo: save to local storage?
 // todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
+
+val firestoreDB = Firebase.firestore
+
+fun updateInventory(productList: List<Product>) {
+    // Should update since if there is a product in the Inventory Page, it is already in the DB.
+    productList.forEach{
+        Log.i("HERE", "${it.name}, ${it.amount}")
+        firestoreDB.collection("inventory").document(it.name)
+            .update("stock", it.amount)
+            //.addOnSuccessListener { Log.d(TAG, "${it.name} stock successfully updated!") }
+            //.addOnFailureListener { e -> Log.w(TAG, "Error updating ${it.name}", e) }
+    }
+}
+
+fun addProduct(productList: List<Product>) {
+    /*
+        Don't think we need this function after the Demo since if there is a product in the
+        inventory Page, it should already be in DB.
+     */
+
+    productList.forEach{
+        firestoreDB.collection("inventory").document(it.name)
+            .set(hashMapOf(
+                "stock" to 0)
+            )
+            // .addOnSuccessListener { Log.d(TAG, "${it.name} stock successfully updated!") }
+            // .addOnFailureListener { e -> Log.w(TAG, "Error updating ${it.name}", e) }
+    }
+}
+
+
 @Composable
 fun InventoryScreen(navController: NavController) {
     var exampleCategories = listOf(
@@ -187,6 +222,12 @@ fun ExpandableCategories(
                             save(categories)
                             reset(categories)
                             refresh.value = true
+
+                            // Get number in the field and update backend database.
+                            categories.forEach { categoryItem ->
+                                updateInventory(categoryItem.productList)
+                            }
+
                             Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
                         },
                     ) {
