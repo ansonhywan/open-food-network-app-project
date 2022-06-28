@@ -1,5 +1,6 @@
 package com.example.ofn.platform
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
@@ -101,6 +103,7 @@ fun ExpandablePlatforms(
 ) {
     val expandedState = remember(platforms) { platforms.map { false }.toMutableStateList() }
     val refresh = remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
     if(refresh.value) {
         LazyColumn(
@@ -170,6 +173,7 @@ fun ExpandablePlatforms(
                             refresh.value = false
                             approve(platforms)
                             refresh.value = true
+                            Toast.makeText(context, "Approved!", Toast.LENGTH_SHORT).show()
                         },
                     ) {
                         Text(

@@ -61,7 +61,7 @@ import com.example.ofn.components.SortDropdown
 import com.example.ofn.components.bottomsheet.BottomSheetContent
 import com.example.ofn.inventory.Category
 import com.example.ofn.inventory.ExpandableCategories
-import com.example.ofn.inventory.Produce
+import com.example.ofn.inventory.Product
 import com.example.ofn.settings.ManageProductsAndCategories.ManageProductsAndCategoriesViewModel
 import com.example.ofn.ui.theme.OFNButtonColors
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -168,9 +168,9 @@ fun Categories(
                 }
 
                 if (expanded) {
-                    categoryItem.produceList.forEach { produce ->
-                        item(key = produce.id) {
-                            CategoryProducts(produce)
+                    categoryItem.productList.forEach { product ->
+                        item(key = product.id) {
+                            CategoryProducts(product)
                         }
                     }
                 }
@@ -199,7 +199,7 @@ fun addNewProductButton(navController: NavController) {
 }
 
 @Composable
-fun CategoryProducts(produce: Produce) {
+fun CategoryProducts(product: Product) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -207,7 +207,7 @@ fun CategoryProducts(produce: Produce) {
             .fillMaxSize()
     ) {
         Text(
-            text = produce.name,
+            text = product.name,
             modifier = Modifier.padding(end = 30.dp)
         )
         Spacer(

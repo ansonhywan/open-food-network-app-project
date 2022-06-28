@@ -1,5 +1,6 @@
 package com.example.ofn.inventory
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
@@ -34,26 +36,22 @@ import com.example.ofn.ui.theme.OFNButtonColors
 fun InventoryScreen(navController: NavController) {
     var exampleCategories = listOf(
         Category(
-            name = "Category 1",
-            produceList = listOf(Produce("1","Produce 0",1), Produce("12","Produce 0",0), Produce("13","Produce 0",0))
+            name = "Fruits",
+            productList = listOf(Product("1","Bananas",1), Product("2","Cherries",0), Product("3","Blueberries",0))
         ),
         Category(
-            name = "Category 2",
-            produceList = listOf(Produce("2","Produce 0",0), Produce("3","Produce 0",0), Produce("4","Produce 0",0))
+            name = "Vegetables",
+            productList = listOf(Product("4","Asparagus",0), Product("5","Avocado",0), Product("6","Broccoli",0))
         ),
         Category(
-            name = "Category 3",
-            produceList = listOf(Produce("5","Produce 0",0), Produce("6","Produce 0",0), Produce("7","Produce 0",0), Produce("19","Produce 0",0))
+            name = "Dairy",
+            productList = listOf(Product("7","Butter",0), Product("8","Cheese",0), Product("9","Milk",0))
         ),
         Category(
-            name = "Category 4",
-            produceList = listOf(Produce("14","Produce 0",0), Produce("15","Produce 0",0), Produce("16","Produce 0",0))
-        ),
-        Category(
-            name = "Category 5",
-            produceList = listOf(Produce("17","Produce 0",0), Produce("18","Produce 0",0), Produce("19","Produce 0",0))
+            name = "Meat",
+            productList = listOf(Product("10","Bacon",0), Product("11","Beef",0), Product("12","Chicken",0))
         )
-    )
+    ).sortedWith(compareBy { it.name })
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -101,6 +99,7 @@ fun ExpandableCategories(
 ) {
     val expandedState = remember(categories) { categories.map { false }.toMutableStateList() }
     val refresh = remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
     if(refresh.value) {
         LazyColumn(modifier) {
@@ -143,11 +142,11 @@ fun ExpandableCategories(
                     Divider()
                 }
 
-                // --------------------  Produce --------------------
+                // -------------------- Product --------------------
                 if (expanded) {
-                    categoryItem.produceList.forEach { produce ->
-                        item(key = produce.id) {
-                            ProduceItem(produce)
+                    categoryItem.productList.forEach { product ->
+                        item(key = product.id) {
+                            ProductItem(product)
                         }
                     }
                 }
@@ -165,6 +164,7 @@ fun ExpandableCategories(
                             categories.forEachIndexed { i, categoryItem ->
                                 expandedState[i] = false
                             }
+                            Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT).show()
                         },
                     ) {
                         Text(
@@ -187,6 +187,7 @@ fun ExpandableCategories(
                             save(categories)
                             reset(categories)
                             refresh.value = true
+                            Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
                         },
                     ) {
                         Text(
@@ -201,64 +202,66 @@ fun ExpandableCategories(
 }
 
 @Composable
-fun ProduceItem(produce: Produce) {
+fun ProductItem(product: Product) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(top = 25.dp, bottom = 25.dp, start = 15.dp)
             .fillMaxSize()
     ) {
-        // Produce Name
+        // Product Name
         Text(
-            text = produce.name,
-            modifier = Modifier.padding(end = 30.dp)
+            text = product.name,
+            modifier = Modifier
+                .padding(end = 30.dp)
+                .width(80.dp)
         )
 
-        // Produce amount available
+        // Product amount available
         Text(
-            text = "${produce.amount} available",
+            text = "${product.amount} available",
             fontSize = 10.sp,
             modifier = Modifier
-                .padding(end = 45.dp)
+                .padding(end = 30.dp)
                 .width(50.dp)
         )
 
-        ProduceButtons(produce)
+        ProductButtons(product)
     }
     Divider()
 }
 
 @Composable
-fun ProduceButtons(produce: Produce) {
+fun ProductButtons(product: Product) {
     val maxInt = BigInteger(Int.MAX_VALUE.toString())
-    var addNumStr by remember(produce.amount) {
-        mutableStateOf(produce.addNum.toString())
+    var addNumStr by remember(product.amount) {
+        mutableStateOf(product.addNum.toString())
     }
     val interactionSourceAdd = remember { MutableInteractionSource() }
     val interactionSourceRemove = remember { MutableInteractionSource() }
 
     if (interactionSourceRemove.collectIsPressedAsState().value) {
-        if (produce.amount > Int.MIN_VALUE) {
-            produce.addNum--
-            addNumStr = produce.addNum.toString()
+        if (product.amount > Int.MIN_VALUE) {
+            product.addNum--
+            addNumStr = product.addNum.toString()
         }
     }
     if (interactionSourceAdd.collectIsPressedAsState().value) {
-        if (produce.addNum < Int.MAX_VALUE) {
-            produce.addNum++
-            addNumStr = produce.addNum.toString()
+        if (product.addNum < Int.MAX_VALUE) {
+            product.addNum++
+            addNumStr = product.addNum.toString()
         }
     }
 
-    // Button to remove produce
+    // Button to remove product
     Button(
         colors = OFNButtonColors(),
         modifier = Modifier
             .size(45.dp),
         onClick = {
-            if (produce.addNum > Int.MIN_VALUE) {
-                produce.addNum--
-                addNumStr = produce.addNum.toString()
+            if (product.addNum > Int.MIN_VALUE) {
+                product.addNum--
+                addNumStr = product.addNum.toString()
             }
         },
         contentPadding = PaddingValues(
@@ -278,7 +281,7 @@ fun ProduceButtons(produce: Produce) {
         )
     }
 
-    // Text field to specify number of produce to add/remove
+    // Text field to specify number of product to add/remove
     Column(
         horizontalAlignment = Alignment.End,
         modifier = Modifier
@@ -291,7 +294,7 @@ fun ProduceButtons(produce: Produce) {
             onValueChange = {
                 // todo: do more verification on the correctness of the input
                 if (it != "" && it != "-" && BigInteger(it) < maxInt) {
-                    produce.addNum = it.toInt()
+                    product.addNum = it.toInt()
                 }
                 addNumStr = it
             },
@@ -306,15 +309,15 @@ fun ProduceButtons(produce: Produce) {
         )
     }
 
-    // Button to add produce
+    // Button to add product
     Button(
         colors = OFNButtonColors(),
         modifier = Modifier
             .size(45.dp),
         onClick = {
-            if (produce.addNum < Int.MAX_VALUE) {
-                produce.addNum++
-                addNumStr = produce.addNum.toString()
+            if (product.addNum < Int.MAX_VALUE) {
+                product.addNum++
+                addNumStr = product.addNum.toString()
             }
         },
         contentPadding = PaddingValues(
@@ -336,19 +339,19 @@ fun ProduceButtons(produce: Produce) {
 
 fun reset(sections: List<Category>) {
     sections.forEach{ category: Category ->
-        category.produceList.forEach{ produce: Produce ->
-            produce.addNum = 0
+        category.productList.forEach{ product: Product ->
+            product.addNum = 0
         }
     }
 }
 
 fun save(sections: List<Category>) {
     sections.forEach{ category: Category ->
-        category.produceList.forEach{ produce: Produce ->
-            produce.amount += produce.addNum
+        category.productList.forEach{ product: Product ->
+            product.amount += product.addNum
         }
     }
 }
 
-data class Category(val name: String, val produceList: List<Produce>)
-data class Produce(val id: String, val name: String, var amount: Int, var addNum: Int = 0)
+data class Category(val name: String, val productList: List<Product>)
+data class Product(val id: String, val name: String, var amount: Int, var addNum: Int = 0)

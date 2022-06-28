@@ -31,7 +31,7 @@ fun SearchBar(
                 text = it
                 onSearch(it)
             },
-            placeholder = { Text("Search product...") },
+            placeholder = { Text(placeholderText) },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background,
                 disabledTextColor = Color.Transparent,
