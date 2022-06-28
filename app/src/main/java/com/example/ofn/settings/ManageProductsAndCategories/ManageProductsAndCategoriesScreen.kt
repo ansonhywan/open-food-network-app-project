@@ -202,17 +202,13 @@ fun addNewProductButton(navController: NavController) {
 fun CategoryProducts(product: Product) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .padding(top = 5.dp, bottom = 5.dp, start = 5.dp)
             .fillMaxSize()
     ) {
         Text(
-            text = product.name,
-            modifier = Modifier.padding(end = 30.dp)
-        )
-        Spacer(
-            modifier = Modifier
-                .size(24.dp)
+            text = product.name
         )
         IconButton(
             onClick = {
