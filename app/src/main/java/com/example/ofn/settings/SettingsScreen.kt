@@ -97,8 +97,8 @@ fun ProfileCard(accountFormViewModel:AccountFormViewModel) {
                 modifier = Modifier.padding(16.dp),
                 elevation = 4.dp
             ) {
-                val imageUri: Uri? by accountFormViewModel.imageUri.observeAsState(null)
-                val bitmap: Bitmap? by accountFormViewModel.bitmap.observeAsState(null)
+                val imageUri: Uri? by accountFormViewModel.imageUri.observeAsState(accountFormViewModel.imageUri.value)
+                val bitmap: Bitmap? by accountFormViewModel.bitmap.observeAsState(accountFormViewModel.bitmap.value)
                 val context = LocalContext.current
                 val placeHolderImage =
                     "https://tedblob.com/wp-content/uploads/2021/09/android.png"
