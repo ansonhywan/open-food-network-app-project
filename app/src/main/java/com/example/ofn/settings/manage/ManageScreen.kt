@@ -364,7 +364,7 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                                     .height(35.dp)
                             ) {
                                 Icon(
-                                    Icons.Outlined.KeyboardReturn,
+                                    Icons.Outlined.Cancel,
                                     contentDescription = "Return Icon"
                                 )
                                 Text(text = "Cancel")
