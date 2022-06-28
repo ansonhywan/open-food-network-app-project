@@ -113,7 +113,7 @@ fun ExpandableCategories(
                 val icon = if(expanded)
                     Icons.Filled.KeyboardArrowDown
                 else
-                    Icons.Filled.KeyboardArrowUp
+                    Icons.Filled.KeyboardArrowRight
                 item(key = "category $i") {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -143,7 +143,7 @@ fun ExpandableCategories(
                     Divider()
                 }
 
-                // -------------------- Produce --------------------
+                // --------------------  Produce --------------------
                 if (expanded) {
                     categoryItem.produceList.forEach { produce ->
                         item(key = produce.id) {
@@ -159,7 +159,7 @@ fun ExpandableCategories(
                     Button(
                         colors = OFNButtonColors(),
                         modifier = Modifier
-                            .padding(30.dp),
+                            .padding(25.dp),
                         onClick = {
                             reset(categories)
                             categories.forEachIndexed { i, categoryItem ->
@@ -180,7 +180,8 @@ fun ExpandableCategories(
                     Button(
                         colors = OFNButtonColors(),
                         modifier = Modifier
-                            .padding(30.dp),
+                            .wrapContentSize()
+                            .padding(25.dp),
                         onClick = {
                             refresh.value = false
                             save(categories)

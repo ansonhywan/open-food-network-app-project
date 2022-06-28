@@ -103,7 +103,9 @@ fun ExpandablePlatforms(
     val refresh = remember { mutableStateOf(true) }
 
     if(refresh.value) {
-        LazyColumn(modifier) {
+        LazyColumn(
+            modifier
+        ) {
             item {
                 header()
             }
@@ -113,7 +115,7 @@ fun ExpandablePlatforms(
                 val icon = if(expanded)
                     Icons.Filled.KeyboardArrowDown
                 else
-                    Icons.Filled.KeyboardArrowUp
+                    Icons.Filled.KeyboardArrowRight
                 item(key = "platform $i") {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -154,7 +156,11 @@ fun ExpandablePlatforms(
             }
             // -------------------- Approve Buttons --------------------
             item {
-                Row {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
                     // Save button
                     Button(
                         colors = OFNButtonColors(),

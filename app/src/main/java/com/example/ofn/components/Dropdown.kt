@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -81,7 +82,7 @@ fun FilterDropdown(options: List<String>) {
     val optionCheckedState = remember { options.map { true }.toMutableStateList() }
     var expanded by remember { mutableStateOf(false) }
     val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
+        Icons.Filled.KeyboardArrowRight
     else
         Icons.Filled.KeyboardArrowDown
 

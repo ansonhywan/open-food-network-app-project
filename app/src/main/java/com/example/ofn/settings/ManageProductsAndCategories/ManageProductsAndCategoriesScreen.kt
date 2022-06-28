@@ -122,9 +122,9 @@ fun Categories(
                 val expanded = expandedState[i]
                 val categoryMenuIcon = Icons.Filled.Menu
                 val icon = if(expanded)
-                    Icons.Filled.KeyboardArrowUp
-                else
                     Icons.Filled.KeyboardArrowDown
+                else
+                    Icons.Filled.KeyboardArrowRight
                 item(key = "category $i") {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -176,11 +176,12 @@ fun Categories(
                 }
             }
             item {
-                Row {
-                    Spacer(
-                        modifier = Modifier
-                            .size(300.dp)
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top=30.dp)
+                ) {
                     addNewProductButton(navController)
                 }
             }

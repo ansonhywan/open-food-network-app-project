@@ -132,8 +132,7 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
 //        scrimColor = Color.Green
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color.LightGray,
+            modifier = Modifier.fillMaxSize()
         ) {
             Column(
                 modifier = Modifier

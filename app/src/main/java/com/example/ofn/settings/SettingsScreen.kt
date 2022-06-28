@@ -43,8 +43,7 @@ import com.example.ofn.ui.theme.OFNTheme
 @Composable
 fun SettingsScreen(navController: NavController?, accountFormViewModel: AccountFormViewModel) {
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.LightGray,
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
