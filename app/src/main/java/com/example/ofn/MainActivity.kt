@@ -91,7 +91,7 @@ fun MainApplication(){
             composable(Screen.Dashboard.route) { DashboardScreen(navController) }
             composable(Screen.Inventory.route) { InventoryScreen(navController) }
             composable(Screen.Platform.route) { PlatformScreen(navController) }
-            composable(Screen.Settings.route) { SettingsScreen(navController) }
+            composable(Screen.Settings.route) { SettingsScreen(navController, accountFormViewModel) }
             composable(Screen.Account.route) { AccountScreen(navController, accountFormViewModel, scope) }
             composable(Screen.ManageProductsAndCategories.route) { ManageProductsAndCategoriesScreen(
                 navController = navController
