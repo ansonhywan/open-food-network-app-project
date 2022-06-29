@@ -1,7 +1,6 @@
 package com.example.ofn.settings
 
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,8 +8,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -20,26 +17,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.ofn.MainApplication
-import com.example.ofn.R
 import com.example.ofn.Screen
 import com.example.ofn.components.NavigationPanel
 import com.example.ofn.settings.account.AccountFormViewModel
-import com.example.ofn.ui.theme.OFNTheme
 
-@RequiresApi(Build.VERSION_CODES.P)
+
 @Composable
 fun SettingsScreen(navController: NavController?, accountFormViewModel: AccountFormViewModel) {
     Surface(
@@ -75,7 +63,6 @@ fun SettingsScreen(navController: NavController?, accountFormViewModel: AccountF
 }
 
 
-@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun ProfileCard(accountFormViewModel:AccountFormViewModel) {
     Card(

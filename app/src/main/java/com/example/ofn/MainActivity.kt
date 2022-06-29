@@ -100,7 +100,6 @@ fun MainApplication(){
         }
     }
 }
-@RequiresApi(Build.VERSION_CODES.P)
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {

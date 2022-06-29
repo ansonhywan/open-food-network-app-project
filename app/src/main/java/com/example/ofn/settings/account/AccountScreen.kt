@@ -1,7 +1,6 @@
 package com.example.ofn.settings
 
 import android.Manifest
-import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -23,38 +22,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.ofn.R
 import com.example.ofn.components.FormTextField
 import com.example.ofn.components.bottomsheet.BottomSheetContent
 import com.example.ofn.settings.account.AccountFormViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
-@RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFormViewModel, scope: CoroutineScope) {
@@ -178,8 +170,14 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
                         )
                     }
                     else if (bitmap == null){
-                        val source = ImageDecoder.createSource(context.contentResolver, imageUri!!)
-                        accountFormViewModel.onBitmapChange(ImageDecoder.decodeBitmap(source))
+                        accountFormViewModel.onBitmapChange(
+                            (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                val source = ImageDecoder.createSource(context.contentResolver, imageUri!!)
+                                ImageDecoder.decodeBitmap(source)
+                            } else {
+                                MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri!! )
+                            })
+                        )
                         Image(
                             bitmap = bitmap!!.asImageBitmap(),
                             contentDescription = "Profile Image",
