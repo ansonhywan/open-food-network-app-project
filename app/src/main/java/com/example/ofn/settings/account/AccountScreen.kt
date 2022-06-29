@@ -177,16 +177,29 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
                                 .clip(CircleShape)
                         )
                     }
-                    imageUri?.let {
-                        if (!isCameraSelected) {
-                            val source = ImageDecoder.createSource(context.contentResolver, it)
-                            accountFormViewModel.onBitmapChange(ImageDecoder.decodeBitmap(source))
-                        }
-                    }
-
-                    bitmap?.let { btm ->
+                    else if (bitmap == null){
+                        val source = ImageDecoder.createSource(context.contentResolver, imageUri!!)
+                        accountFormViewModel.onBitmapChange(ImageDecoder.decodeBitmap(source))
                         Image(
-                            bitmap = btm.asImageBitmap(),
+                            bitmap = bitmap!!.asImageBitmap(),
+                            contentDescription = "Profile Image",
+                            alignment = Alignment.TopCenter,
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .size(200.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.Blue,
+                                    shape = CircleShape
+                                )
+                                .padding(4.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    else{
+                        Image(
+                            bitmap = bitmap!!.asImageBitmap(),
                             contentDescription = "Profile Image",
                             alignment = Alignment.TopCenter,
                             modifier = Modifier
