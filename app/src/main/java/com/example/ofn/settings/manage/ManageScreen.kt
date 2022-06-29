@@ -368,6 +368,7 @@ fun ManageScreen(navController: NavController?, manageViewModel:ManageViewModel,
                                 onClick = {
                                     val retval = manageViewModel.onProductSaved();
                                     if (retval) {
+                                        manageViewModel.resetToDefault()
                                         Toast.makeText(context, "Product Saved!", Toast.LENGTH_SHORT).show()
                                     } else {
                                         Toast.makeText(context, "Product was not Saved.", Toast.LENGTH_SHORT).show()
