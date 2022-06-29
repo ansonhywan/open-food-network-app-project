@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import androidx.compose.material.Icon
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -21,6 +22,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,33 +48,32 @@ import com.example.ofn.components.FormTextField
 import com.example.ofn.components.bottomsheet.BottomSheetContent
 import com.example.ofn.settings.manage.ManageViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = ManageViewModel()) {
+fun ManageScreen(navController: NavController?, manageViewModel:ManageViewModel, scope: CoroutineScope) {
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val scope = rememberCoroutineScope()
-    var isCameraSelected by rememberSaveable{ mutableStateOf<Boolean>(false) }
-    var imageUri by rememberSaveable{ mutableStateOf<Uri?>(null) }
-    var bitmap by rememberSaveable{ mutableStateOf<Bitmap?>(null) }
+    val name:String by manageViewModel.name.observeAsState("")
+    val category:String by manageViewModel.category.observeAsState("")
+    val description:String by manageViewModel.description.observeAsState("")
+    val imageUri:Uri? by manageViewModel.imageUri.observeAsState(null)
+    val bitmap:Bitmap? by manageViewModel.bitmap.observeAsState(null)
+    val isCameraSelected:Boolean by manageViewModel.isCameraSelected.observeAsState(false)
 
     val context = LocalContext.current
     val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-            imageUri = uri
-            bitmap = null
+        manageViewModel.onImageUriChange(uri)
+        manageViewModel.onBitmapChange(null)
     }
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { btm: Bitmap? ->
-        bitmap = btm
-        imageUri = null
+    val cameraLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { btm: Bitmap? ->
+        manageViewModel.onImageUriChange(null)
+        manageViewModel.onBitmapChange(btm)
     }
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
+    val permissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
             if (isCameraSelected) {
                 cameraLauncher.launch()
@@ -100,7 +101,7 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                             }
                         }
                         else -> {
-                            isCameraSelected = true
+                            manageViewModel.onCameraSelected(true)
                             permissionLauncher.launch(Manifest.permission.CAMERA)
                         }
                     }
@@ -115,7 +116,7 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                             }
                         }
                         else -> {
-                            isCameraSelected = false
+                            manageViewModel.onCameraSelected(false)
                             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                         }
                     }
@@ -133,17 +134,17 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth()
-                    .padding(30.dp)
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 30.dp)
             ) {
                 Row (
                     modifier = Modifier
-                        .padding(2.dp) ,
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         "Edit Product",
                         fontSize = 30.sp,
-                        modifier = Modifier.padding(10.dp)
                     )
                     val placeHolderImage =
                         "https://tedblob.com/wp-content/uploads/2021/09/android.png"
@@ -160,13 +161,13 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .wrapContentWidth()
-                                .size(100.dp)
+                                .size(150.dp)
                                 .border(
                                     width = 2.dp,
                                     color = Color.Blue,
                                     shape = CircleShape
                                 )
-                                .padding(10.dp)
+                                .padding(4.dp)
                                 .clip(CircleShape)
                                 .clickable{
                                     scope.launch {
@@ -180,28 +181,67 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                                 }
                         )
                     }
-                    imageUri?.let {
-                        if (!isCameraSelected) {
-                            val source = ImageDecoder.createSource(context.contentResolver, it)
-                            bitmap = ImageDecoder.decodeBitmap(source)
-                        }
-                    }
-
-                    bitmap?.let { btm ->
+                    else if (bitmap == null){
+                        manageViewModel.onBitmapChange(
+                            (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                val source = ImageDecoder.createSource(context.contentResolver, imageUri!!)
+                                ImageDecoder.decodeBitmap(source)
+                            } else {
+                                MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri!! )
+                            })
+                        )
                         Image(
-                            bitmap = btm.asImageBitmap(),
+                            bitmap = bitmap!!.asImageBitmap(),
                             contentDescription = "Profile Image",
                             alignment = Alignment.TopCenter,
                             modifier = Modifier
                                 .wrapContentWidth()
-                                .size(200.dp)
+                                .size(150.dp)
                                 .border(
                                     width = 2.dp,
                                     color = Color.Blue,
                                     shape = CircleShape
                                 )
                                 .padding(4.dp)
-                                .clip(CircleShape),
+                                .clip(CircleShape)
+                                .clickable{
+                                    scope.launch {
+                                        if (!modalBottomSheetState.isVisible){
+                                            modalBottomSheetState.show()
+                                        } else{
+                                            modalBottomSheetState.hide()
+                                        }
+
+                                    }
+                                },
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    else{
+                        Image(
+                            bitmap = bitmap!!.asImageBitmap(),
+                            contentDescription = "Profile Image",
+                            alignment = Alignment.TopCenter,
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .size(150.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.Blue,
+                                    shape = CircleShape
+                                )
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .clickable{
+                                    scope.launch {
+                                        if (!modalBottomSheetState.isVisible){
+                                            modalBottomSheetState.show()
+                                        } else{
+                                            modalBottomSheetState.hide()
+                                        }
+
+                                    }
+                                },
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -218,9 +258,9 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                     ) {
                         Text("Name")
                         FormTextField(
-                            text = viewModel.name,
+                            text = name,
                             placeholder = "Name",
-                            onChange = { viewModel.onNameChange(it) },
+                            onChange = { manageViewModel.onNameChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
                             keyBoardActions = KeyboardActions(
@@ -239,9 +279,9 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                     ) {
                         Text("Category")
                         FormTextField(
-                            text = viewModel.category,
+                            text = category,
                             placeholder = "Category",
-                            onChange = { viewModel.onCategoryChange(it) },
+                            onChange = { manageViewModel.onCategoryChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
                             keyBoardActions = KeyboardActions(
@@ -262,9 +302,9 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                         Text("Description")
                         FormTextField(
                             modifier = Modifier.height(200.dp),
-                            text = viewModel.description,
+                            text = description,
                             placeholder = "Description",
-                            onChange = { viewModel.onDescriptionChange(it) },
+                            onChange = { manageViewModel.onDescriptionChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
                             keyBoardActions = KeyboardActions(
@@ -289,13 +329,14 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                         ){
                             Button(
                                 onClick = {
-                                    val retval = viewModel.onProductDelete();
+                                    val retval = manageViewModel.onProductDelete();
                                     if (retval) {
                                         Toast.makeText(
                                             context,
                                             "Product Deleted!",
                                             Toast.LENGTH_SHORT
                                         ).show()
+                                        manageViewModel.resetToDefault()
                                     } else {
                                         Toast.makeText(
                                             context,
@@ -325,7 +366,7 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                         ){
                             Button(
                                 onClick = {
-                                    val retval = viewModel.onProductSaved();
+                                    val retval = manageViewModel.onProductSaved();
                                     if (retval) {
                                         Toast.makeText(context, "Product Saved!", Toast.LENGTH_SHORT).show()
                                     } else {
@@ -352,6 +393,7 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
                         ){
                             Button(
                                 onClick = {
+                                    manageViewModel.resetToDefault()
                                     navController?.navigate(Screen.ManageProductsAndCategories.route)
                                 },
                                 modifier = Modifier
@@ -372,12 +414,4 @@ fun ManageScreen(navController: NavController?, viewModel:ManageViewModel = Mana
         }
     }
 
-}
-
-@RequiresApi(Build.VERSION_CODES.P)
-@OptIn(ExperimentalPermissionsApi::class)
-@Preview(showBackground = true)
-@Composable
-fun ManagePreview() {
-    ManageScreen(navController = null)
 }

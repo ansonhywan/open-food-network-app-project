@@ -31,6 +31,7 @@ import com.example.ofn.settings.ManageScreen
 import com.example.ofn.settings.SettingsScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ofn.settings.account.AccountFormViewModel
+import com.example.ofn.settings.manage.ManageViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
@@ -56,6 +57,7 @@ fun MainApplication(){
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val accountFormViewModel: AccountFormViewModel = viewModel()
+    val manageViewModel: ManageViewModel = viewModel()
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -96,7 +98,7 @@ fun MainApplication(){
             composable(Screen.ManageProductsAndCategories.route) { ManageProductsAndCategoriesScreen(
                 navController = navController
             ) }
-            composable(Screen.ManageProduct.route) { ManageScreen(navController = navController) }
+            composable(Screen.ManageProduct.route) { ManageScreen(navController, manageViewModel, scope) }
         }
     }
 }
