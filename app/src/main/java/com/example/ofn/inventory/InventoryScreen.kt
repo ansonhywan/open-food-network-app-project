@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -185,12 +186,14 @@ fun ExpandableCategories(
             }
             // -------------------- Reset / Submit Buttons --------------------
             item {
-                Row {
+                Row(
+                    modifier = Modifier.fillMaxSize().padding(top=100.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
                     // Reset button
                     Button(
                         colors = OFNButtonColors(),
-                        modifier = Modifier
-                            .padding(25.dp),
                         onClick = {
                             reset(categories)
                             categories.forEachIndexed { i, categoryItem ->
@@ -206,14 +209,13 @@ fun ExpandableCategories(
                     }
                     Spacer(
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(24.dp)
                     )
                     // Save button
                     Button(
                         colors = OFNButtonColors(),
                         modifier = Modifier
-                            .wrapContentSize()
-                            .padding(25.dp),
+                            .wrapContentSize(),
                         onClick = {
                             refresh.value = false
                             save(categories)
