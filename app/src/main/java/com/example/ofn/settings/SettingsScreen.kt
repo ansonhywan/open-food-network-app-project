@@ -2,8 +2,6 @@ package com.example.ofn.settings
 
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,17 +17,21 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.ofn.Screen
+import com.example.ofn.navigation.Screen
 import com.example.ofn.components.NavigationPanel
+import com.example.ofn.navigation.AUTH_GRAPH_ROUTE
 import com.example.ofn.settings.account.AccountFormViewModel
 
 
 @Composable
-fun SettingsScreen(navController: NavController?, accountFormViewModel: AccountFormViewModel) {
+fun SettingsScreen(navController: NavController, accountFormViewModel: AccountFormViewModel) {
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -44,20 +46,30 @@ fun SettingsScreen(navController: NavController?, accountFormViewModel: AccountF
                 modifier = Modifier
                     .padding(7.dp),
                 verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 NavigationPanel(
                     text = "Edit Account"
                 ) {
-                    navController?.navigate(Screen.Account.route)
+                    navController.navigate(Screen.Account.route)
                 }
                 NavigationPanel(
                     text = "Manage Product & Categories"
                 ) {
-                    navController?.navigate(Screen.ManageProductsAndCategories.route)
+                    navController.navigate(Screen.ManageProductsAndCategories.route)
                 }
             }
-
+            Column(
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)
+            ) {
+                Button(
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color.Red, contentColor = Color.White),
+                    onClick = { navController.navigate(AUTH_GRAPH_ROUTE) }) {
+                    Text("Sign Out",  fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
+                }
+            }
         }
     }
 }
