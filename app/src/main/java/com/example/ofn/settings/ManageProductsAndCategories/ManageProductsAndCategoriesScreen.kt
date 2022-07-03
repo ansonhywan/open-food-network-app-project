@@ -1,78 +1,35 @@
 package com.example.ofn.settings
 
-import android.Manifest
-import android.content.ContentResolver
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import androidx.compose.material.Icon
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import com.example.ofn.R
-import com.example.ofn.Screen
-import com.example.ofn.components.FilterDropdown
-import com.example.ofn.components.FormTextField
+import com.example.ofn.navigation.Screen
 import com.example.ofn.components.SearchBar
-import com.example.ofn.components.SortDropdown
-import com.example.ofn.components.bottomsheet.BottomSheetContent
 import com.example.ofn.inventory.Category
-import com.example.ofn.inventory.ExpandableCategories
 import com.example.ofn.inventory.Product
 import com.example.ofn.settings.ManageProductsAndCategories.ManageProductsAndCategoriesViewModel
-import com.example.ofn.ui.theme.OFNButtonColors
+import com.example.ofn.settings.manage.ManageViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import kotlinx.coroutines.launch
-import java.math.BigInteger
 
 
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel:ManageProductsAndCategoriesViewModel = ManageProductsAndCategoriesViewModel()) {
+fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: ManageProductsAndCategoriesViewModel= androidx.lifecycle.viewmodel.compose.viewModel()) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
@@ -180,7 +137,7 @@ fun Categories(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top=30.dp)
+                        .padding(top = 30.dp)
                 ) {
                     addNewProductButton(navController)
                 }
