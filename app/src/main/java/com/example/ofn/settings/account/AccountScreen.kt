@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -34,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFormViewModel, scope: CoroutineScope) {
+fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFormViewModel) {
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val name:String by accountFormViewModel.name.observeAsState("")
     val email:String by accountFormViewModel.email.observeAsState("")
@@ -58,6 +58,7 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
     val bitmap:Bitmap? by accountFormViewModel.bitmap.observeAsState(null)
     val isCameraSelected:Boolean by accountFormViewModel.isCameraSelected.observeAsState(false)
 
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
         accountFormViewModel.onImageUriChange(uri)
@@ -159,7 +160,7 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .wrapContentWidth()
-                                .size(200.dp)
+                                .size(180.dp)
                                 .border(
                                     width = 2.dp,
                                     color = Color.Blue,
@@ -221,7 +222,6 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
                                 } else{
                                     modalBottomSheetState.hide()
                                 }
-
                             }
                         },
                         modifier = Modifier
@@ -237,19 +237,26 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Name")
-                        Icon(Icons.Outlined.Person, contentDescription = "Name Icon")
+                        Row(
+                            modifier = Modifier.width(70.dp)
+                        ) {
+                            Text("Name")
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Icon(Icons.Outlined.Person, contentDescription = "Name Icon")
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
                         FormTextField(
                             text = name,
                             placeholder = "Name",
-                            onChange = { accountFormViewModel.onNameChange(it) },
+                            onValueChange = { accountFormViewModel.onNameChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
-                            keyBoardActions = KeyboardActions(
+                            keyboardActions = KeyboardActions(
                                 onNext = {
                                     focusManager.moveFocus(FocusDirection.Down)
                                 }
-                            )
+                            ),
+                            visualTransformation = VisualTransformation.None
                         )
                     }
                     Row(
@@ -259,19 +266,26 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Phone")
-                        Icon(Icons.Outlined.Phone, contentDescription = "Phone Icon")
+                        Row(
+                            modifier = Modifier.width(70.dp)
+                        ){
+                            Text("Phone")
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Icon(Icons.Outlined.Phone, contentDescription = "Phone Icon")
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
                         FormTextField(
                             text = phone,
                             placeholder = "Phone",
-                            onChange = { accountFormViewModel.onPhoneChange(it) },
+                            onValueChange = { accountFormViewModel.onPhoneChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
-                            keyBoardActions = KeyboardActions(
+                            keyboardActions = KeyboardActions(
                                 onNext = {
                                     focusManager.moveFocus(FocusDirection.Down)
                                 }
-                            )
+                            ),
+                            visualTransformation = VisualTransformation.None
                         )
                     }
                     Row(
@@ -281,19 +295,26 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Email")
-                        Icon(Icons.Outlined.Email, contentDescription = "Email Icon")
+                        Row(
+                            modifier = Modifier.width(70.dp)
+                        ) {
+                            Text("Email")
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Icon(Icons.Outlined.Email, contentDescription = "Email Icon")
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
                         FormTextField(
                             text = email,
                             placeholder = "Email",
-                            onChange = { accountFormViewModel.onEmailChange(it) },
+                            onValueChange = { accountFormViewModel.onEmailChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
-                            keyBoardActions = KeyboardActions(
-                                onNext = {
-                                    focusManager.moveFocus(FocusDirection.Down)
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    focusManager.clearFocus()
                                 }
-                            )
+                            ),
+                            visualTransformation = VisualTransformation.None
                         )
                     }
 
@@ -301,5 +322,4 @@ fun AccountScreen(navController: NavController?, accountFormViewModel:AccountFor
             }
         }
     }
-
 }
