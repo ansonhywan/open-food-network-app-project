@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -35,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -45,15 +45,12 @@ import com.example.ofn.navigation.Screen
 import com.example.ofn.components.FormTextField
 import com.example.ofn.components.bottomsheet.BottomSheetContent
 import com.example.ofn.settings.manage.ManageViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
-@RequiresApi(Build.VERSION_CODES.P)
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ManageScreen(navController: NavController?, manageViewModel:ManageViewModel, scope: CoroutineScope) {
+fun ManageScreen(navController: NavController?, manageViewModel:ManageViewModel) {
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val name:String by manageViewModel.name.observeAsState("")
     val category:String by manageViewModel.category.observeAsState("")
@@ -61,6 +58,7 @@ fun ManageScreen(navController: NavController?, manageViewModel:ManageViewModel,
     val imageUri:Uri? by manageViewModel.imageUri.observeAsState(null)
     val bitmap:Bitmap? by manageViewModel.bitmap.observeAsState(null)
     val isCameraSelected:Boolean by manageViewModel.isCameraSelected.observeAsState(false)
+    val scope = rememberCoroutineScope()
 
     val context = LocalContext.current
     val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -254,18 +252,21 @@ fun ManageScreen(navController: NavController?, manageViewModel:ManageViewModel,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Name")
+                        Box(modifier = Modifier.width(90.dp)) {
+                            Text("Name")
+                        }
                         FormTextField(
                             text = name,
                             placeholder = "Name",
-                            onChange = { manageViewModel.onNameChange(it) },
+                            onValueChange = { manageViewModel.onNameChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
-                            keyBoardActions = KeyboardActions(
+                            keyboardActions = KeyboardActions(
                                 onNext = {
                                     focusManager.moveFocus(FocusDirection.Down)
                                 }
-                            )
+                            ),
+                            visualTransformation = VisualTransformation.None
                         )
                     }
                     Row(
@@ -275,18 +276,21 @@ fun ManageScreen(navController: NavController?, manageViewModel:ManageViewModel,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Category")
+                        Box(modifier = Modifier.width(90.dp)) {
+                            Text("Category")
+                        }
                         FormTextField(
                             text = category,
                             placeholder = "Category",
-                            onChange = { manageViewModel.onCategoryChange(it) },
+                            onValueChange = { manageViewModel.onCategoryChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
-                            keyBoardActions = KeyboardActions(
+                            keyboardActions = KeyboardActions(
                                 onNext = {
                                     focusManager.moveFocus(FocusDirection.Down)
                                 }
-                            )
+                            ),
+                            visualTransformation = VisualTransformation.None
                         )
                     }
                     Row(
@@ -297,19 +301,22 @@ fun ManageScreen(navController: NavController?, manageViewModel:ManageViewModel,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Description")
+                        Box(modifier = Modifier.width(90.dp)) {
+                            Text("Description")
+                        }
                         FormTextField(
                             modifier = Modifier.height(200.dp),
                             text = description,
                             placeholder = "Description",
-                            onChange = { manageViewModel.onDescriptionChange(it) },
+                            onValueChange = { manageViewModel.onDescriptionChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button
                             keyboardType = KeyboardType.Text, //Plain text keyboard
-                            keyBoardActions = KeyboardActions(
+                            keyboardActions = KeyboardActions(
                                 onNext = {
                                     focusManager.moveFocus(FocusDirection.Down)
                                 }
-                            )
+                            ),
+                            visualTransformation = VisualTransformation.None
                         )
                     }
                     Row(

@@ -1,7 +1,5 @@
 package com.example.ofn.navigation.NavigationGraph
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -14,14 +12,11 @@ import com.example.ofn.platform.PlatformScreen
 import com.example.ofn.settings.SettingsScreen
 import com.example.ofn.settings.account.AccountFormViewModel
 import com.example.ofn.settings.manage.ManageViewModel
-import kotlinx.coroutines.CoroutineScope
 
-@RequiresApi(Build.VERSION_CODES.P)
 fun NavGraphBuilder.homeNavGraph(
     navController: NavHostController,
     accountFormViewModel: AccountFormViewModel,
-    manageViewModel: ManageViewModel,
-    scope: CoroutineScope
+    manageViewModel: ManageViewModel
 ){
     navigation(
         startDestination = Screen.Dashboard.route,
@@ -31,6 +26,6 @@ fun NavGraphBuilder.homeNavGraph(
         composable(Screen.Inventory.route) { InventoryScreen(navController) }
         composable(Screen.Platform.route) { PlatformScreen(navController) }
         composable(Screen.Settings.route) { SettingsScreen(navController, accountFormViewModel) }
-        settingNavGraph(navController, accountFormViewModel, manageViewModel, scope)
+        settingNavGraph(navController, accountFormViewModel, manageViewModel)
     }
 }

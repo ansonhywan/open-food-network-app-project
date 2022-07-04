@@ -22,7 +22,6 @@ fun SetupNavGraph(
     navController: NavHostController,
     modifier: Modifier
 ) {
-    val scope = rememberCoroutineScope()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
     val loginFormViewModel: LoginFormViewModel = viewModel()
@@ -33,7 +32,7 @@ fun SetupNavGraph(
         route = ROOT_GRAPH_ROUTE,
         modifier = modifier
     ) {
-        homeNavGraph(navController = navController, accountFormViewModel, manageViewModel, scope)
+        homeNavGraph(navController = navController, accountFormViewModel, manageViewModel)
         authNavGraph(navController = navController, loginFormViewModel, signupFormViewModel)
     }
 }

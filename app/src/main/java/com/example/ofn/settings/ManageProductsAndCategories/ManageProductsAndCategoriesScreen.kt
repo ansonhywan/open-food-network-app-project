@@ -1,8 +1,6 @@
 package com.example.ofn.settings
 
-import android.os.Build
 import androidx.compose.material.Icon
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,12 +20,7 @@ import com.example.ofn.components.SearchBar
 import com.example.ofn.inventory.Category
 import com.example.ofn.inventory.Product
 import com.example.ofn.settings.ManageProductsAndCategories.ManageProductsAndCategoriesViewModel
-import com.example.ofn.settings.manage.ManageViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
-
-@RequiresApi(Build.VERSION_CODES.P)
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: ManageProductsAndCategoriesViewModel= androidx.lifecycle.viewmodel.compose.viewModel()) {
     Surface(
@@ -186,8 +179,6 @@ fun addNewProduct(navController: NavController) {
 
 }
 
-@RequiresApi(Build.VERSION_CODES.P)
-@OptIn(ExperimentalPermissionsApi::class)
 @Preview(showBackground = true)
 @Composable
 fun ManageProductsAndCategoriesPreview() {
