@@ -2,14 +2,19 @@ package com.example.ofn.settings.manage
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class ManageViewModel : ViewModel() {
+    private val firestoreDB = Firebase.firestore
     private val _name = MutableLiveData<String>("")
     var name: LiveData<String> = _name
     private val _category = MutableLiveData<String>("")
@@ -43,10 +48,45 @@ class ManageViewModel : ViewModel() {
         _isCameraSelected.value = cameraSelected
     }
     fun onProductSaved():Boolean {
-        //save product into databae
-        //find avialble id 
-        //add information to db
-        //return a bool to say if successful
+
+        // Add product to the inventory collection.
+        val inventoryCollection = firestoreDB.collection("inventory")
+
+        val newProductFields = hashMapOf(
+            "category" to category,
+            "description" to description,
+            "stock" to 0
+        )
+
+        inventoryCollection.document(name)
+            .set(newProductFields)
+
+
+        // Add category to the categories collection.
+        val categoriesCollection = firestoreDB.collection("categories").document(category)
+
+        val newCategoryFields = hashMapOf(
+            "products" to arrayListOf(name)
+        )
+
+        categoriesCollection.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val document = task.result
+                if(document != null) {
+                    if (document.exists()) {
+                        Log.d("TAG", "Document already exists.")
+                        categoriesCollection.update("products", FieldValue.arrayUnion(name))
+                    } else {
+                        Log.d("TAG", "Document doesn't exist.")
+                        categoriesCollection.set(newCategoryFields)
+                    }
+                }
+            } else {
+                Log.d("TAG", "Error: ", task.exception)
+            }
+        }
+
+        // TODO: ERROR CHECKING, CURRENTLY ALWAYS RETURNS TRUE.
         return true;
     }
 
