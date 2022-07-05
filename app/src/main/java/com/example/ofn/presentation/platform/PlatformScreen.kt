@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.ofn.components.*
 import com.example.ofn.presentation.components.FilterDropdown
 import com.example.ofn.presentation.components.SearchBar
 import com.example.ofn.presentation.components.SortDropdown
