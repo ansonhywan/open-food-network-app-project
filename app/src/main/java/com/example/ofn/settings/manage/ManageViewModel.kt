@@ -47,7 +47,7 @@ class ManageViewModel : ViewModel() {
     fun onCameraSelected(cameraSelected: Boolean){
         _isCameraSelected.value = cameraSelected
     }
-    fun onProductSaved():Boolean {
+    fun onProductSaved(name:String, category:String, description:String):Boolean {
 
         // Add product to the inventory collection.
         val inventoryCollection = firestoreDB.collection("inventory")
