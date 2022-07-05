@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
@@ -47,7 +48,8 @@ class ManageViewModel : ViewModel() {
     fun onCameraSelected(cameraSelected: Boolean){
         _isCameraSelected.value = cameraSelected
     }
-    fun onProductSaved():Boolean {
+    fun onProductSaved(name: String, category: String, description: String):Boolean {
+
 
         // Add product to the inventory collection.
         val inventoryCollection = firestoreDB.collection("inventory")
