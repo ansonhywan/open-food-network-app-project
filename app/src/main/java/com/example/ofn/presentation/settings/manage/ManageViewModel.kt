@@ -2,9 +2,12 @@ package com.example.ofn.presentation.settings.manage
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.ofn.presentation.inventory.firestoreDB
+import com.google.firebase.firestore.FieldValue
 
 class ManageViewModel : ViewModel() {
     private val _name = MutableLiveData<String>("")
@@ -39,11 +42,45 @@ class ManageViewModel : ViewModel() {
     fun onCameraSelected(cameraSelected: Boolean){
         _isCameraSelected.value = cameraSelected
     }
-    fun onProductSaved():Boolean {
-        //save product into databae
-        //find avialble id 
-        //add information to db
-        //return a bool to say if successful
+    fun onProductSaved(name: String, category: String, description: String):Boolean {
+        // Add product to the inventory collection.
+        val inventoryCollection = firestoreDB.collection("inventory")
+
+        val newProductFields = hashMapOf(
+            "category" to category,
+            "description" to description,
+            "stock" to 0
+        )
+
+        inventoryCollection.document(name)
+            .set(newProductFields)
+
+
+        // Add category to the categories collection.
+        val categoriesCollection = firestoreDB.collection("categories").document(category)
+
+        val newCategoryFields = hashMapOf(
+            "products" to arrayListOf(name)
+        )
+
+        categoriesCollection.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val document = task.result
+                if(document != null) {
+                    if (document.exists()) {
+                        Log.d("TAG", "Document already exists.")
+                        categoriesCollection.update("products", FieldValue.arrayUnion(name))
+                    } else {
+                        Log.d("TAG", "Document doesn't exist.")
+                        categoriesCollection.set(newCategoryFields)
+                    }
+                }
+            } else {
+                Log.d("TAG", "Error: ", task.exception)
+            }
+        }
+
+        // TODO: ERROR CHECKING, CURRENTLY ALWAYS RETURNS TRUE.
         return true;
     }
 

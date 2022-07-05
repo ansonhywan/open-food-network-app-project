@@ -371,7 +371,7 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                         ){
                             Button(
                                 onClick = {
-                                    val retval = manageViewModel.onProductSaved();
+                                    val retval = manageViewModel.onProductSaved(name, category, description);
                                     if (retval) {
                                         manageViewModel.resetToDefault()
                                         Toast.makeText(context, "Product Saved!", Toast.LENGTH_SHORT).show()
