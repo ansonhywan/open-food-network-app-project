@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.settings.manage
+package com.example.ofn.ui.settings.manage
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.ofn.presentation.inventory.firestoreDB
+import com.example.ofn.ui.inventory.firestoreDB
 import com.google.firebase.firestore.FieldValue
 
 class ManageViewModel : ViewModel() {

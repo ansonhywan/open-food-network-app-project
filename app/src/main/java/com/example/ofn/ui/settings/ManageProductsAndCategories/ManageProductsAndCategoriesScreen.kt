@@ -1,4 +1,4 @@
-package com.example.ofn.settings
+package com.example.ofn.ui.settings.ManageProductsAndCategories
 
 import androidx.compose.material.Icon
 import androidx.compose.foundation.*
@@ -15,11 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.ofn.presentation.navigation.Screen
-import com.example.ofn.presentation.components.SearchBar
-import com.example.ofn.presentation.inventory.Category
-import com.example.ofn.presentation.inventory.Product
-import com.example.ofn.presentation.settings.ManageProductsAndCategories.ManageProductsAndCategoriesViewModel
+import com.example.ofn.ui.navigation.Screen
+import com.example.ofn.ui.components.SearchBar
+import com.example.ofn.ui.inventory.Category
+import com.example.ofn.ui.inventory.Product
 
 @Composable
 fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: ManageProductsAndCategoriesViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {

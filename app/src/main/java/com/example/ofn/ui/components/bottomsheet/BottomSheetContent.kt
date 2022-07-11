@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.components.bottomsheet
+package com.example.ofn.ui.components.bottomsheet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

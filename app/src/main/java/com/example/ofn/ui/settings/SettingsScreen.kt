@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.settings
+package com.example.ofn.ui.settings
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -18,16 +18,15 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.ofn.presentation.navigation.Screen
-import com.example.ofn.presentation.components.NavigationPanel
-import com.example.ofn.presentation.navigation.AUTH_GRAPH_ROUTE
-import com.example.ofn.presentation.settings.account.AccountFormViewModel
+import com.example.ofn.ui.navigation.Screen
+import com.example.ofn.ui.components.NavigationPanel
+import com.example.ofn.ui.navigation.AUTH_GRAPH_ROUTE
+import com.example.ofn.ui.settings.account.AccountFormViewModel
 
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.platform
+package com.example.ofn.ui.platform
 
 import android.widget.Toast
 import androidx.compose.foundation.*
@@ -19,9 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.ofn.presentation.components.FilterDropdown
-import com.example.ofn.presentation.components.SearchBar
-import com.example.ofn.presentation.components.SortDropdown
+import com.example.ofn.ui.components.FilterDropdown
+import com.example.ofn.ui.components.SearchBar
+import com.example.ofn.ui.components.SortDropdown
 import com.example.ofn.ui.theme.OFNButtonColors
 
 

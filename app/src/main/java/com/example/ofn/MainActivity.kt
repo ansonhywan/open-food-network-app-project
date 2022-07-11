@@ -10,29 +10,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.ofn.ui.theme.OFNTheme
-import com.example.ofn.presentation.dashboard.DashboardScreen
-import com.example.ofn.presentation.inventory.InventoryScreen
-import com.example.ofn.presentation.platform.PlatformScreen
-import com.example.ofn.settings.AccountScreen
-import com.example.ofn.settings.ManageProductsAndCategoriesScreen
-import com.example.ofn.settings.ManageScreen
-import com.example.ofn.presentation.settings.SettingsScreen
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ofn.presentation.navigation.NavigationGraph.SetupNavGraph
-import com.example.ofn.presentation.navigation.Screen
-import com.example.ofn.presentation.settings.account.AccountFormViewModel
-import com.example.ofn.presentation.settings.manage.ManageViewModel
+import com.example.ofn.ui.navigation.Screen
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.P)

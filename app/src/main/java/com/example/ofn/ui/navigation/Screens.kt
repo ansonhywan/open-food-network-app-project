@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.navigation
+package com.example.ofn.ui.navigation
 
 import com.example.ofn.R
 

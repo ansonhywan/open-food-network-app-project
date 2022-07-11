@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.settings.account
+package com.example.ofn.ui.settings.account
 
 import android.graphics.Bitmap
 import android.net.Uri

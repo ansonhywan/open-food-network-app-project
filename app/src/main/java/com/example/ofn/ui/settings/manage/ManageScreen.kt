@@ -1,4 +1,4 @@
-package com.example.ofn.settings
+package com.example.ofn.ui.settings.manage
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -41,10 +41,9 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.ofn.presentation.navigation.Screen
-import com.example.ofn.presentation.components.FormTextField
-import com.example.ofn.presentation.components.bottomsheet.BottomSheetContent
-import com.example.ofn.presentation.settings.manage.ManageViewModel
+import com.example.ofn.ui.navigation.Screen
+import com.example.ofn.ui.components.FormTextField
+import com.example.ofn.ui.components.bottomsheet.BottomSheetContent
 import kotlinx.coroutines.launch
 
 

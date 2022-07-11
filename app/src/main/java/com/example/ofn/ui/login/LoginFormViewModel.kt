@@ -1,5 +1,4 @@
-package com.example.ofn.presentation.login
-import android.net.Uri
+package com.example.ofn.ui.login
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

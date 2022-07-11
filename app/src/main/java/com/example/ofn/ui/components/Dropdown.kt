@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.components
+package com.example.ofn.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

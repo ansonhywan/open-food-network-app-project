@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.login
+package com.example.ofn.ui.login
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ofn.R
-import com.example.ofn.presentation.components.FormTextField
-import com.example.ofn.presentation.navigation.HOME_GRAPH_ROUTE
-import com.example.ofn.presentation.navigation.Screen
+import com.example.ofn.ui.components.FormTextField
+import com.example.ofn.ui.navigation.HOME_GRAPH_ROUTE
+import com.example.ofn.ui.navigation.Screen
 
 @Composable
 fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewModel) {

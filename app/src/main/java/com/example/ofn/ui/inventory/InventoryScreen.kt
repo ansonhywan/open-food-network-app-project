@@ -1,4 +1,4 @@
-package com.example.ofn.presentation.inventory
+package com.example.ofn.ui.inventory
 
 import android.util.Log
 import android.widget.Toast
@@ -23,9 +23,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.ofn.presentation.components.FilterDropdown
-import com.example.ofn.presentation.components.SearchBar
-import com.example.ofn.presentation.components.SortDropdown
+import com.example.ofn.ui.components.FilterDropdown
+import com.example.ofn.ui.components.SearchBar
+import com.example.ofn.ui.components.SortDropdown
 import java.math.BigInteger
 import com.example.ofn.ui.theme.OFNButtonColors
 import com.google.firebase.firestore.ktx.firestore
