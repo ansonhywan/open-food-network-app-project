@@ -6,10 +6,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.ui.inventory.firestoreDB
 import com.google.firebase.firestore.FieldValue
 
-class ManageViewModel : ViewModel() {
+class ManageViewModel() : ViewModel() {
+
     private val _name = MutableLiveData<String>("")
     var name: LiveData<String> = _name
     private val _category = MutableLiveData<String>("")
@@ -23,6 +25,8 @@ class ManageViewModel : ViewModel() {
     var bitmap: LiveData<Bitmap?> = _bitmap
     private val _isCameraSelected = MutableLiveData<Boolean>(false)
     var isCameraSelected: LiveData<Boolean> = _isCameraSelected
+
+    private val categoryRepo = CategoryRepository()
 
     fun onNameChange(newText: String){
         _name.value = newText
@@ -42,46 +46,12 @@ class ManageViewModel : ViewModel() {
     fun onCameraSelected(cameraSelected: Boolean){
         _isCameraSelected.value = cameraSelected
     }
-    fun onProductSaved(name: String, category: String, description: String):Boolean {
-        // Add product to the inventory collection.
-        val inventoryCollection = firestoreDB.collection("inventory")
+    fun onProductSaved(productName: String, categoryName: String, description: String):Boolean {
+        // Add new Product and Category to DB
+        categoryRepo.addNewCategoryAndProduct(productName, categoryName, description)
 
-        val newProductFields = hashMapOf(
-            "category" to category,
-            "description" to description,
-            "stock" to 0
-        )
-
-        inventoryCollection.document(name)
-            .set(newProductFields)
-
-
-        // Add category to the categories collection.
-        val categoriesCollection = firestoreDB.collection("categories").document(category)
-
-        val newCategoryFields = hashMapOf(
-            "products" to arrayListOf(name)
-        )
-
-        categoriesCollection.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val document = task.result
-                if(document != null) {
-                    if (document.exists()) {
-                        Log.d("TAG", "Document already exists.")
-                        categoriesCollection.update("products", FieldValue.arrayUnion(name))
-                    } else {
-                        Log.d("TAG", "Document doesn't exist.")
-                        categoriesCollection.set(newCategoryFields)
-                    }
-                }
-            } else {
-                Log.d("TAG", "Error: ", task.exception)
-            }
-        }
-
-        // TODO: ERROR CHECKING, CURRENTLY ALWAYS RETURNS TRUE.
-        return true;
+        // TODO: Error checking
+        return true
     }
 
     fun resetToDefault(){
@@ -94,6 +64,10 @@ class ManageViewModel : ViewModel() {
     }
     fun onProductDelete():Boolean {
         //go into database and delete using the id that is loaded into the model
+
+        categoryRepo.getAllCategoriesAndProducts()
+
+
         return true;
     }
 
