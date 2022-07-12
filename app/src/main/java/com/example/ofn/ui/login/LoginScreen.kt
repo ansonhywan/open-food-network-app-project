@@ -119,18 +119,18 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
                 Text(text = "Login")
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(align = Alignment.BottomCenter),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Don't have an Account?")
-            TextButton(
-                onClick = { navController.navigate(Screen.Signup.route) },
-            ) {
-                Text(text = "Sign Up")
-            }
-        }
+//        Row(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .wrapContentSize(align = Alignment.BottomCenter),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Text(text = "Don't have an Account?")
+//            TextButton(
+//                onClick = { navController.navigate(Screen.Signup.route) },
+//            ) {
+//                Text(text = "Sign Up")
+//            }
+//        }
     }
 }

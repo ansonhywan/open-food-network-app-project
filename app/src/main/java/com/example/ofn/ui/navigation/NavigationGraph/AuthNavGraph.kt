@@ -25,10 +25,10 @@ fun NavGraphBuilder.authNavGraph(
         ) {
             LoginScreen(navController = navController, loginFormViewModel)
         }
-        composable(
-            route = Screen.Signup.route
-        ) {
-            SignupScreen(navController = navController, signupFormViewModel)
-        }
+//        composable(
+//            route = Screen.Signup.route
+//        ) {
+//            SignupScreen(navController = navController, signupFormViewModel)
+//        }
     }
 }
