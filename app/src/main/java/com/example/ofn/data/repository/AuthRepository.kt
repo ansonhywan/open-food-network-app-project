@@ -1,34 +1,29 @@
 package com.example.ofn.data.repository
-
-import android.widget.Toast
+import com.example.ofn.data.dao.UserDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.auth.User
+
 
 class AuthRepository {
-    private lateinit var auth: FirebaseAuth
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var user: FirebaseUser? = getCurrentFirebaseUser()
+    private val userRepository: UserRepository = UserRepository()
 
-    fun setUpAuth(){
-        this.auth = Firebase.auth
+    private fun getCurrentFirebaseUser(): FirebaseUser? {
+        return this.auth.currentUser
     }
 
-    fun getCurrentUser(): FirebaseUser? {
-        return auth.currentUser
-    }
     fun createAccount(email: String, password: String) {
-        // [START create_user_with_email]
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task -
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    val user = auth.currentUser
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
-                }
+        this.auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
+            task->
+            if (task.isSuccessful){
+                this.user = task.result.user
+                this.userRepository.insert_new_user(this.user!!.uid, this.user!!.email!!)
+            }else{
+                this.user = null
             }
-        // [END create_user_with_email]
+        }
     }
+
 }

@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.dashboard.DashboardScreen
 import com.example.ofn.ui.inventory.InventoryScreen
 import com.example.ofn.ui.navigation.HOME_GRAPH_ROUTE

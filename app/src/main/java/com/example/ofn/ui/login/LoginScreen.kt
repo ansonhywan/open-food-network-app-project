@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ofn.R
+import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.components.FormTextField
 import com.example.ofn.ui.navigation.HOME_GRAPH_ROUTE
 import com.example.ofn.ui.navigation.Screen

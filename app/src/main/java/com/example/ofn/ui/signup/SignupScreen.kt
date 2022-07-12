@@ -20,13 +20,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ofn.R
+import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.components.FormTextField
 import com.example.ofn.ui.navigation.HOME_GRAPH_ROUTE
 import com.example.ofn.ui.navigation.Screen
 
 @Composable
-fun SignupScreen(navController: NavController, signupFormViewModel: SignupFormViewModel) {
-    val username:String by signupFormViewModel.username.observeAsState("")
+fun SignupScreen(navController: NavController,  signupFormViewModel: SignupFormViewModel) {
+    val email:String by signupFormViewModel.email.observeAsState("")
     val password:String by signupFormViewModel.password.observeAsState("")
     val confirmPassword:String by signupFormViewModel.confirm_password.observeAsState("")
     val rememberMe:Boolean by signupFormViewModel.rememberMe.observeAsState(false)
@@ -45,13 +46,13 @@ fun SignupScreen(navController: NavController, signupFormViewModel: SignupFormVi
             )
             Spacer(modifier = Modifier.size(16.dp))
             FormTextField(
-                text = username,
+                text = email,
                 onValueChange = { signupFormViewModel.onUsernameChange(it) },
-                label = { Text(text = "UserName") },
+                label = { Text(text = "Email") },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_baseline_person_24),
-                        contentDescription = "UserName Icon"
+                        contentDescription = "Email Icon"
                     )
                 },
                 modifier = Modifier
@@ -126,6 +127,7 @@ fun SignupScreen(navController: NavController, signupFormViewModel: SignupFormVi
             }
             Button(
                 onClick = {
+                    signupFormViewModel.signUp(email, password)
                     navController.navigate(HOME_GRAPH_ROUTE)
                     Toast.makeText(context, "Sign Up Success", Toast.LENGTH_SHORT).show()
                 },

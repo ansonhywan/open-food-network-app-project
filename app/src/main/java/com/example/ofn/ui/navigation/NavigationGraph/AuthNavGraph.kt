@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.login.LoginFormViewModel
 import com.example.ofn.ui.login.LoginScreen
 import com.example.ofn.ui.navigation.AUTH_GRAPH_ROUTE

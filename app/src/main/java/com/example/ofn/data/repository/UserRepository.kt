@@ -2,10 +2,14 @@ package com.example.ofn.data.repository
 
 import android.graphics.Bitmap
 import android.util.Base64
+import com.example.ofn.data.dao.UserDao
+import com.example.ofn.data.model.User
 import java.io.ByteArrayOutputStream
 
 
 class UserRepository {
+
+    private val userDao: UserDao = UserDao()
 
     fun getImageData(bmp: Bitmap):String {
         val bao = ByteArrayOutputStream()
@@ -16,5 +20,10 @@ class UserRepository {
         //  store & retrieve this string which is URL safe(can be used to store in FBDB) to firebase
         // Use either Realtime Database or Firestore
         return imageB64
+    }
+
+    fun insert_new_user(uid: String, email: String){
+        var user = User(uid, email, "" ,"","","")
+        this.userDao.addUser(user)
     }
 }

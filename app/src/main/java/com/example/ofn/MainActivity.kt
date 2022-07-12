@@ -1,10 +1,8 @@
 package com.example.ofn
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
@@ -17,15 +15,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.theme.OFNTheme
 import com.example.ofn.presentation.navigation.NavigationGraph.SetupNavGraph
 import com.example.ofn.ui.navigation.Screen
 
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             OFNTheme {
                 MainApplication()
             }
@@ -33,9 +32,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun MainApplication(){
+
     val screens = listOf<Screen>(
         Screen.Dashboard,
         Screen.Inventory,
@@ -82,7 +81,7 @@ fun MainApplication(){
     }
 
 }
-@RequiresApi(Build.VERSION_CODES.P)
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
