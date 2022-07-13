@@ -3,7 +3,6 @@ package com.example.ofn.data.dao
 import android.util.Log
 import com.example.ofn.data.model.Category
 import com.example.ofn.data.model.Product
-import com.example.ofn.data.network.parseCategoryDocument
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -26,6 +25,9 @@ class CategoryDao() {
             .addOnFailureListener { exception ->
                 Log.d("getAllCategories", "Error getting documents: ", exception)
             }
+        for ((key, value) in collectionsProductListMap) {
+            Log.d("getAllCategories", "$key => $value")
+        }
         return collectionsProductListMap
     }
 
@@ -34,7 +36,7 @@ class CategoryDao() {
         // Add product to the inventory collection.
         val inventoryCollection = firestoreDB.collection("inventory")
 
-        val newProduct = Product(category = categoryName, description = description, stock = 0)
+        val newProduct = Product(productName = productName,category = categoryName, description = description, stock = 0)
 
         inventoryCollection.document(productName)
             .set(newProduct)
@@ -51,7 +53,7 @@ class CategoryDao() {
                 if(document != null) {
                     if (document.exists()) {
                         Log.d("TAG", "Document already exists.")
-                        categoriesCollection.update("products", FieldValue.arrayUnion(productName))
+                        categoriesCollection.update("productList", FieldValue.arrayUnion(productName))
                     } else {
                         Log.d("TAG", "Document doesn't exist.")
                         categoriesCollection.set(newCategory)

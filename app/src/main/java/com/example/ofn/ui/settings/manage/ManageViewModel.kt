@@ -7,8 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.ofn.data.repository.CategoryRepository
-import com.example.ofn.ui.inventory.firestoreDB
-import com.google.firebase.firestore.FieldValue
 
 class ManageViewModel() : ViewModel() {
 

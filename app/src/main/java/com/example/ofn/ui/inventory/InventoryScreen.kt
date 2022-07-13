@@ -23,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
+import com.example.ofn.data.repository.CategoryRepository
+import com.example.ofn.data.repository.InventoryRepository
 import com.example.ofn.ui.components.FilterDropdown
 import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
@@ -36,32 +38,19 @@ import com.google.firebase.ktx.Firebase
 // todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
 
-val firestoreDB = Firebase.firestore
+private val firestoreDB = Firebase.firestore //TODO: REMOVE THIS WHEN REPOSITORIES ARE IMPLEMENTED
+
+private val inventoryRepo = InventoryRepository()
+private val categoryRepo = CategoryRepository()
 
 fun updateInventory(productList: List<Product>) {
     // Should update since if there is a product in the Inventory Page, it is already in the DB.
     productList.forEach{
-        Log.i("HERE", "${it.name}, ${it.amount}")
+        Log.i("updateInventory", "${it.name}, ${it.amount}")
         firestoreDB.collection("inventory").document(it.name)
             .update("stock", it.amount)
             //.addOnSuccessListener { Log.d(TAG, "${it.name} stock successfully updated!") }
             //.addOnFailureListener { e -> Log.w(TAG, "Error updating ${it.name}", e) }
-    }
-}
-
-fun addProduct(productList: List<Product>) {
-    /*
-        Don't think we need this function after the Demo since if there is a product in the
-        inventory Page, it should already be in DB.
-     */
-
-    productList.forEach{
-        firestoreDB.collection("inventory").document(it.name)
-            .set(hashMapOf(
-                "stock" to 0)
-            )
-            // .addOnSuccessListener { Log.d(TAG, "${it.name} stock successfully updated!") }
-            // .addOnFailureListener { e -> Log.w(TAG, "Error updating ${it.name}", e) }
     }
 }
 
