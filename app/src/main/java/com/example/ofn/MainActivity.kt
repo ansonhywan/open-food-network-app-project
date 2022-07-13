@@ -13,24 +13,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.theme.OFNTheme
-import com.example.ofn.dashboard.DashboardScreen
-import com.example.ofn.inventory.InventoryScreen
-import com.example.ofn.platform.PlatformScreen
-import com.example.ofn.settings.AccountScreen
-import com.example.ofn.settings.ManageProductsAndCategoriesScreen
-import com.example.ofn.settings.ManageScreen
-import com.example.ofn.settings.SettingsScreen
+import com.example.ofn.presentation.navigation.NavigationGraph.SetupNavGraph
+import com.example.ofn.ui.navigation.Screen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             OFNTheme {
                 MainApplication()
             }
@@ -40,6 +34,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApplication(){
+
     val screens = listOf<Screen>(
         Screen.Dashboard,
         Screen.Inventory,
@@ -47,50 +42,46 @@ fun MainApplication(){
         Screen.Settings
     )
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = {
-            BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                screens.forEach { screen ->
-                    BottomNavigationItem(
-                        icon = {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    if (currentDestination?.route != Screen.Login.route && currentDestination?.route != Screen.Signup.route){
+        Scaffold(
+            bottomBar = {
+                BottomNavigation {
+                    screens.forEach { screen ->
+                        BottomNavigationItem(
+                            icon = {
                                 Icon(
-                                    painterResource(id = screen.icon),
+                                    painterResource(id = screen.icon!!),
                                     contentDescription = screen.title,
                                     modifier = Modifier.size(25.dp)
                                 )
-                               },
-                        label = { Text(screen.title) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                        onClick = {
-                            navController.navigate(screen.route) {
-                                navController.popBackStack()
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
-                                launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                restoreState = true
+                            },
+                            label = { Text(screen.title) },
+                            selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                            onClick = {
+                                navController.navigate(screen.route) {
+                                    popUpTo(screen.route)
+                                    // Avoid multiple copies of the same destination when
+                                    // reselecting the same item
+                                    launchSingleTop = true
+                                    // Restore state when reselecting a previously selected item
+                                    restoreState = true
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
+        ) { innerPadding ->
+            SetupNavGraph(navController, Modifier.padding(innerPadding))
         }
-    ) { innerPadding ->
-        NavHost(navController, startDestination = Screen.Dashboard.route, Modifier.padding(innerPadding)) {
-            composable(Screen.Dashboard.route) { DashboardScreen(navController) }
-            composable(Screen.Inventory.route) { InventoryScreen(navController) }
-            composable(Screen.Platform.route) { PlatformScreen(navController) }
-            composable(Screen.Settings.route) { SettingsScreen(navController) }
-            composable(Screen.Account.route) { AccountScreen(navController) }
-            composable(Screen.ManageProductsAndCategories.route) { ManageProductsAndCategoriesScreen(
-                navController = navController
-            ) }
-            composable(Screen.ManageProduct.route) { ManageScreen(navController = navController) }
-        }
+    }else{
+        SetupNavGraph(navController, Modifier.padding(10.dp))
     }
+
 }
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
