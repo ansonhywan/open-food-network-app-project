@@ -1,6 +1,7 @@
 package com.example.ofn.ui.settings.ManageProductsAndCategories
 
 import androidx.lifecycle.ViewModel
+import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.ui.inventory.Category
 
 class ManageProductsAndCategoriesViewModel : ViewModel() {

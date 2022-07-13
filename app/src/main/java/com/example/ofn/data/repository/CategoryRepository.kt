@@ -1,5 +1,6 @@
 package com.example.ofn.data.repository
 import com.example.ofn.data.dao.CategoryDao
+import com.example.ofn.data.model.Category
 
 
 class CategoryRepository(){
@@ -10,8 +11,8 @@ class CategoryRepository(){
         categoriesDao.postNewCategoryAndProduct(productName, categoryName, description)
     }
 
-    fun getAllCategoriesAndProducts() {
-        categoriesDao.getAllCategories()
+    fun getAllCategoriesAndProducts(): List<Category>{
+        return categoriesDao.getAllCategories()
     }
 
 }

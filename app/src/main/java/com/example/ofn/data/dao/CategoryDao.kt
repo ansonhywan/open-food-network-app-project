@@ -11,41 +11,38 @@ class CategoryDao() {
 
     private val firestoreDB = Firebase.firestore
 
-    fun getAllCategories(): Map<String, Any?> {
-        val collectionsProductListMap = mutableMapOf<String, Any?>()
+    fun getAllCategories(): List<Category> {
+        val allCategoriesList = mutableListOf<Category>()
         firestoreDB.collection("categories")
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    collectionsProductListMap[document.id] =
-                        document.get("productList")
-                    Log.d("getAllCategories", "${document.id} => ${document.get("productList")}")
+                    allCategoriesList.add(Category(document.id))
+                    Log.d("getAllCategories", "${document.id}")
                 }
             }
             .addOnFailureListener { exception ->
                 Log.d("getAllCategories", "Error getting documents: ", exception)
             }
-        for ((key, value) in collectionsProductListMap) {
-            Log.d("getAllCategories", "$key => $value")
-        }
-        return collectionsProductListMap
+        return allCategoriesList
     }
 
     fun postNewCategoryAndProduct(productName: String, categoryName: String, description: String): Boolean {
 
-        // Add product to the inventory collection.
-        val inventoryCollection = firestoreDB.collection("inventory")
-
-        val newProduct = Product(productName = productName,category = categoryName, description = description, stock = 0)
-
-        inventoryCollection.document(productName)
-            .set(newProduct)
-
+        val newProduct = Product(
+            productName = productName,
+            category = categoryName,
+            description = description,
+            stock = 0,
+            imageUrl = "temp"
+        )
 
         // Add category to the categories collection.
 
-        val newCategory = Category(categoryName = categoryName, productList = listOf(productName))
-        val categoriesCollection = firestoreDB.collection("categories").document(categoryName)
+        val newCategory = Category(categoryName = categoryName)
+
+        val categoriesCollection = firestoreDB.collection("categories")
+            .document(categoryName)
 
         categoriesCollection.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -53,10 +50,19 @@ class CategoryDao() {
                 if(document != null) {
                     if (document.exists()) {
                         Log.d("TAG", "Document already exists.")
-                        categoriesCollection.update("productList", FieldValue.arrayUnion(productName))
+                        firestoreDB.collection("categories")
+                            .document(categoryName)
+                            .collection("products")
+                            .document(productName)
+                            .set(newProduct)
                     } else {
                         Log.d("TAG", "Document doesn't exist.")
                         categoriesCollection.set(newCategory)
+                        firestoreDB.collection("categories")
+                            .document(categoryName)
+                            .collection("products")
+                            .document(productName)
+                            .set(newProduct)
                     }
                 }
             } else {
@@ -67,6 +73,4 @@ class CategoryDao() {
         // TODO: ERROR CHECKING, CURRENTLY ALWAYS RETURNS TRUE.
         return true;
         }
-
-
 }
