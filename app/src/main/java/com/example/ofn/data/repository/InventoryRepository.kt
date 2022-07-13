@@ -2,7 +2,7 @@ package com.example.ofn.data.repository;
 import com.example.ofn.data.dao.ProductDao;
 import com.example.ofn.data.model.Product
 
-public class InventoryRepository() {
+class InventoryRepository() {
 
     private val productDao = ProductDao()
 
