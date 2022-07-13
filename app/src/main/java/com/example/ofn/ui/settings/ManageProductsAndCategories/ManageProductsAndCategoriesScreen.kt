@@ -1,5 +1,6 @@
 package com.example.ofn.ui.settings.ManageProductsAndCategories
 
+import android.widget.Toast
 import androidx.compose.material.Icon
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,6 +32,7 @@ fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: 
             Categories(
                 navController = navController,
                 categories = viewModel.getCategories(),
+                viewModel = viewModel,
                 modifier = Modifier
                     .padding(16.dp)
             ) {
@@ -52,16 +55,21 @@ fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: 
 
 }
 
+
 @Composable
 fun Categories(
     navController: NavController,
     categories: List<Category>,
+    viewModel: ManageProductsAndCategoriesViewModel,
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
     val expandedState = remember(categories) { categories.map { false }.toMutableStateList() }
     val dropdownState = remember(categories) { categories.map { false }.toMutableStateList() }
     val refresh = remember { mutableStateOf(true) }
+    val openRenameDialog = remember { mutableStateOf(false)  }
+    val openDeleteDialog = remember { mutableStateOf(false)  }
+    val context = LocalContext.current
 
     if(refresh.value) {
         LazyColumn(modifier) {
@@ -72,6 +80,7 @@ fun Categories(
                 val expanded = expandedState[i]
                 val dropdown = dropdownState[i]
                 val categoryMenuIcon = Icons.Filled.Menu
+                val name = categoryItem.name
                 val icon = if(expanded)
                     Icons.Filled.KeyboardArrowDown
                 else
@@ -120,12 +129,107 @@ fun Categories(
                                 expanded = dropdownState[i],
                                 onDismissRequest = { dropdownState[i] = false }
                             ) {
-                                DropdownMenuItem(onClick = { /*TODO*/ }) {
+                                DropdownMenuItem(onClick = {openRenameDialog.value = true}) {
                                     Text(text = "Rename")
                                 };
-                                DropdownMenuItem(onClick = { /*TODO*/ }) {
+                                DropdownMenuItem(onClick = { openDeleteDialog.value = true }) {
                                     Text(text = "Delete")
                                 }
+                            }
+                            if (openDeleteDialog.value) {
+                                AlertDialog(
+                                    onDismissRequest = {
+                                        openDeleteDialog.value = false;
+                                    },
+                                    title = {
+                                        Text(text = "Are you sure you would like to delete the Category: " + categoryItem.name)
+                                    },
+                                    buttons = {
+                                        Row(
+                                            modifier = Modifier.padding(all = 8.dp),
+                                            horizontalArrangement = Arrangement.SpaceEvenly,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Button(
+                                                onClick = {  openDeleteDialog.value = false;
+                                                    var retval = viewModel.deleteCategory(categoryItem.name);
+                                                    if (retval) {
+                                                        Toast.makeText(context, "Delete Successfull", Toast.LENGTH_SHORT).show()
+                                                    } else {
+                                                        Toast.makeText(context, "Delete Unsucccessful", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                            ) {
+                                                Text("Confirm")
+                                            }
+                                            Spacer(
+                                                modifier = Modifier
+                                                    .size(24.dp)
+                                            )
+                                            Button(
+                                                onClick = {  openDeleteDialog.value = false
+                                                }
+                                            ) {
+                                                Text("Cancel")
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                            if (openRenameDialog.value) {;
+                                var text by remember { mutableStateOf(categoryItem.name) }
+                                    AlertDialog(
+                                        onDismissRequest = {
+                                            openRenameDialog.value = false;
+                                        },
+                                        title = {
+                                            Text(text = "Rename")
+                                        },
+                                        text = {
+                                            Column() {
+                                                TextField(
+                                                    value = text,
+                                                    onValueChange = { text = it }
+                                                )
+                                            }
+                                        },
+                                        buttons = {
+                                            Row(
+                                                modifier = Modifier.padding(all = 8.dp),
+                                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Button(
+                                                    onClick = {  openRenameDialog.value = false;
+                                                        var retval = viewModel.renameCategory(categoryItem.name, text);
+                                                        if (retval) {
+                                                            Toast.makeText(context, "Rename Successfull", Toast.LENGTH_SHORT).show()
+                                                        } else {
+                                                            Toast.makeText(context, "Rename Unsucccessful", Toast.LENGTH_SHORT).show()
+                                                        }
+                                                    }
+                                                ) {
+                                                    Text("Confirm")
+                                                }
+                                                Spacer(
+                                                    modifier = Modifier
+                                                        .size(24.dp)
+                                                )
+                                                Button(
+                                                    onClick = {  openRenameDialog.value = false;
+                                                        var retval = viewModel.deleteCategory(categoryItem.name);
+                                                        if (retval) {
+                                                            Toast.makeText(context, "Delete Successfull", Toast.LENGTH_SHORT).show()
+                                                        } else {
+                                                            Toast.makeText(context, "Delete Unsucccessful", Toast.LENGTH_SHORT).show()
+                                                        }
+                                                    }
+                                                ) {
+                                                    Text("Dismiss")
+                                                }
+                                            }
+                                        }
+                                    )
                             }
                         }
                     }
