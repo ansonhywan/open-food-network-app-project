@@ -20,14 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ofn.R
-import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.components.FormTextField
 import com.example.ofn.ui.navigation.HOME_GRAPH_ROUTE
 import com.example.ofn.ui.navigation.Screen
 
 @Composable
 fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewModel) {
-    val username:String by loginFormViewModel.username.observeAsState("")
+    val email:String by loginFormViewModel.email.observeAsState("")
     val password:String by loginFormViewModel.password.observeAsState("")
     val rememberMe:Boolean by loginFormViewModel.rememberMe.observeAsState(false)
     val context = LocalContext.current
@@ -45,7 +44,7 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
             )
             Spacer(modifier = Modifier.size(16.dp))
             FormTextField(
-                text = username,
+                text = email,
                 onValueChange = { loginFormViewModel.onUsernameChange(it) },
                 label = { Text(text = "UserName") },
                 leadingIcon = {
@@ -109,8 +108,11 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
             }
             Button(
                 onClick = {
-                    navController.navigate(HOME_GRAPH_ROUTE)
-                    Toast.makeText(context, "Login Success", Toast.LENGTH_SHORT).show()
+                    loginFormViewModel.login(context, email, password) {
+                        navController.navigate(
+                            HOME_GRAPH_ROUTE
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

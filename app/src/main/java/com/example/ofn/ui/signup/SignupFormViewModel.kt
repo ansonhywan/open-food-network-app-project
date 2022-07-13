@@ -1,10 +1,13 @@
 package com.example.ofn.ui.signup
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.ofn.data.Constants
 import com.example.ofn.data.repository.AuthRepository
-import kotlinx.coroutines.launch
+import com.example.ofn.data.repository.UserRepository
+import com.google.firebase.auth.FirebaseUser
 
 class SignupFormViewModel: ViewModel() {
     private val _email = MutableLiveData<String>("")
@@ -17,6 +20,8 @@ class SignupFormViewModel: ViewModel() {
     var rememberMe: LiveData<Boolean> = _rememberMe
 
     private val authRepository: AuthRepository = AuthRepository()
+    private var user: FirebaseUser? = authRepository.getCurrentFirebaseUser()
+    private val userRepository: UserRepository = UserRepository()
 
     fun onUsernameChange(newText: String){
         _email.value = newText
@@ -31,9 +36,18 @@ class SignupFormViewModel: ViewModel() {
         _rememberMe.value = newText
     }
 
-    fun signUp(email: String, password: String) {
-        viewModelScope.launch {
-            authRepository.createAccount(email, password)
+    fun signUp(context: Context, email: String, password: String, navigation: ()->Unit){
+        authRepository.createAccount(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                user = task.result.user
+                userRepository.insert_new_user(user!!.uid, user!!.email!!)
+                Toast.makeText(context, Constants.SIGN_UP_SUCCESS_MESSAGE, Toast.LENGTH_SHORT).show()
+                navigation.invoke()
+            } else {
+                user = null
+                val responseMessage = "Failed with " + task.exception!!.message!!
+                Toast.makeText(context, responseMessage, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

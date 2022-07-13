@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ofn.R
+import com.example.ofn.data.Constants.SIGN_UP_SUCCESS_MESSAGE
 import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.components.FormTextField
 import com.example.ofn.ui.navigation.HOME_GRAPH_ROUTE
@@ -127,9 +129,11 @@ fun SignupScreen(navController: NavController,  signupFormViewModel: SignupFormV
             }
             Button(
                 onClick = {
-                    signupFormViewModel.signUp(email, password)
-                    navController.navigate(HOME_GRAPH_ROUTE)
-                    Toast.makeText(context, "Sign Up Success", Toast.LENGTH_SHORT).show()
+                    signupFormViewModel.signUp(context, email, password) {
+                        navController.navigate(
+                            HOME_GRAPH_ROUTE
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
