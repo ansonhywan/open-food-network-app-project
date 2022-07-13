@@ -111,6 +111,7 @@ fun Categories(
     header: @Composable () -> Unit
 ) {
     val expandedState = remember(categories) { categories.map { false }.toMutableStateList() }
+    val dropdownState = remember(categories) { categories.map { false }.toMutableStateList() }
     val refresh = remember { mutableStateOf(true) }
 
     if(refresh.value) {
@@ -120,6 +121,7 @@ fun Categories(
             }
             categories.forEachIndexed { i, categoryItem ->
                 val expanded = expandedState[i]
+                val dropdown = dropdownState[i]
                 val categoryMenuIcon = Icons.Filled.Menu
                 val icon = if(expanded)
                     Icons.Filled.KeyboardArrowUp
@@ -154,15 +156,29 @@ fun Categories(
                             modifier = Modifier
                                 .size(24.dp)
                         )
-                        Icon(
-                            categoryMenuIcon,
-                            contentDescription = "category menu icon",
-                            tint = MaterialTheme.colors.onSecondary,
-                            modifier = Modifier
-                            //todo: do pop up menu to edit category
-                        )
-
-
+                        Box(modifier = Modifier) {
+                            IconButton(
+                                onClick = { dropdownState[i] = !dropdown }
+                            ) {
+                                Icon(
+                                    categoryMenuIcon,
+                                    contentDescription = "category menu icon",
+                                    tint = MaterialTheme.colors.onSecondary,
+                                    modifier = Modifier
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = dropdownState[i],
+                                onDismissRequest = { dropdownState[i] = false }
+                            ) {
+                                DropdownMenuItem(onClick = { /*TODO*/ }) {
+                                    Text(text = "Rename")
+                                };
+                                DropdownMenuItem(onClick = { /*TODO*/ }) {
+                                    Text(text = "Delete")
+                                }
+                            }
+                        }
                     }
                     Divider()
                 }
