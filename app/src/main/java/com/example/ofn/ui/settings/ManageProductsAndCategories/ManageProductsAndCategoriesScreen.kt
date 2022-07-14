@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -21,7 +20,7 @@ import com.example.ofn.ui.navigation.Screen
 import com.example.ofn.ui.components.SearchBar
 
 @Composable
-fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: ManageProductsAndCategoriesViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: ManageProductsAndCategoriesViewModel) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
@@ -174,12 +173,5 @@ fun CategoryProducts(product: Product) {
 }
 
 fun addNewProduct(navController: NavController) {
-    navController?.navigate(Screen.ManageProduct.route)
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ManageProductsAndCategoriesPreview() {
-    ManageProductsAndCategoriesScreen(navController = null)
+    navController.navigate(Screen.ManageProduct.route)
 }
