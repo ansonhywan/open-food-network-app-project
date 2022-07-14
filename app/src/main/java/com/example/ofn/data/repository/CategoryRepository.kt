@@ -15,4 +15,12 @@ class CategoryRepository(){
         return categoriesDao.getAllCategories()
     }
 
+    fun renameCategory(categoryName: String, newName: String) {
+        categoriesDao.renameCategory(categoryName, newName)
+    }
+
+    fun deleteCategory(categoryName: String){
+        categoriesDao.deleteCategory(categoryName)
+    }
+
 }

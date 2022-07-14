@@ -42,35 +42,89 @@ class CategoryDao() {
         val newCategory = Category(categoryName = categoryName)
 
         val categoriesCollection = firestoreDB.collection("categories")
-            .document(categoryName)
 
-        categoriesCollection.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val document = task.result
-                if(document != null) {
-                    if (document.exists()) {
-                        Log.d("TAG", "Document already exists.")
-                        firestoreDB.collection("categories")
-                            .document(categoryName)
-                            .collection("products")
-                            .document(productName)
-                            .set(newProduct)
+        categoriesCollection
+            .whereEqualTo("categoryName", categoryName)
+            .limit(1).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    if (task.result.isEmpty) {
+                        // Category does not exist.
+                        Log.d("postNewCategoryAndProd", "CATEGORY DOES NOT EXIST")
+                        categoriesCollection.add(newCategory)
+                            .addOnSuccessListener { docRef ->
+                                docRef
+                                    .collection("products")
+                                    .add(newProduct)
+                            }
                     } else {
-                        Log.d("TAG", "Document doesn't exist.")
-                        categoriesCollection.set(newCategory)
-                        firestoreDB.collection("categories")
-                            .document(categoryName)
+                        // Category already exists.
+                        Log.d("postNewCategoryAndProd", "CATEGORY ALREADY EXISTS")
+                        val docId = task.result.documents[0].id
+                        categoriesCollection.document(docId)
                             .collection("products")
-                            .document(productName)
-                            .set(newProduct)
+                            .add(newProduct)
                     }
                 }
-            } else {
-                Log.d("TAG", "Error: ", task.exception)
             }
-        }
 
         // TODO: ERROR CHECKING, CURRENTLY ALWAYS RETURNS TRUE.
         return true;
+        }
+
+
+        fun deleteCategory(categoryName: String) {
+            // Delete category from db. This entails deleting all products wtihin it as well.
+
+            val categoriesCollection = firestoreDB.collection("categories")
+
+            categoriesCollection
+                .whereEqualTo("categoryName", categoryName)
+                .limit(1).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Query successful, category exists.
+                        val docId = task.result.documents[0].id
+                        categoriesCollection.document(docId)
+                            .delete()
+                            .addOnSuccessListener { Log.d("deleteCategory", "$categoryName successfully deleted!") }
+                            .addOnFailureListener { e -> Log.w("deleteCategory", "Error deleting document", e) }
+                    } else {
+                        // Category trying to be deleted does not exist.
+                    }
+                }
+
+        }
+
+        fun renameCategory(categoryName: String, newName: String) {
+            val categoriesCollection = firestoreDB.collection("categories")
+
+            categoriesCollection
+                .whereEqualTo("categoryName", categoryName)
+                .limit(1).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Query successful, category exists.
+                        val docId = task.result.documents[0].id
+                        categoriesCollection.document(docId)
+                            .update("categoryName", newName)
+                            .addOnSuccessListener {
+                                Log.d(
+                                    "renameCategory",
+                                    "$categoryName successfully renaned!"
+                                )
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w(
+                                    "renameCategory",
+                                    "Error renaming document",
+                                    e
+                                )
+                            }
+                    } else {
+                        // Category trying to be renamed does not exist.
+                    }
+
+                }
         }
 }

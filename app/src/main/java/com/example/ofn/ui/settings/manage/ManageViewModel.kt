@@ -60,13 +60,15 @@ class ManageViewModel() : ViewModel() {
         onCategoryChange("")
         onDescriptionChange("")
     }
-    fun onProductDelete():Boolean {
-        //go into database and delete using the id that is loaded into the model
 
-        categoryRepo.getAllCategoriesAndProducts()
+    fun onProductDelete(categoryName: String): Boolean {
+        categoryRepo.deleteCategory(categoryName)
+        return true
+    }
 
-
-        return true;
+    fun renameCategory(categoryName: String, newName: String): Boolean {
+        categoryRepo.renameCategory(categoryName, newName)
+        return true
     }
 
 }
