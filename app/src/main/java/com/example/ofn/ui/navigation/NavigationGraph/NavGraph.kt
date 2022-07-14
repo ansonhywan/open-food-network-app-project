@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.example.ofn.data.repository.AuthRepository
+import com.example.ofn.ui.inventory.InventoryViewModel
 import com.example.ofn.ui.login.LoginFormViewModel
 import com.example.ofn.ui.navigation.AUTH_GRAPH_ROUTE
 import com.example.ofn.ui.navigation.ROOT_GRAPH_ROUTE
@@ -20,6 +21,7 @@ fun SetupNavGraph(
     navController: NavHostController,
     modifier: Modifier
 ) {
+    val inventoryViewModel: InventoryViewModel = viewModel()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
     val loginFormViewModel: LoginFormViewModel = viewModel()
@@ -30,7 +32,7 @@ fun SetupNavGraph(
         route = ROOT_GRAPH_ROUTE,
         modifier = modifier
     ) {
-        homeNavGraph(navController = navController, accountFormViewModel, manageViewModel)
+        homeNavGraph(navController = navController, inventoryViewModel, accountFormViewModel, manageViewModel)
         authNavGraph(navController = navController, loginFormViewModel, signupFormViewModel)
     }
 }
