@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.ofn.data.repository.CategoryRepository
-import com.example.ofn.data.repository.InventoryRepository
+import com.example.ofn.data.repository.ProductRepository
 import com.example.ofn.ui.components.FilterDropdown
 import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
@@ -40,7 +40,7 @@ import com.google.firebase.ktx.Firebase
 
 private val firestoreDB = Firebase.firestore //TODO: REMOVE THIS WHEN REPOSITORIES ARE IMPLEMENTED
 
-private val inventoryRepo = InventoryRepository()
+private val productRepo = ProductRepository()
 private val categoryRepo = CategoryRepository()
 
 fun updateInventory(productList: List<Product>) {

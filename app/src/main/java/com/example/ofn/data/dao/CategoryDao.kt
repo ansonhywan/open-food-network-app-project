@@ -17,8 +17,9 @@ class CategoryDao() {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    allCategoriesList.add(Category(document.id))
-                    Log.d("getAllCategories", "${document.id}")
+                    val categoryName = document.get("categoryName") as String
+                    allCategoriesList.add(Category(categoryName = categoryName))
+                    Log.d("getAllCategories", "Successfully got $categoryName")
                 }
             }
             .addOnFailureListener { exception ->

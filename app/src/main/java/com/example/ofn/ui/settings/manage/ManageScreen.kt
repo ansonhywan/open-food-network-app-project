@@ -333,7 +333,7 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                         ){
                             Button(
                                 onClick = {
-                                    val retval = manageViewModel.onProductDelete();
+                                    val retval = manageViewModel.onProductDelete(category)
                                     if (retval) {
                                         Toast.makeText(
                                             context,
