@@ -1,4 +1,5 @@
 package com.example.ofn.data.repository
+import android.util.Log
 import com.example.ofn.data.dao.CategoryDao
 import com.example.ofn.data.model.Category
 import com.example.ofn.data.model.Product
@@ -22,6 +23,11 @@ class CategoryRepository(){
 
     fun deleteCategory(categoryName: String){
         categoriesDao.deleteCategory(categoryName)
+    }
+
+    fun testGetCategories() {
+        val result = categoriesDao.testGetCategories()
+        Log.d("RAGOEWIOGH", "$result")
     }
 
 }

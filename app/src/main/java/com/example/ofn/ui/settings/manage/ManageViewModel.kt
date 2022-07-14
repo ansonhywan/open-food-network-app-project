@@ -62,7 +62,8 @@ class ManageViewModel() : ViewModel() {
     }
 
     fun onProductDelete(categoryName: String): Boolean {
-        categoryRepo.deleteCategory(categoryName)
+        categoryRepo.testGetCategories()
+//        categoryRepo.deleteCategory(categoryName)
         return true
     }
 
