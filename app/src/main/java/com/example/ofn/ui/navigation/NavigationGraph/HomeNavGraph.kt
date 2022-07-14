@@ -7,6 +7,7 @@ import androidx.navigation.compose.navigation
 import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.ui.dashboard.DashboardScreen
 import com.example.ofn.ui.inventory.InventoryScreen
+import com.example.ofn.ui.inventory.InventoryViewModel
 import com.example.ofn.ui.navigation.HOME_GRAPH_ROUTE
 import com.example.ofn.ui.navigation.Screen
 import com.example.ofn.ui.platform.PlatformScreen
@@ -16,6 +17,7 @@ import com.example.ofn.ui.settings.manage.ManageViewModel
 
 fun NavGraphBuilder.homeNavGraph(
     navController: NavHostController,
+    inventoryViewModel: InventoryViewModel,
     accountFormViewModel: AccountFormViewModel,
     manageViewModel: ManageViewModel
 ){
@@ -24,7 +26,7 @@ fun NavGraphBuilder.homeNavGraph(
         route = HOME_GRAPH_ROUTE,
     ){
         composable(Screen.Dashboard.route) { DashboardScreen(navController) }
-        composable(Screen.Inventory.route) { InventoryScreen(navController) }
+        composable(Screen.Inventory.route) { InventoryScreen(navController, inventoryViewModel) }
         composable(Screen.Platform.route) { PlatformScreen(navController) }
         composable(Screen.Settings.route) { SettingsScreen(navController, accountFormViewModel) }
         settingNavGraph(navController, accountFormViewModel, manageViewModel)

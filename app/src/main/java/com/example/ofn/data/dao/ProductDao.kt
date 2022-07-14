@@ -10,18 +10,18 @@ class ProductDao() {
 
     private val firestoreDB = Firebase.firestore
 
-    fun updateProductStock(productList: List<Product>, newStock: Int) {
+    fun updateProductStock(productList: List<Product>) {
         // Should update since if there is a product in the Inventory Page, it is already in the DB.
         productList.forEach{
-            Log.i("updateProductStock", "${it.productName}: ${it.stock} => $newStock")
+            Log.i("updateProductStock", "${it.productName}: ${it.stock}")
             firestoreDB.collection("inventory").document(it.productName)
-                .update("stock", newStock)
+                .update("stock", it.stock)
                 .addOnSuccessListener { Log.d("updateProductStock", "Stock successfully updated!") }
                 .addOnFailureListener { e -> Log.w("updateProductStock", "Error updating stock", e) }
         }
     }
 
-    fun getAllProductsInCategory(categoryName: String): List<Product> {
+    fun getAllProductsInCategory(categoryName: String, callback: () -> Unit): List<Product> {
         val allProductsList = mutableListOf<Product>()
 
         val categoriesCollection = firestoreDB.collection("categories")
@@ -48,6 +48,7 @@ class ProductDao() {
                                 allProductsList.add(productToAdd)
                                 Log.d("getAllProductsInCat", "Successfully got $productToAdd")
                             }
+                            callback()
                         }
                         .addOnFailureListener { exception ->
                             Log.d("getAllProductsInCat", "Error getting documents: ", exception)

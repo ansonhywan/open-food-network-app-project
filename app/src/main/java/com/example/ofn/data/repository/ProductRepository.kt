@@ -7,11 +7,11 @@ class ProductRepository {
 
     private val productDao = ProductDao()
 
-    fun addStockToProduct(productList: List<Product>, newStock: Int) {
-        productDao.updateProductStock(productList = productList, newStock = newStock)
+    fun addStockToProduct(productList: List<Product>) {
+        productDao.updateProductStock(productList = productList)
     }
 
-    fun getAllProductsInCategory(categoryName: String): List<Product> {
-        return productDao.getAllProductsInCategory(categoryName)
+    fun getAllProductsInCategory(categoryName: String, callback: () -> Unit): List<Product> {
+        return productDao.getAllProductsInCategory(categoryName, callback)
     }
 }
