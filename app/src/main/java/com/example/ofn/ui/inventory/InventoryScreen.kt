@@ -1,6 +1,5 @@
 package com.example.ofn.ui.inventory
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,37 +24,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.ofn.data.model.Category
 import com.example.ofn.data.model.Product
-import com.example.ofn.data.repository.CategoryRepository
-import com.example.ofn.data.repository.ProductRepository
 import com.example.ofn.ui.components.FilterDropdown
 import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
-import java.math.BigInteger
 import com.example.ofn.ui.theme.OFNButtonColors
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 
 // todo: save to local storage?
 // todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
-
-private val firestoreDB = Firebase.firestore //TODO: REMOVE THIS WHEN REPOSITORIES ARE IMPLEMENTED
-
-private val productRepo = ProductRepository()
-private val categoryRepo = CategoryRepository()
-
-//fun updateInventory(productList: List<Product>) {
-//    // Should update since if there is a product in the Inventory Page, it is already in the DB.
-//    productList.forEach{
-//        Log.i("updateInventory", "${it.name}, ${it.amount}")
-//        firestoreDB.collection("inventory").document(it.name)
-//            .update("stock", it.amount)
-//            //.addOnSuccessListener { Log.d(TAG, "${it.name} stock successfully updated!") }
-//            //.addOnFailureListener { e -> Log.w(TAG, "Error updating ${it.name}", e) }
-//    }
-//}
-
 
 @Composable
 fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryViewModel) {
@@ -336,6 +313,3 @@ fun ProductButtons(product: Product, inventoryViewModel: InventoryViewModel) {
     }
 }
 
-// todo: remove Category and Product defined here (currently referenced in ManageProductsAndCategoriesScreen) ↓
-data class Category(val name: String, val productList: List<com.example.ofn.ui.inventory.Product>)
-data class Product(val id: String, val name: String, var amount: Int, var addNum: Int = 0)

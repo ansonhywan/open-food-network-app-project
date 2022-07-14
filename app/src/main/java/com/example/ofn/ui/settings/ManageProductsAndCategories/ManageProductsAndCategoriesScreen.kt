@@ -15,10 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.ofn.data.model.Category
+import com.example.ofn.data.model.Product
 import com.example.ofn.ui.navigation.Screen
 import com.example.ofn.ui.components.SearchBar
-import com.example.ofn.ui.inventory.Category
-import com.example.ofn.ui.inventory.Product
 
 @Composable
 fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: ManageProductsAndCategoriesViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
@@ -93,7 +93,7 @@ fun Categories(
                                 .size(1.dp)
                         )
                         Text(
-                            text = categoryItem.name,
+                            text = categoryItem.categoryName,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .padding(vertical = 25.dp)
@@ -117,8 +117,8 @@ fun Categories(
                 }
 
                 if (expanded) {
-                    categoryItem.productList.forEach { product ->
-                        item(key = product.id) {
+                    categoryItem.productList!!.forEach { product ->
+                        item(key = product.productName) {
                             CategoryProducts(product)
                         }
                     }
@@ -157,7 +157,7 @@ fun CategoryProducts(product: Product) {
             .fillMaxSize()
     ) {
         Text(
-            text = product.name
+            text = product.productName
         )
         IconButton(
             onClick = {

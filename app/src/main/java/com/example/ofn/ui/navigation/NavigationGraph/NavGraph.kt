@@ -24,7 +24,7 @@ fun SetupNavGraph(
     val inventoryViewModel: InventoryViewModel = viewModel()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
-    val loginFormViewModel: LoginFormViewModel = viewModel()
+    val loginFormViewModel: LoginFormViewModel = viewModel(modelClass = LoginFormViewModel::class.java)
     val signupFormViewModel: SignupFormViewModel = viewModel()
     NavHost(
         navController = navController,

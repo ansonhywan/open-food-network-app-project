@@ -26,6 +26,7 @@ import coil.request.ImageRequest
 import com.example.ofn.ui.navigation.Screen
 import com.example.ofn.ui.components.NavigationPanel
 import com.example.ofn.ui.navigation.AUTH_GRAPH_ROUTE
+import com.example.ofn.ui.settings.account.AccountFormUIState
 import com.example.ofn.ui.settings.account.AccountFormViewModel
 
 
@@ -94,8 +95,9 @@ fun ProfileCard(accountFormViewModel: AccountFormViewModel) {
                 modifier = Modifier.padding(16.dp),
                 elevation = 4.dp
             ) {
-                val imageUri: Uri? by accountFormViewModel.imageUri.observeAsState(accountFormViewModel.imageUri.value)
-                val bitmap: Bitmap? by accountFormViewModel.bitmap.observeAsState(accountFormViewModel.bitmap.value)
+                val accountFormUIState: AccountFormUIState = accountFormViewModel.accountFormUIState
+                val imageUri: Uri? = accountFormUIState.imageUri
+                val bitmap: Bitmap? = accountFormUIState.bitmap
                 val context = LocalContext.current
                 val placeHolderImage =
                     "https://tedblob.com/wp-content/uploads/2021/09/android.png"
