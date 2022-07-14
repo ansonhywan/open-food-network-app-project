@@ -298,7 +298,7 @@ fun ProductButtons(product: Product, inventoryViewModel: InventoryViewModel) {
             value = addNumStr,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
-//                addNumStr = inventoryViewModel.onAddNumChange(product, it, addNumStr)
+                addNumStr = inventoryViewModel.onAddNumChange(product, it, addNumStr)
             },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background,
