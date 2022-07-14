@@ -86,7 +86,22 @@ class CategoryDao() {
                     if (task.isSuccessful) {
                         // Query successful, category exists.
                         val docId = task.result.documents[0].id
-                        categoriesCollection.document(docId)
+                        val categoryDocRef = categoriesCollection.document(docId)
+                        categoryDocRef
+                            .collection("products")
+                            .get()
+                            .addOnSuccessListener { result ->
+                                for (document in result) {
+                                    val productDocId = document.id
+                                    val productDocRef = categoryDocRef.collection("products").document(productDocId)
+                                    productDocRef
+                                        .delete()
+                                        .addOnSuccessListener { Log.d("deleteCategory", "Successfully deleted product!") }
+                                        .addOnFailureListener { e -> Log.w("deleteCategory", "Error deleting product", e) }
+
+                                }
+                            }
+                        categoryDocRef
                             .delete()
                             .addOnSuccessListener { Log.d("deleteCategory", "$categoryName successfully deleted!") }
                             .addOnFailureListener { e -> Log.w("deleteCategory", "Error deleting document", e) }
