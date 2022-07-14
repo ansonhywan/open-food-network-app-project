@@ -62,9 +62,23 @@ class CategoryDao() {
                         // Category already exists.
                         Log.d("postNewCategoryAndProd", "CATEGORY ALREADY EXISTS")
                         val docId = task.result.documents[0].id
-                        categoriesCollection.document(docId)
-                            .collection("products")
-                            .add(newProduct)
+                        val categoryProductCollection = categoriesCollection.document(docId).collection("products")
+                        categoryProductCollection
+                            .whereEqualTo("productName", productName)
+                            .limit(1).get()
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    if (task.result.isEmpty) {
+                                        // Product does not already exist. Add it to sub-collection
+                                        categoryProductCollection
+                                            .add(newProduct)
+                                    } else {
+                                        // Product already exists.
+                                        // Do nothing.
+                                        Log.d("postNewCategoryAndProd", "$productName ALREADY EXISTS in $categoryName")
+                                    }
+                                }
+                            }
                     }
                 }
             }
