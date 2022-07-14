@@ -34,10 +34,14 @@ class LoginFormViewModel: ViewModel() {
     }
 
     fun login(context: Context, email: String, password: String, navigation: ()->Unit){
+        if (email.isEmpty() || password.isEmpty()){
+            Toast.makeText(context, Constants.EMPTY_CREDENTIALS_MESSAGE, Toast.LENGTH_SHORT).show()
+            return
+        }
         authRepository.signInWithEmail(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 user = task.result.user
-                Toast.makeText(context, Constants.SIGN_UP_SUCCESS_MESSAGE, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, Constants.LOGIN_SUCCESS_MESSAGE, Toast.LENGTH_SHORT).show()
                 navigation.invoke()
             } else {
                 user = null

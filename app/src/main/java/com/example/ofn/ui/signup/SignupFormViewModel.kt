@@ -37,6 +37,10 @@ class SignupFormViewModel: ViewModel() {
     }
 
     fun signUp(context: Context, email: String, password: String, navigation: ()->Unit){
+        if (email.isEmpty() || password.isEmpty()){
+            Toast.makeText(context, "Empty Username or Password!", Toast.LENGTH_SHORT).show()
+            return
+        }
         authRepository.createAccount(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 user = task.result.user
