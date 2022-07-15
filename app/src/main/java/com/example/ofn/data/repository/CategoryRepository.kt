@@ -1,8 +1,11 @@
 package com.example.ofn.data.repository
 import android.util.Log
+import com.example.ofn.data.Constants
 import com.example.ofn.data.dao.CategoryDao
 import com.example.ofn.data.model.Category
 import com.example.ofn.data.model.Product
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class CategoryRepository(){
@@ -13,8 +16,17 @@ class CategoryRepository(){
         categoriesDao.postNewCategoryAndProduct(productName, categoryName, description)
     }
 
-    fun getAllCategories(): List<Category>{
-        return categoriesDao.getAllCategories()
+    suspend fun getAllCategories(onComplete: (HashMap<Boolean, Any>) -> Unit)=withContext(Dispatchers.IO){
+        val allCategoriesList = mutableListOf<Category>()
+        categoriesDao.getAllCategories().addOnCompleteListener {
+            if (it.isSuccessful){
+                for (document in it.result){
+                    val categoryName = document.get("categoryName") as String
+                    allCategoriesList.add(Category(categoryName = categoryName))
+                }
+
+            }
+        }
     }
 
     fun renameCategory(categoryName: String, newName: String) {
@@ -25,9 +37,15 @@ class CategoryRepository(){
         categoriesDao.deleteCategory(categoryName)
     }
 
-    fun testGetCategories() {
-        val result = categoriesDao.testGetCategories()
-        Log.d("RAGOEWIOGH", "$result")
+    suspend fun testGetCategories(onComplete:(HashMap<Boolean, Any>)->Unit)= withContext(Dispatchers.IO) {
+        categoriesDao.testGetCategories()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    onComplete.invoke(hashMapOf<Boolean, Any>(true to it.result.documents))
+                }else{
+                    onComplete.invoke(hashMapOf<Boolean, Any>(false to Constants.RETRIEVE_DATA_FAILURE_MESSAGE))
+                }
+            }
     }
 
 }
