@@ -334,22 +334,22 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                         ){
                             Button(
                                 onClick = {
-                                    val retval = manageViewModel.onProductDelete(category)
-                                    if (retval) {
-                                        Toast.makeText(
-                                            context,
-                                            "Product Deleted!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        manageViewModel.resetToDefault()
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Product was not Deleted. Try Again",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
+                                    manageViewModel.onProductDelete(context, category)
+//                                    if (retval) {
+//                                        Toast.makeText(
+//                                            context,
+//                                            "Product Deleted!",
+//                                            Toast.LENGTH_SHORT
+//                                        ).show()
+//                                        manageViewModel.resetToDefault()
+//                                    } else {
+//                                        Toast.makeText(
+//                                            context,
+//                                            "Product was not Deleted. Try Again",
+//                                            Toast.LENGTH_SHORT
+//                                        ).show()
+//                                    }
+//                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
                                     //return
                                 },
                                 modifier = Modifier

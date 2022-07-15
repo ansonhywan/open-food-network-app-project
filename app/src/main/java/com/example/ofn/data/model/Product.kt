@@ -6,4 +6,6 @@ data class Product (
     val description: String,
     val stock: Long,
     val imageUrl: String
-)
+){
+    constructor(): this("","","",0,"")
+}
