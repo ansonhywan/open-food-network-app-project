@@ -7,11 +7,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.ofn.data.Constants
 import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.data.repository.UserRepository
 import com.example.ofn.ui.login.LoginUIState
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.launch
 
 class SignupFormViewModel(
     private val authRepository: AuthRepository = AuthRepository(),
@@ -20,7 +22,7 @@ class SignupFormViewModel(
 
     var signupUIState by mutableStateOf(SignupUIState())
 
-    private var user: FirebaseUser? = authRepository.getCurrentFirebaseUser()
+    private var user: FirebaseUser? = authRepository.currentUser
 
     fun onUsernameChange(newText: String){
         signupUIState = signupUIState.copy(email = newText)
@@ -35,21 +37,29 @@ class SignupFormViewModel(
         signupUIState = signupUIState.copy(rememberMe = newText)
     }
 
-    fun signUp(context: Context, email: String, password: String, navigation: ()->Unit){
+    fun signUp(context: Context, email: String, password: String, navigation: ()->Unit)=viewModelScope.launch{
         if (email.isEmpty() || password.isEmpty()){
             Toast.makeText(context, "Empty Username or Password!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        authRepository.createAccount(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                user = task.result.user
-                userRepository.insert_new_user(user!!.uid, user!!.email!!)
-                Toast.makeText(context, Constants.SIGN_UP_SUCCESS_MESSAGE, Toast.LENGTH_SHORT).show()
-                navigation.invoke()
-            } else {
-                user = null
-                val responseMessage = "Failed with " + task.exception!!.message!!
-                Toast.makeText(context, responseMessage, Toast.LENGTH_SHORT).show()
+        }else {
+            try {
+                authRepository.createUser(email, password) {
+                    if (it.containsKey(true)) {
+                        user = it[true] as FirebaseUser?
+                        userRepository.insert_new_user(user!!.uid, user!!.email!!)
+                        Toast.makeText(
+                            context,
+                            Constants.SIGN_UP_SUCCESS_MESSAGE,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        navigation.invoke()
+                    } else {
+                        user = null
+                        Toast.makeText(context, it[false].toString(), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
             }
         }
     }
