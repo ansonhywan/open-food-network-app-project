@@ -1,56 +1,65 @@
 package com.example.ofn.ui.signup
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.ofn.data.Constants
 import com.example.ofn.data.repository.AuthRepository
 import com.example.ofn.data.repository.UserRepository
+import com.example.ofn.ui.login.LoginUIState
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.launch
 
-class SignupFormViewModel: ViewModel() {
-    private val _email = MutableLiveData<String>("")
-    var email: LiveData<String> = _email
-    private val _password = MutableLiveData<String>("")
-    var password: LiveData<String> = _password
-    private val _confirm_password = MutableLiveData<String>("")
-    var confirm_password: LiveData<String> = _confirm_password
-    private val _rememberMe = MutableLiveData<Boolean>(false)
-    var rememberMe: LiveData<Boolean> = _rememberMe
-
-    private val authRepository: AuthRepository = AuthRepository()
-    private var user: FirebaseUser? = authRepository.getCurrentFirebaseUser()
+class SignupFormViewModel(
+    private val authRepository: AuthRepository = AuthRepository(),
     private val userRepository: UserRepository = UserRepository()
+): ViewModel() {
+
+    var signupUIState by mutableStateOf(SignupUIState())
+
+    private var user: FirebaseUser? = authRepository.currentUser
 
     fun onUsernameChange(newText: String){
-        _email.value = newText
+        signupUIState = signupUIState.copy(email = newText)
     }
     fun onPasswordChange(newText: String){
-        _password.value = newText
+        signupUIState = signupUIState.copy(password = newText)
     }
     fun onConfirmPasswordChange(newText: String){
-        _confirm_password.value = newText
+        signupUIState = signupUIState.copy(confirmPassword = newText)
     }
     fun onRememberMeChange(newText: Boolean){
-        _rememberMe.value = newText
+        signupUIState = signupUIState.copy(rememberMe = newText)
     }
 
-    fun signUp(context: Context, email: String, password: String, navigation: ()->Unit){
+    fun signUp(context: Context, email: String, password: String, navigation: ()->Unit)=viewModelScope.launch{
         if (email.isEmpty() || password.isEmpty()){
             Toast.makeText(context, "Empty Username or Password!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        authRepository.createAccount(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                user = task.result.user
-                userRepository.insert_new_user(user!!.uid, user!!.email!!)
-                Toast.makeText(context, Constants.SIGN_UP_SUCCESS_MESSAGE, Toast.LENGTH_SHORT).show()
-                navigation.invoke()
-            } else {
-                user = null
-                val responseMessage = "Failed with " + task.exception!!.message!!
-                Toast.makeText(context, responseMessage, Toast.LENGTH_SHORT).show()
+        }else {
+            try {
+                authRepository.createUser(email, password) {
+                    if (it.containsKey(true)) {
+                        user = it[true] as FirebaseUser?
+                        userRepository.insert_new_user(user!!.uid, user!!.email!!)
+                        Toast.makeText(
+                            context,
+                            Constants.SIGN_UP_SUCCESS_MESSAGE,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        navigation.invoke()
+                    } else {
+                        user = null
+                        Toast.makeText(context, it[false].toString(), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
             }
         }
     }

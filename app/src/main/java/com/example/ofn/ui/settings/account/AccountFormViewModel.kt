@@ -2,39 +2,29 @@ package com.example.ofn.ui.settings.account
 
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class AccountFormViewModel : ViewModel() {
-    private val _name = MutableLiveData<String>("")
-    var name: LiveData<String> = _name
-    private val _email = MutableLiveData<String>("")
-    var email: LiveData<String> = _email
-    private val _phone = MutableLiveData<String>("")
-    var phone: LiveData<String> = _phone
-    private val _imageUri = MutableLiveData<Uri?>(null)
-    var imageUri: LiveData<Uri?> = _imageUri
-    private val _bitmap = MutableLiveData<Bitmap?>(null)
-    var bitmap: LiveData<Bitmap?> = _bitmap
-    private val _isCameraSelected = MutableLiveData<Boolean>(false)
-    var isCameraSelected: LiveData<Boolean> = _isCameraSelected
+    var accountFormUIState by mutableStateOf(AccountFormUIState())
     fun onNameChange(newText: String){
-        _name.value = newText
+        accountFormUIState = accountFormUIState.copy(userName = newText)
     }
     fun onEmailChange(newText: String){
-        _email.value = newText
+        accountFormUIState = accountFormUIState.copy(email = newText)
     }
     fun onPhoneChange(newText: String){
-        _phone.value = newText
+        accountFormUIState = accountFormUIState.copy(phone = newText)
     }
     fun onImageUriChange(newUri: Uri?){
-        _imageUri.value = newUri
+        accountFormUIState = accountFormUIState.copy(imageUri = newUri)
     }
     fun onBitmapChange(newBitmap: Bitmap?){
-        _bitmap.value = newBitmap
+        accountFormUIState = accountFormUIState.copy(bitmap = newBitmap)
     }
     fun onCameraSelected(cameraSelected: Boolean){
-        _isCameraSelected.value = cameraSelected
+        accountFormUIState = accountFormUIState.copy(isCameraSelected = cameraSelected)
     }
 }

@@ -29,10 +29,11 @@ import com.example.ofn.ui.navigation.Screen
 
 @Composable
 fun SignupScreen(navController: NavController,  signupFormViewModel: SignupFormViewModel) {
-    val email:String by signupFormViewModel.email.observeAsState("")
-    val password:String by signupFormViewModel.password.observeAsState("")
-    val confirmPassword:String by signupFormViewModel.confirm_password.observeAsState("")
-    val rememberMe:Boolean by signupFormViewModel.rememberMe.observeAsState(false)
+    val signupUIState = signupFormViewModel.signupUIState
+    val email:String = signupUIState.email
+    val password:String = signupUIState.password
+    val confirmPassword:String = signupUIState.confirmPassword
+    val rememberMe:Boolean = signupUIState.rememberMe
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     Surface{

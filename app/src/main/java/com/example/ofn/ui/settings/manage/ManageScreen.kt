@@ -51,12 +51,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel) {
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val name:String by manageViewModel.name.observeAsState("")
-    val category:String by manageViewModel.category.observeAsState("")
-    val description:String by manageViewModel.description.observeAsState("")
-    val imageUri:Uri? by manageViewModel.imageUri.observeAsState(null)
-    val bitmap:Bitmap? by manageViewModel.bitmap.observeAsState(null)
-    val isCameraSelected:Boolean by manageViewModel.isCameraSelected.observeAsState(false)
+    val manageUIState:ManageUIState = manageViewModel.manageUIState
+    val name:String = manageUIState.productName
+    val category:String = manageUIState.category
+    val description:String = manageUIState.description
+    val imageUri:Uri? = manageUIState.imageUri
+    val bitmap:Bitmap? = manageUIState.bitmap
+    val isCameraSelected:Boolean = manageUIState.isCameraSelected
     val scope = rememberCoroutineScope()
 
     val context = LocalContext.current

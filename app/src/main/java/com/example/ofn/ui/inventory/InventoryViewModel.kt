@@ -1,6 +1,5 @@
 package com.example.ofn.ui.inventory
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.ofn.data.model.Category
@@ -9,7 +8,7 @@ import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.data.repository.ProductRepository
 import java.math.BigInteger
 
-class InventoryViewModel: ViewModel() {
+class InventoryViewModel(): ViewModel() {
     private val categoryRepo: CategoryRepository = CategoryRepository()
     private val productRepo: ProductRepository = ProductRepository()
     val categories: List<Category> = categoryRepo.getAllCategories()

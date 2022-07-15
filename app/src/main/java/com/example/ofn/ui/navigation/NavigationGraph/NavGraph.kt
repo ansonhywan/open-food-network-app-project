@@ -15,6 +15,7 @@ import com.example.ofn.ui.settings.manage.ManageViewModel
 import com.example.ofn.ui.signup.SignupFormViewModel
 import com.example.ofn.ui.navigation.NavigationGraph.authNavGraph
 import com.example.ofn.ui.navigation.NavigationGraph.homeNavGraph
+import com.example.ofn.ui.settings.ManageProductsAndCategories.ManageProductsAndCategoriesViewModel
 
 @Composable
 fun SetupNavGraph(
@@ -24,15 +25,16 @@ fun SetupNavGraph(
     val inventoryViewModel: InventoryViewModel = viewModel()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
-    val loginFormViewModel: LoginFormViewModel = viewModel()
+    val loginFormViewModel: LoginFormViewModel = viewModel(modelClass = LoginFormViewModel::class.java)
     val signupFormViewModel: SignupFormViewModel = viewModel()
+    val manageProductsAndCategoriesViewModel: ManageProductsAndCategoriesViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = AUTH_GRAPH_ROUTE,
         route = ROOT_GRAPH_ROUTE,
         modifier = modifier
     ) {
-        homeNavGraph(navController = navController, inventoryViewModel, accountFormViewModel, manageViewModel)
+        homeNavGraph(navController = navController, inventoryViewModel, accountFormViewModel, manageViewModel, manageProductsAndCategoriesViewModel)
         authNavGraph(navController = navController, loginFormViewModel, signupFormViewModel)
     }
 }
