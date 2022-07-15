@@ -202,3 +202,5 @@ class CategoryDao() {
             return allCategoriesList
         }
 }
+
+//test
