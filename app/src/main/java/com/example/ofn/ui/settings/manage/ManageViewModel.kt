@@ -61,19 +61,8 @@ class ManageViewModel() : ViewModel() {
         onDescriptionChange("")
     }
 
-    fun onProductDelete(context: Context, categoryName: String): Job =viewModelScope.launch{
-        categoryRepo.testGetCategories(){
-            if (it.containsKey(true)){
-                Toast.makeText(context, "Successfully getting all categories!", Toast.LENGTH_SHORT).show()
-                val h: List<DocumentSnapshot> = it[true] as List<DocumentSnapshot>
-                val t0: Category = h[0].toObject(Category::class.java)!!
-                val t1: Category = h[1].toObject(Category::class.java)!!
-                val t2: Category = h[2].toObject(Category::class.java)!!
-                Log.d("t0", t0.toString()+ t0.productList.toString())
-            }else{
-                Toast.makeText(context, it[false].toString(), Toast.LENGTH_SHORT).show()
-            }
-        }
+    fun onProductDelete(context: Context, categoryName: String){
+
     }
 
     fun renameCategory(categoryName: String, newName: String): Boolean {

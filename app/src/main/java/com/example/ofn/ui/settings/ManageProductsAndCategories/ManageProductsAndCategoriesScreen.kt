@@ -25,28 +25,28 @@ fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: 
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        if (navController != null) {
-            Categories(
-                navController = navController,
-                categories = viewModel.getCategories(),
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = "Manage",
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                SearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    placeholderText = "Search ..."
-                ) {
-                }
-            }
-        }
+//        if (navController != null) {
+//            Categories(
+//                navController = navController,
+//                categories = viewModel.getCategories(),
+//                modifier = Modifier
+//                    .padding(16.dp)
+//            ) {
+//                Text(
+//                    modifier = Modifier.padding(16.dp),
+//                    text = "Manage",
+//                    fontSize = 35.sp,
+//                    fontWeight = FontWeight.Medium
+//                )
+//                SearchBar(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                    placeholderText = "Search ..."
+//                ) {
+//                }
+//            }
+//        }
     }
 
 }

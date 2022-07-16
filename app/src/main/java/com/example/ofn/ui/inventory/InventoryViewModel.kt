@@ -1,17 +1,49 @@
 package com.example.ofn.ui.inventory
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.ofn.data.model.Category
+import androidx.lifecycle.viewModelScope
 import com.example.ofn.data.model.Product
 import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.data.repository.ProductRepository
+import kotlinx.coroutines.launch
 import java.math.BigInteger
 
-class InventoryViewModel(): ViewModel() {
-    private val categoryRepo: CategoryRepository = CategoryRepository()
+class InventoryViewModel(
+    private val categoryRepo: CategoryRepository = CategoryRepository(),
     private val productRepo: ProductRepository = ProductRepository()
-    val categories: List<Category> = categoryRepo.getAllCategories()
+): ViewModel() {
+
+    var inventoryUIState by mutableStateOf(InventoryUIState())
+
+    fun populateCategories(context: Context)=viewModelScope.launch{
+        categoryRepo.getAllCategoriesProducts {
+            if (it.containsKey(true)){
+                val categoryInfo:Pair<String, Pair<String, Int>>  = it[true] as Pair<String, Pair<String, Int>>
+                val categoryName: String = categoryInfo.first
+                val productName: String = categoryInfo.second.first
+                val stock: Int = categoryInfo.second.second
+                Log.d("Populate", inventoryUIState.categoryUIMap.toString())
+                val newMap: HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap.clone() as HashMap<String, HashMap<String, Pair<Int, Int>>>
+                if (inventoryUIState.categoryUIMap.containsKey(categoryName)) {
+                    newMap[categoryName]!!.put(productName, Pair(stock, 0))
+                }
+                else{
+                    val newProductEntry: HashMap<String, Pair<Int, Int>> =  hashMapOf(productName to Pair(stock, 0))
+                    newMap[categoryName] = newProductEntry
+                }
+                inventoryUIState  = inventoryUIState.copy(categoryUIMap = newMap)
+            }else{
+                Toast.makeText(context, "Failed to populate all categories!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     var addNumMap: HashMap<String, HashMap<String, ProductInfo>> = HashMap()
     var refreshState = mutableStateOf(true)
 
@@ -78,6 +110,5 @@ class InventoryViewModel(): ViewModel() {
         }
         return curInput
     }
-
-    data class ProductInfo(val stock: Long, var addNum: Int)
 }
+data class ProductInfo(val stock: Long, var addNum: Int)

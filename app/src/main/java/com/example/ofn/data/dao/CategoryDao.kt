@@ -13,17 +13,12 @@ class CategoryDao() {
     private val firestoreDB = Firebase.firestore
 
     fun getAllCategories(): Task<QuerySnapshot> {
-//            .addOnSuccessListener { result ->
-//                for (document in result) {
-//                    val categoryName = document.get("categoryName") as String
-//                    allCategoriesList.add(Category(categoryName = categoryName))
-//                    Log.d("getAllCategories", "Successfully got $categoryName")
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.d("getAllCategories", "Error getting documents: ", exception)
-//            }
         return firestoreDB.collection("categories").get()
+    }
+
+    fun getProductsUnderCategory(categoryId: String): Task<QuerySnapshot> {
+        return firestoreDB.collection("categories")
+            .document(categoryId).collection("products").get()
     }
 
     fun postNewCategoryAndProduct(productName: String, categoryName: String, description: String): Boolean {
@@ -38,7 +33,7 @@ class CategoryDao() {
 
         // Add category to the categories collection.
 
-        val newCategory = Category(categoryName = categoryName)
+        val newCategory = Category(categoryName = categoryName, productList = listOf())
 
         val categoriesCollection = firestoreDB.collection("categories")
 
@@ -85,8 +80,7 @@ class CategoryDao() {
         return true;
         }
 
-
-        fun deleteCategory(categoryName: String) {
+    fun deleteCategory(categoryName: String) {
             // Delete category from db. This entails deleting all products wtihin it as well.
 
             val categoriesCollection = firestoreDB.collection("categories")
@@ -124,7 +118,7 @@ class CategoryDao() {
 
         }
 
-        fun renameCategory(categoryName: String, newName: String) {
+    fun renameCategory(categoryName: String, newName: String) {
             val categoriesCollection = firestoreDB.collection("categories")
 
             categoriesCollection
@@ -155,8 +149,4 @@ class CategoryDao() {
 
                 }
         }
-
-    fun testGetCategories(): Task<QuerySnapshot> {
-        return firestoreDB.collection("categories").get()
-    }
 }

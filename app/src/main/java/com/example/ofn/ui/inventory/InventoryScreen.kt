@@ -1,5 +1,6 @@
 package com.example.ofn.ui.inventory
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -36,13 +37,18 @@ import com.example.ofn.ui.theme.OFNButtonColors
 
 @Composable
 fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryViewModel) {
+
+    val inventoryUIState: InventoryUIState = inventoryViewModel.inventoryUIState
+    val context: Context = LocalContext.current
+    inventoryViewModel.populateCategories(context)
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
         ExpandableCategories(
             inventoryViewModel = inventoryViewModel,
-            categories = inventoryViewModel.categories.sortedWith(compareBy { it.categoryName }),
+            categories = inventoryUIState.categoryUIMap,
             modifier = Modifier
                 .padding(16.dp)
         ) {
@@ -72,6 +78,7 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
                 FilterDropdown(inventoryViewModel.categories.sortedWith(compareBy { it.categoryName }).map{ category -> category.categoryName })
             }
         }
+//        Text(inventoryUIState.categoryUIMap.toString())
     }
 }
 
