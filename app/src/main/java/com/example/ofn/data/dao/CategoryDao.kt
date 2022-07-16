@@ -119,34 +119,34 @@ class CategoryDao() {
         }
 
     fun renameCategory(categoryName: String, newName: String) {
-            val categoriesCollection = firestoreDB.collection("categories")
+        val categoriesCollection = firestoreDB.collection("categories")
 
-            categoriesCollection
-                .whereEqualTo("categoryName", categoryName)
-                .limit(1).get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        // Query successful, category exists.
-                        val docId = task.result.documents[0].id
-                        categoriesCollection.document(docId)
-                            .update("categoryName", newName)
-                            .addOnSuccessListener {
-                                Log.d(
-                                    "renameCategory",
-                                    "$categoryName successfully renaned!"
-                                )
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w(
-                                    "renameCategory",
-                                    "Error renaming document",
-                                    e
-                                )
-                            }
-                    } else {
-                        // Category trying to be renamed does not exist.
-                    }
-
+        categoriesCollection
+            .whereEqualTo("categoryName", categoryName)
+            .limit(1).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Query successful, category exists.
+                    val docId = task.result.documents[0].id
+                    categoriesCollection.document(docId)
+                        .update("categoryName", newName)
+                        .addOnSuccessListener {
+                            Log.d(
+                                "renameCategory",
+                                "$categoryName successfully renaned!"
+                            )
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(
+                                "renameCategory",
+                                "Error renaming document",
+                                e
+                            )
+                        }
+                } else {
+                    // Category trying to be renamed does not exist.
                 }
+
         }
+    }
 }
