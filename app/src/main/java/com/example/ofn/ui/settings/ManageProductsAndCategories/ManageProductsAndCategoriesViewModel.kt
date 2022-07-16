@@ -7,7 +7,7 @@ import com.example.ofn.data.repository.CategoryRepository
 
 class ManageProductsAndCategoriesViewModel(private val categoryRepository: CategoryRepository = CategoryRepository()) : ViewModel() {
 
-    fun getCategories(): List<Category> {
-        return categoryRepository.getAllCategories()
-    }
+//    fun getCategories(): List<Category> {
+//        return categoryRepository.getAllCategories()
+//    }
 }
