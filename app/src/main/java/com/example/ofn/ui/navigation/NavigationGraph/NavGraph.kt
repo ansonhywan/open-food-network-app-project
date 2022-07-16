@@ -23,6 +23,7 @@ fun SetupNavGraph(
     modifier: Modifier
 ) {
     val inventoryViewModel: InventoryViewModel = viewModel()
+    inventoryViewModel.populateCategories()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
     val loginFormViewModel: LoginFormViewModel = viewModel(modelClass = LoginFormViewModel::class.java)

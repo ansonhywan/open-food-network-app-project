@@ -40,7 +40,7 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
 
     val inventoryUIState: InventoryUIState = inventoryViewModel.inventoryUIState
     val context: Context = LocalContext.current
-    inventoryViewModel.populateCategories(context)
+    inventoryViewModel.populateCategories()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -75,7 +75,7 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
             ) {
                 SortDropdown(listOf("Name", "Price", "Amount"))
                 Spacer(modifier = Modifier.size(24.dp))
-                FilterDropdown(inventoryViewModel.categories.sortedWith(compareBy { it.categoryName }).map{ category -> category.categoryName })
+                FilterDropdown(inventoryUIState.categoryUIMap.keys.toList())
             }
         }
 //        Text(inventoryUIState.categoryUIMap.toString())
@@ -85,105 +85,104 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
 @Composable
 fun ExpandableCategories(
     inventoryViewModel: InventoryViewModel,
-    categories: List<Category>,
+    categories: HashMap<String, HashMap<String, Pair<Int, Int>>>,
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
-    val expandedState = remember(categories) { categories.map { false }.toMutableStateList() }
+    val categoryNames: List<String> = categories.keys.toList()
+    val expandedState = remember(categoryNames) { categoryNames.map { false }.toMutableStateList() }
     val context = LocalContext.current
 
-    if(inventoryViewModel.refreshState.value) {
-        LazyColumn(modifier) {
-            item {
-                header()
-            }
-            // -------------------- Categories --------------------
-            categories.forEachIndexed { i, categoryItem ->
-                val expanded = expandedState[i]
-                val icon = if(expanded)
-                    Icons.Filled.KeyboardArrowDown
-                else
-                    Icons.Filled.KeyboardArrowRight
-                item(key = "category $i") {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable {
-                                expandedState[i] = !expanded
-                            }
-                    ) {
-                        Text(
-                            text = categoryItem.categoryName,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(vertical = 25.dp)
-                                .weight(11f)
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .size(24.dp)
-                        )
-                        Icon(
-                            icon,
-                            contentDescription = "dropdown arrow",
-                            tint = MaterialTheme.colors.onSecondary,
-                            modifier = Modifier
-                        )
-                    }
-                    Divider()
-                }
-
-                // -------------------- Product --------------------
-                if (expanded) {
-                    item{
-                        CategoryItem(categoryItem.categoryName, inventoryViewModel)
-                    }
-                }
-            }
-            // -------------------- Reset / Submit Buttons --------------------
-            item {
+    LazyColumn(modifier) {
+        item {
+            header()
+        }
+        // -------------------- Categories --------------------
+        categoryNames.forEachIndexed { i, categoryName ->
+            val expanded = expandedState[i]
+            val icon = if(expanded)
+                Icons.Filled.KeyboardArrowDown
+            else
+                Icons.Filled.KeyboardArrowRight
+            item(key = "category $i") {
                 Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 100.dp),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.SpaceAround
+                        .clickable {
+                            expandedState[i] = !expanded
+                        }
                 ) {
-                    // Reset button
-                    Button(
-                        colors = OFNButtonColors(),
-                        onClick = {
-                            inventoryViewModel.onReset()
-                            categories.forEachIndexed { i, categoryItem ->
-                                expandedState[i] = false
-                            }
-                            Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT).show()
-                        },
-                    ) {
-                        Text(
-                            text = "Reset",
-                            fontSize = 20.sp,
-                        )
-                    }
+                    Text(
+                        text = categoryName,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(vertical = 25.dp)
+                            .weight(11f)
+                    )
                     Spacer(
                         modifier = Modifier
                             .size(24.dp)
                     )
-                    // Save button
-                    Button(
-                        colors = OFNButtonColors(),
+                    Icon(
+                        icon,
+                        contentDescription = "dropdown arrow",
+                        tint = MaterialTheme.colors.onSecondary,
                         modifier = Modifier
-                            .wrapContentSize(),
-                        onClick = {
-                            inventoryViewModel.onSave()
-                            Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
-                        },
-                    ) {
-                        Text(
-                            text = "Save",
-                            fontSize = 20.sp,
-                        )
-                    }
+                    )
+                }
+                Divider()
+            }
+
+            // -------------------- Product --------------------
+            if (expanded) {
+                item{
+                    CategoryItem(categoryName, inventoryViewModel)
+                }
+            }
+        }
+        // -------------------- Reset / Submit Buttons --------------------
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 100.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                // Reset button
+                Button(
+                    colors = OFNButtonColors(),
+                    onClick = {
+                        inventoryViewModel.resetAllAddNum()
+                        categoryNames.forEachIndexed { i, _ ->
+                            expandedState[i] = false
+                        }
+                        Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT).show()
+                    },
+                ) {
+                    Text(
+                        text = "Reset",
+                        fontSize = 20.sp,
+                    )
+                }
+                Spacer(
+                    modifier = Modifier
+                        .size(24.dp)
+                )
+                // Save button
+                Button(
+                    colors = OFNButtonColors(),
+                    modifier = Modifier
+                        .wrapContentSize(),
+                    onClick = {
+                        inventoryViewModel.onSave()
+                        Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
+                    },
+                ) {
+                    Text(
+                        text = "Save",
+                        fontSize = 20.sp,
+                    )
                 }
             }
         }
@@ -191,15 +190,15 @@ fun ExpandableCategories(
 }
 
 @Composable
-fun CategoryItem(name: String, inventoryViewModel: InventoryViewModel) {
-    val productList = remember { inventoryViewModel.getProductList(name) }
-    productList.forEach { product ->
-        ProductItem(product, inventoryViewModel)
+fun CategoryItem(categoryName: String, inventoryViewModel: InventoryViewModel) {
+    inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!!.forEach { (productName, productInfo) ->
+        ProductItem(categoryName, productName, inventoryViewModel)
     }
 }
 
 @Composable
-fun ProductItem(product: Product, inventoryViewModel: InventoryViewModel) {
+fun ProductItem(categoryName: String, productName: String, inventoryViewModel: InventoryViewModel) {
+    val productInfo: Pair<Int, Int> = inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]?.get(productName)!!
     Row (
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -208,7 +207,7 @@ fun ProductItem(product: Product, inventoryViewModel: InventoryViewModel) {
     ) {
         // Product Name
         Text(
-            text = product.productName,
+            text = productName,
             modifier = Modifier
                 .padding(end = 30.dp)
                 .width(80.dp)
@@ -216,34 +215,30 @@ fun ProductItem(product: Product, inventoryViewModel: InventoryViewModel) {
 
         // Product amount available
         Text(
-            text = "${product.stock} available",
+            text = "${productInfo.first} available",
             fontSize = 10.sp,
             modifier = Modifier
                 .padding(end = 30.dp)
                 .width(50.dp)
         )
 
-        ProductButtons(product, inventoryViewModel)
+        ProductButtons(categoryName, productName,  inventoryViewModel)
     }
     Divider()
 }
 
 @Composable
-fun ProductButtons(product: Product, inventoryViewModel: InventoryViewModel) {
-    var addNumStr: String by remember(inventoryViewModel.refreshState) {
-        mutableStateOf(inventoryViewModel.addNumMap[product.category]?.get(product.productName)?.addNum.toString())
-    }
-    if(inventoryViewModel.addNumMap[product.category]?.get(product.productName)?.addNum == null) {
-        addNumStr = "0"
-    }
+fun ProductButtons(categoryName: String, productName: String,inventoryViewModel: InventoryViewModel) {
+    val h = remember { mutableStateOf(1)}
+    var addNum:String by remember  { mutableStateOf(inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!![productName]!!.second.toString()) }
     val interactionSourceAdd = remember { MutableInteractionSource() }
     val interactionSourceRemove = remember { MutableInteractionSource() }
 
     if (interactionSourceRemove.collectIsPressedAsState().value) {
-        addNumStr = inventoryViewModel.onProductButtonPress(product, false)
+        addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false)
     }
     if (interactionSourceAdd.collectIsPressedAsState().value) {
-        addNumStr = inventoryViewModel.onProductButtonPress(product, true)
+        addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, true)
     }
 
     // Button to remove product
@@ -252,7 +247,7 @@ fun ProductButtons(product: Product, inventoryViewModel: InventoryViewModel) {
         modifier = Modifier
             .size(45.dp),
         onClick = {
-            addNumStr = inventoryViewModel.onProductButtonPress(product, false)
+            addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false)
         },
         contentPadding = PaddingValues(
             start = 1.dp,
@@ -279,10 +274,10 @@ fun ProductButtons(product: Product, inventoryViewModel: InventoryViewModel) {
             .padding(5.dp),
     ) {
         TextField(
-            value = addNumStr,
+            value = addNum.toString(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
-                addNumStr = inventoryViewModel.onAddNumChange(product, it, addNumStr)
+                addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it)
             },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background,
@@ -301,7 +296,7 @@ fun ProductButtons(product: Product, inventoryViewModel: InventoryViewModel) {
         modifier = Modifier
             .size(45.dp),
         onClick = {
-            addNumStr = inventoryViewModel.onProductButtonPress(product, true)
+            addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, true)
         },
         contentPadding = PaddingValues(
             start = 1.dp,

@@ -21,7 +21,7 @@ class InventoryViewModel(
 
     var inventoryUIState by mutableStateOf(InventoryUIState())
 
-    fun populateCategories(context: Context)=viewModelScope.launch{
+    fun populateCategories()=viewModelScope.launch{
         categoryRepo.getAllCategoriesProducts {
             if (it.containsKey(true)){
                 val categoryInfo:Pair<String, Pair<String, Int>>  = it[true] as Pair<String, Pair<String, Int>>
@@ -39,76 +39,57 @@ class InventoryViewModel(
                 }
                 inventoryUIState  = inventoryUIState.copy(categoryUIMap = newMap)
             }else{
-                Toast.makeText(context, "Failed to populate all categories!", Toast.LENGTH_SHORT).show()
+                Log.d("Populate", "Failed to populate all categories")
             }
         }
     }
 
-    var addNumMap: HashMap<String, HashMap<String, ProductInfo>> = HashMap()
-    var refreshState = mutableStateOf(true)
-
-
-    fun getProductList(category: String): List<Product> {
-        return productRepo.getAllProductsInCategory(category) {
-            refreshState.value = false
-            refreshState.value = true
+    fun resetAllAddNum() {
+        val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
+        var newMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = categoryMap.clone() as HashMap<String, HashMap<String, Pair<Int, Int>>>
+        for (categoryName:String in newMap.keys){
+            val products: HashMap<String, Pair<Int, Int>> = newMap[categoryName]!!
+            for (productName in products.keys){
+                products[productName] = Pair(products[productName]!!.first, 0)
+            }
         }
-    }
-
-    fun onReset() {
-        addNumMap.clear()
+        inventoryUIState  = inventoryUIState.copy(categoryUIMap = newMap)
     }
     fun onSave() {
         var productsToUpdate: MutableList<Product> = mutableListOf()
-        addNumMap.toList().forEach { catPair: Pair<String, HashMap<String,ProductInfo>> ->
+        val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
+        categoryMap.toList().forEach { catPair ->
             catPair.second.toList().forEach {
-                productsToUpdate.add(Product(it.first, catPair.first, "", it.second.stock+it.second.addNum, ""))
+                productsToUpdate.add(Product(it.first, catPair.first,"", it.second.first, ""))
             }
         }
-        addNumMap.clear()
+        resetAllAddNum()
         productRepo.addStockToProduct(productsToUpdate) //todo: this should update the category collection?
-        refreshState.value = false
-        refreshState.value = true
     }
 
-    fun onProductButtonPress(product: Product, add: Boolean): String {
-        if(!addNumMap.containsKey(product.category)) {
-            addNumMap.put(product.category, HashMap())
+    fun onProductButtonPress(categoryName:String, productName:String, add: Boolean):String{
+        val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
+        var newAddNum: Int = if (add){
+            categoryMap[categoryName]!![productName]!!.second + 1
+        }else{
+            categoryMap[categoryName]!![productName]!!.second - 1
         }
-        var curNum: Int? = addNumMap[product.category]?.get(product.productName)?.addNum
-        if(add) {
-            if(curNum != null && curNum < Int.MAX_VALUE) {
-                addNumMap[product.category]?.put(product.productName, ProductInfo(product.stock, curNum + 1))
-                return (curNum + 1).toString()
-            } else if (curNum == null) {
-                addNumMap[product.category]?.put(product.productName, ProductInfo(product.stock, 1))
-                return "1"
-            }
-        } else {
-            if(curNum != null && curNum > Int.MIN_VALUE) {
-                addNumMap[product.category]?.put(product.productName, ProductInfo(product.stock,curNum - 1))
-                return (curNum - 1).toString()
-            } else if (curNum == null) {
-                addNumMap[product.category]?.put(product.productName, ProductInfo(product.stock, -1))
-                return "-1"
-            }
-        }
-        return "0"
+        var newMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = categoryMap.clone() as HashMap<String, HashMap<String, Pair<Int, Int>>>
+        newMap[categoryName]!![productName] = Pair(categoryMap[categoryName]!![productName]!!.first, newAddNum)
+        inventoryUIState  = inventoryUIState.copy(categoryUIMap = newMap)
+        return newAddNum.toString()
     }
 
-    fun onAddNumChange(product: Product, input: String, curInput: String): String {
+    fun onAddNumChange(categoryName: String, productName: String, input: String):String{
         // todo: do more verification on the correctness of the input
         val maxInt = BigInteger(Int.MAX_VALUE.toString())
-
-        if(!addNumMap.containsKey(product.category)) {
-            addNumMap.put(product.category, HashMap())
-        }
-
+        val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
         if (input != "" && input != "-" && BigInteger(input) < maxInt) {
-            addNumMap[product.category]?.put(product.productName, ProductInfo(product.stock, input.toInt()))
+            var newMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = categoryMap.clone() as HashMap<String, HashMap<String, Pair<Int, Int>>>
+            newMap[categoryName]!![productName] = Pair(categoryMap[categoryName]!![productName]!!.first, input.toInt())
+            inventoryUIState  = inventoryUIState.copy(categoryUIMap = newMap)
             return input
         }
-        return curInput
+        return ""
     }
 }
-data class ProductInfo(val stock: Long, var addNum: Int)
