@@ -1,7 +1,6 @@
 package com.example.ofn.data.dao
 
 import android.util.Log
-import com.example.ofn.data.model.Category
 import com.example.ofn.data.model.Product
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -42,7 +41,7 @@ class ProductDao() {
                                     productName = document.get("productName") as String,
                                     category = document.get("category") as String,
                                     description = document.get("description") as String,
-                                    stock = document.get("stock") as Long,
+                                    stock = document.get("stock") as Int,
                                     imageUrl = document.get("imageUrl") as String
                                 )
                                 allProductsList.add(productToAdd)

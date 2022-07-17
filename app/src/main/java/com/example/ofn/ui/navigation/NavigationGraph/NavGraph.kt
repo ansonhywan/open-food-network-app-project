@@ -23,11 +23,13 @@ fun SetupNavGraph(
     modifier: Modifier
 ) {
     val inventoryViewModel: InventoryViewModel = viewModel()
+    inventoryViewModel.populateCategories()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
     val loginFormViewModel: LoginFormViewModel = viewModel(modelClass = LoginFormViewModel::class.java)
     val signupFormViewModel: SignupFormViewModel = viewModel()
     val manageProductsAndCategoriesViewModel: ManageProductsAndCategoriesViewModel = viewModel()
+    manageProductsAndCategoriesViewModel.populateCategories()
     NavHost(
         navController = navController,
         startDestination = AUTH_GRAPH_ROUTE,

@@ -1,8 +1,10 @@
 package com.example.ofn.ui.settings.manage
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,8 +12,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.ofn.data.model.Category
 import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.ui.login.LoginUIState
+import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ManageViewModel() : ViewModel() {
 
@@ -54,10 +61,8 @@ class ManageViewModel() : ViewModel() {
         onDescriptionChange("")
     }
 
-    fun onProductDelete(categoryName: String): Boolean {
-        categoryRepo.testGetCategories()
-//        categoryRepo.deleteCategory(categoryName)
-        return true
+    fun onProductDelete(context: Context, categoryName: String){
+
     }
 
     fun renameCategory(categoryName: String, newName: String): Boolean {

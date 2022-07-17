@@ -26,9 +26,6 @@ import com.example.ofn.ui.navigation.Screen
 
 @Composable
 fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewModel) {
-//    val loginUIState.email:String by loginFormViewModel.loginUIState.email.observeAsState("")
-//    val loginUIState.password:String by loginFormViewModel.loginUIState.password.observeAsState("")
-//    val loginUIState.rememberMe:Boolean by loginFormViewModel.loginUIState.rememberMe.observeAsState(false)
     val loginUIState = loginFormViewModel.loginUIState
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -109,11 +106,11 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
             }
             Button(
                 onClick = {
-                    loginFormViewModel.login(context, loginUIState.email, loginUIState.password) {
+//                    loginFormViewModel.login(context, loginUIState.email, loginUIState.password) {
                         navController.navigate(
                             HOME_GRAPH_ROUTE
                         )
-                    }
+//                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

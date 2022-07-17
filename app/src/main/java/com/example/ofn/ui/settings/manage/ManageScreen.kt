@@ -186,32 +186,32 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                                 MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri!! )
                             })
                         )
-                        Image(
-                            bitmap = bitmap!!.asImageBitmap(),
-                            contentDescription = "Profile Image",
-                            alignment = Alignment.TopCenter,
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .size(150.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.Blue,
-                                    shape = CircleShape
-                                )
-                                .padding(4.dp)
-                                .clip(CircleShape)
-                                .clickable{
-                                    scope.launch {
-                                        if (!modalBottomSheetState.isVisible){
-                                            modalBottomSheetState.show()
-                                        } else{
-                                            modalBottomSheetState.hide()
-                                        }
-
-                                    }
-                                },
-                            contentScale = ContentScale.Crop
-                        )
+//                        Image(
+//                            bitmap = bitmap!!.asImageBitmap(),
+//                            contentDescription = "Profile Image",
+//                            alignment = Alignment.TopCenter,
+//                            modifier = Modifier
+//                                .wrapContentWidth()
+//                                .size(150.dp)
+//                                .border(
+//                                    width = 2.dp,
+//                                    color = Color.Blue,
+//                                    shape = CircleShape
+//                                )
+//                                .padding(4.dp)
+//                                .clip(CircleShape)
+//                                .clickable{
+//                                    scope.launch {
+//                                        if (!modalBottomSheetState.isVisible){
+//                                            modalBottomSheetState.show()
+//                                        } else{
+//                                            modalBottomSheetState.hide()
+//                                        }
+//
+//                                    }
+//                                },
+//                            contentScale = ContentScale.Crop
+//                        )
                     }
                     else{
                         Image(
@@ -319,102 +319,101 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                             visualTransformation = VisualTransformation.None
                         )
                     }
-                    Row(
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 15.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 15.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
+                            .padding(top = 10.dp)
+                            .wrapContentHeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Button(
+                            onClick = {
+                                manageViewModel.onProductDelete(context, category)
+//                                    if (retval) {
+//                                        Toast.makeText(
+//                                            context,
+//                                            "Product Deleted!",
+//                                            Toast.LENGTH_SHORT
+//                                        ).show()
+//                                        manageViewModel.resetToDefault()
+//                                    } else {
+//                                        Toast.makeText(
+//                                            context,
+//                                            "Product was not Deleted. Try Again",
+//                                            Toast.LENGTH_SHORT
+//                                        ).show()
+//                                    }
+//                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
+                                //return
+                            },
                             modifier = Modifier
-                                .padding(top = 10.dp)
-                                .wrapContentHeight(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            Button(
-                                onClick = {
-                                    val retval = manageViewModel.onProductDelete(category)
-                                    if (retval) {
-                                        Toast.makeText(
-                                            context,
-                                            "Product Deleted!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        manageViewModel.resetToDefault()
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Product was not Deleted. Try Again",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
-                                    //return
-                                },
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .height(35.dp)
-                            ) {
-                                Icon(
-                                    Icons.Outlined.DeleteOutline,
-                                    contentDescription = "Delete Icon"
-                                )
-                                Text(text = "Delete")
-                            }
-                        }
-                        Column(
-                            modifier = Modifier
-                                .padding(top = 10.dp)
-                                .wrapContentHeight(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            Button(
-                                onClick = {
-                                    val retval = manageViewModel.onProductSaved(name, category, description);
-                                    if (retval) {
-                                        manageViewModel.resetToDefault()
-                                        Toast.makeText(context, "Product Saved!", Toast.LENGTH_SHORT).show()
-                                    } else {
-                                        Toast.makeText(context, "Product was not Saved.", Toast.LENGTH_SHORT).show()
-                                    }
-                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
-                                },
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .height(35.dp)
-                            ) {
-                                Icon(
-                                    Icons.Outlined.Save,
-                                    contentDescription = "Save Icon"
-                                )
-                                Text(text = "Save")
-                            }
-                        }
-                        Column(
-                            modifier = Modifier
-                                .padding(top = 10.dp)
-                                .wrapContentHeight(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            Button(
-                                onClick = {
-                                    manageViewModel.resetToDefault()
-                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
-                                },
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .height(35.dp)
-                            ) {
-                                Icon(
-                                    Icons.Outlined.Cancel,
-                                    contentDescription = "Return Icon"
-                                )
-                                Text(text = "Cancel")
-                            }
+                                .padding(5.dp)
+                                .height(35.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.DeleteOutline,
+                                contentDescription = "Delete Icon"
+                            )
+                            Text(text = "Delete")
                         }
                     }
-
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                            .wrapContentHeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Button(
+                            onClick = {
+                                val retval = manageViewModel.onProductSaved(name, category, description);
+                                if (retval) {
+                                    manageViewModel.resetToDefault()
+                                    Toast.makeText(context, "Product Saved!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Product was not Saved.", Toast.LENGTH_SHORT).show()
+                                }
+                                navController?.navigate(Screen.ManageProductsAndCategories.route)
+                            },
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .height(35.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.Save,
+                                contentDescription = "Save Icon"
+                            )
+                            Text(text = "Save")
+                        }
+                    }
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                            .wrapContentHeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Button(
+                            onClick = {
+                                manageViewModel.resetToDefault()
+                                navController?.navigate(Screen.ManageProductsAndCategories.route)
+                            },
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .height(35.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.Cancel,
+                                contentDescription = "Return Icon"
+                            )
+                            Text(text = "Cancel")
+                        }
+                    }
                 }
             }
         }

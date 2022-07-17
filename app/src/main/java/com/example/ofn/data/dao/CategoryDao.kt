@@ -1,37 +1,24 @@
 package com.example.ofn.data.dao
 
 import android.util.Log
-import androidx.annotation.RestrictTo
-import androidx.compose.runtime.rememberCoroutineScope
 import com.example.ofn.data.model.Category
 import com.example.ofn.data.model.Product
-import com.google.firebase.firestore.FieldValue
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class CategoryDao() {
 
     private val firestoreDB = Firebase.firestore
 
-    fun getAllCategories(): List<Category> {
-        val allCategoriesList = mutableListOf<Category>()
-        firestoreDB.collection("categories")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val categoryName = document.get("categoryName") as String
-                    allCategoriesList.add(Category(categoryName = categoryName))
-                    Log.d("getAllCategories", "Successfully got $categoryName")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("getAllCategories", "Error getting documents: ", exception)
-            }
-        return allCategoriesList
+    fun getAllCategories(): Task<QuerySnapshot> {
+        return firestoreDB.collection("categories").get()
+    }
+
+    fun getProductsUnderCategory(categoryId: String): Task<QuerySnapshot> {
+        return firestoreDB.collection("categories")
+            .document(categoryId).collection("products").get()
     }
 
     fun postNewCategoryAndProduct(productName: String, categoryName: String, description: String): Boolean {
@@ -46,7 +33,7 @@ class CategoryDao() {
 
         // Add category to the categories collection.
 
-        val newCategory = Category(categoryName = categoryName)
+        val newCategory = Category(categoryName = categoryName, productList = listOf())
 
         val categoriesCollection = firestoreDB.collection("categories")
 
@@ -93,8 +80,7 @@ class CategoryDao() {
         return true;
         }
 
-
-        fun deleteCategory(categoryName: String) {
+    fun deleteCategory(categoryName: String) {
             // Delete category from db. This entails deleting all products wtihin it as well.
 
             val categoriesCollection = firestoreDB.collection("categories")
@@ -132,73 +118,35 @@ class CategoryDao() {
 
         }
 
-        fun renameCategory(categoryName: String, newName: String) {
-            val categoriesCollection = firestoreDB.collection("categories")
+    fun renameCategory(categoryName: String, newName: String) {
+        val categoriesCollection = firestoreDB.collection("categories")
 
-            categoriesCollection
-                .whereEqualTo("categoryName", categoryName)
-                .limit(1).get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        // Query successful, category exists.
-                        val docId = task.result.documents[0].id
-                        categoriesCollection.document(docId)
-                            .update("categoryName", newName)
-                            .addOnSuccessListener {
-                                Log.d(
-                                    "renameCategory",
-                                    "$categoryName successfully renaned!"
-                                )
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w(
-                                    "renameCategory",
-                                    "Error renaming document",
-                                    e
-                                )
-                            }
-                    } else {
-                        // Category trying to be renamed does not exist.
-                    }
-
-                }
-        }
-
-        fun testGetCategories(): List<Category> {
-            val allCategoriesList = mutableListOf<Category>()
-            val scope = CoroutineScope(Job() + Dispatchers.Main)
-            val categoriesCollection = firestoreDB.collection("categories")
-            scope.launch {
-                categoriesCollection.get()
-                    .addOnSuccessListener { result ->
-                        for (document in result) {
-                            val productList = mutableListOf<Product>()
-                            val categoryName = document.get("categoryName") as String
-                            val productsCollectionRef = categoriesCollection.document(document.id).collection("products")
-                            productsCollectionRef.get()
-                                .addOnSuccessListener { result ->
-                                    for (document in result) {
-                                        val currentProduct = Product(
-                                            productName = document.get("productName") as String,
-                                            category = document.get("category") as String,
-                                            description = document.get("description") as String,
-                                            stock = document.get("stock") as Long,
-                                            imageUrl = document.get("imageUrl") as String
-                                        )
-                                        Log.d("getAllCategories", "Successfully got $currentProduct")
-                                        productList.add(currentProduct)
-                                        Log.d("getAllCategories", "$allCategoriesList")
-                                    }
-                                }
-                            allCategoriesList.add(Category(categoryName = categoryName, productList = productList))
-                            Log.d("getAllCategories", "Successfully got $categoryName")
+        categoriesCollection
+            .whereEqualTo("categoryName", categoryName)
+            .limit(1).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Query successful, category exists.
+                    val docId = task.result.documents[0].id
+                    categoriesCollection.document(docId)
+                        .update("categoryName", newName)
+                        .addOnSuccessListener {
+                            Log.d(
+                                "renameCategory",
+                                "$categoryName successfully renaned!"
+                            )
                         }
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.d("getAllCategories", "Error getting documents: ", exception)
-                    }
-            }
+                        .addOnFailureListener { e ->
+                            Log.w(
+                                "renameCategory",
+                                "Error renaming document",
+                                e
+                            )
+                        }
+                } else {
+                    // Category trying to be renamed does not exist.
+                }
 
-            return allCategoriesList
         }
+    }
 }
