@@ -39,8 +39,6 @@ import com.example.ofn.ui.theme.OFNButtonColors
 fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryViewModel) {
 
     val inventoryUIState: InventoryUIState = inventoryViewModel.inventoryUIState
-    val context: Context = LocalContext.current
-    inventoryViewModel.populateCategories()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -78,7 +76,6 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
                 FilterDropdown(inventoryUIState.categoryUIMap.keys.toList())
             }
         }
-//        Text(inventoryUIState.categoryUIMap.toString())
     }
 }
 
@@ -93,97 +90,97 @@ fun ExpandableCategories(
     val expandedState = remember(categoryNames) { categoryNames.map { false }.toMutableStateList() }
     val context = LocalContext.current
 
-    LazyColumn(modifier) {
-        item {
-            header()
-        }
-        // -------------------- Categories --------------------
-        categoryNames.forEachIndexed { i, categoryName ->
-            val expanded = expandedState[i]
-            val icon = if(expanded)
-                Icons.Filled.KeyboardArrowDown
-            else
-                Icons.Filled.KeyboardArrowRight
-            item(key = "category $i") {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clickable {
-                            expandedState[i] = !expanded
-                        }
-                ) {
-                    Text(
-                        text = categoryName,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding(vertical = 25.dp)
-                            .weight(11f)
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                    Icon(
-                        icon,
-                        contentDescription = "dropdown arrow",
-                        tint = MaterialTheme.colors.onSecondary,
-                        modifier = Modifier
-                    )
-                }
-                Divider()
-            }
+    Column(modifier) {
+        header()
+        LazyColumn(
 
-            // -------------------- Product --------------------
-            if (expanded) {
-                item{
-                    CategoryItem(categoryName, inventoryViewModel)
+        ) {
+            // -------------------- Categories --------------------
+            categoryNames.forEachIndexed { i, categoryName ->
+                val expanded = expandedState[i]
+                val icon = if (expanded)
+                    Icons.Filled.KeyboardArrowDown
+                else
+                    Icons.Filled.KeyboardArrowRight
+                item(key = "category $i") {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clickable {
+                                expandedState[i] = !expanded
+                            }
+                    ) {
+                        Text(
+                            text = categoryName,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(vertical = 25.dp)
+                                .weight(11f)
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .size(24.dp)
+                        )
+                        Icon(
+                            icon,
+                            contentDescription = "dropdown arrow",
+                            tint = MaterialTheme.colors.onSecondary,
+                            modifier = Modifier
+                        )
+                    }
+                    Divider()
+                }
+
+                // -------------------- Product --------------------
+                if (expanded) {
+                    item {
+                        CategoryItem(categoryName, inventoryViewModel)
+                    }
                 }
             }
         }
-        // -------------------- Reset / Submit Buttons --------------------
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 100.dp),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceAround
+            // -------------------- Reset / Submit Buttons --------------------
+
+        Row(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            // Reset button
+            Button(
+                colors = OFNButtonColors(),
+                onClick = {
+                    inventoryViewModel.resetAllAddNum()
+                    categoryNames.forEachIndexed { i, _ ->
+                        expandedState[i] = false
+                    }
+                    Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT).show()
+                },
             ) {
-                // Reset button
-                Button(
-                    colors = OFNButtonColors(),
-                    onClick = {
-                        inventoryViewModel.resetAllAddNum()
-                        categoryNames.forEachIndexed { i, _ ->
-                            expandedState[i] = false
-                        }
-                        Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT).show()
-                    },
-                ) {
-                    Text(
-                        text = "Reset",
-                        fontSize = 20.sp,
-                    )
-                }
-                Spacer(
-                    modifier = Modifier
-                        .size(24.dp)
+                Text(
+                    text = "Reset",
+                    fontSize = 20.sp,
                 )
-                // Save button
-                Button(
-                    colors = OFNButtonColors(),
-                    modifier = Modifier
-                        .wrapContentSize(),
-                    onClick = {
-                        inventoryViewModel.onSave()
-                        Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
-                    },
-                ) {
-                    Text(
-                        text = "Save",
-                        fontSize = 20.sp,
-                    )
-                }
+            }
+            Spacer(
+                modifier = Modifier
+                    .size(24.dp)
+            )
+            // Save button
+            Button(
+                colors = OFNButtonColors(),
+                modifier = Modifier
+                    .wrapContentSize(),
+                onClick = {
+                    inventoryViewModel.onSave()
+                    Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
+                },
+            ) {
+                Text(
+                    text = "Save",
+                    fontSize = 20.sp,
+                )
             }
         }
     }
@@ -229,7 +226,6 @@ fun ProductItem(categoryName: String, productName: String, inventoryViewModel: I
 
 @Composable
 fun ProductButtons(categoryName: String, productName: String,inventoryViewModel: InventoryViewModel) {
-    val h = remember { mutableStateOf(1)}
     var addNum:String by remember  { mutableStateOf(inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!![productName]!!.second.toString()) }
     val interactionSourceAdd = remember { MutableInteractionSource() }
     val interactionSourceRemove = remember { MutableInteractionSource() }
@@ -274,7 +270,7 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
             .padding(5.dp),
     ) {
         TextField(
-            value = addNum.toString(),
+            value = addNum,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
                 addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it)

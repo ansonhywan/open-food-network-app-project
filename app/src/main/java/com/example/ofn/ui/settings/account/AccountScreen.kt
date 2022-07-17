@@ -177,22 +177,22 @@ fun AccountScreen(navController: NavController?, accountFormViewModel: AccountFo
                                 MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri!! )
                             })
                         )
-                        Image(
-                            bitmap = bitmap!!.asImageBitmap(),
-                            contentDescription = "Profile Image",
-                            alignment = Alignment.TopCenter,
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .size(200.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.Blue,
-                                    shape = CircleShape
-                                )
-                                .padding(4.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
+//                        Image(
+//                            bitmap = bitmap!!.asImageBitmap(),
+//                            contentDescription = "Profile Image",
+//                            alignment = Alignment.TopCenter,
+//                            modifier = Modifier
+//                                .wrapContentWidth()
+//                                .size(200.dp)
+//                                .border(
+//                                    width = 2.dp,
+//                                    color = Color.Blue,
+//                                    shape = CircleShape
+//                                )
+//                                .padding(4.dp)
+//                                .clip(CircleShape),
+//                            contentScale = ContentScale.Crop
+//                        )
                     }
                     else{
                         Image(
