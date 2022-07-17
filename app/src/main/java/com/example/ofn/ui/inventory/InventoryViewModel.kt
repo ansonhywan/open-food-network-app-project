@@ -1,6 +1,8 @@
 package com.example.ofn.ui.inventory
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,7 +18,9 @@ class InventoryViewModel(
     private val categoryRepo: CategoryRepository = CategoryRepository(),
     private val productRepo: ProductRepository = ProductRepository()
 ): ViewModel() {
+
     var inventoryUIState by mutableStateOf(InventoryUIState())
+
     fun populateCategories()=viewModelScope.launch{
         categoryRepo.getAllCategoriesProducts {
             if (it.containsKey(true)){
@@ -59,8 +63,7 @@ class InventoryViewModel(
                 productsToUpdate.add(Product(it.first, catPair.first,"", it.second.first, ""))
             }
         }
-        resetAllAddNum()
-        productRepo.addStockToProduct(productsToUpdate) //todo: this should update the category collection?
+//        productRepo.addStockToProduct(productsToUpdate) //todo: this should update the category collection?
     }
 
     fun onProductButtonPress(categoryName:String, productName:String, add: Boolean):String{
