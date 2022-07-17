@@ -138,51 +138,55 @@ fun ExpandableCategories(
                     }
                 }
             }
-        }
             // -------------------- Reset / Submit Buttons --------------------
 
-        Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            // Reset button
-            Button(
-                colors = OFNButtonColors(),
-                onClick = {
-                    inventoryViewModel.resetAllAddNum()
-                    categoryNames.forEachIndexed { i, _ ->
-                        expandedState[i] = false
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    // Reset button
+                    Button(
+                        colors = OFNButtonColors(),
+                        onClick = {
+                            inventoryViewModel.resetAllAddNum()
+                            categoryNames.forEachIndexed { i, _ ->
+                                expandedState[i] = false
+                            }
+                            Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT)
+                                .show()
+                        },
+                    ) {
+                        Text(
+                            text = "Reset",
+                            fontSize = 20.sp,
+                        )
                     }
-                    Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT).show()
-                },
-            ) {
-                Text(
-                    text = "Reset",
-                    fontSize = 20.sp,
-                )
-            }
-            Spacer(
-                modifier = Modifier
-                    .size(24.dp)
-            )
-            // Save button
-            Button(
-                colors = OFNButtonColors(),
-                modifier = Modifier
-                    .wrapContentSize(),
-                onClick = {
-                    inventoryViewModel.onSave()
-                    Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
-                },
-            ) {
-                Text(
-                    text = "Save",
-                    fontSize = 20.sp,
-                )
+                    Spacer(
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                    // Save button
+                    Button(
+                        colors = OFNButtonColors(),
+                        modifier = Modifier
+                            .wrapContentSize(),
+                        onClick = {
+                            inventoryViewModel.onSave()
+                            Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
+                        },
+                    ) {
+                        Text(
+                            text = "Save",
+                            fontSize = 20.sp,
+                        )
+                    }
+                }
             }
         }
+
     }
 }
 
@@ -226,15 +230,15 @@ fun ProductItem(categoryName: String, productName: String, inventoryViewModel: I
 
 @Composable
 fun ProductButtons(categoryName: String, productName: String,inventoryViewModel: InventoryViewModel) {
-    var addNum:String by remember  { mutableStateOf(inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!![productName]!!.second.toString()) }
+    var addNum:Int by  remember {mutableStateOf(inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!![productName]!!.second)}
     val interactionSourceAdd = remember { MutableInteractionSource() }
     val interactionSourceRemove = remember { MutableInteractionSource() }
 
     if (interactionSourceRemove.collectIsPressedAsState().value) {
-        addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false)
+        addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false).toInt()
     }
     if (interactionSourceAdd.collectIsPressedAsState().value) {
-        addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, true)
+        addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, true).toInt()
     }
 
     // Button to remove product
@@ -243,7 +247,7 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
         modifier = Modifier
             .size(45.dp),
         onClick = {
-            addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false)
+            addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false).toInt()
         },
         contentPadding = PaddingValues(
             start = 1.dp,
@@ -270,10 +274,10 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
             .padding(5.dp),
     ) {
         TextField(
-            value = addNum,
+            value = addNum.toString(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
-                addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it)
+                addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it).toInt()
             },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background,
@@ -292,7 +296,7 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
         modifier = Modifier
             .size(45.dp),
         onClick = {
-            addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, true)
+            addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, true).toInt()
         },
         contentPadding = PaddingValues(
             start = 1.dp,
