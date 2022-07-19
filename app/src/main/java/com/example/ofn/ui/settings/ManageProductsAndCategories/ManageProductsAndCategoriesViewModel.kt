@@ -37,4 +37,17 @@ class ManageProductsAndCategoriesViewModel(private val categoryRepository: Categ
             }
         }
     }
+    fun renameCategory(categoryName:String, newCategoryName:String):Boolean {
+        var retval = true;
+        //call function to renam category and get return value from it to determine if it was correct
+        return retval;
+
+    }
+
+    fun deleteCategory(categoryName: String):Boolean {
+        var retval = true;
+        //call function to delete category and get return value form it to determine if it was success
+        return retval;
+    }
+
 }
