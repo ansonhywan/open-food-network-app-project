@@ -1,48 +1,48 @@
 package com.example.ofn.ui.settings.manage
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.ofn.data.model.Category
 import com.example.ofn.data.repository.CategoryRepository
+import com.example.ofn.ui.login.LoginUIState
+import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ManageViewModel() : ViewModel() {
 
-    private val _name = MutableLiveData<String>("")
-    var name: LiveData<String> = _name
-    private val _category = MutableLiveData<String>("")
-    var category: LiveData<String> = _category
-    private val _description = MutableLiveData<String>("")
-    var description: LiveData<String> = _description
-
-    private val _imageUri = MutableLiveData<Uri?>(null)
-    var imageUri: LiveData<Uri?> = _imageUri
-    private val _bitmap = MutableLiveData<Bitmap?>(null)
-    var bitmap: LiveData<Bitmap?> = _bitmap
-    private val _isCameraSelected = MutableLiveData<Boolean>(false)
-    var isCameraSelected: LiveData<Boolean> = _isCameraSelected
+    var manageUIState by mutableStateOf(ManageUIState())
 
     private val categoryRepo = CategoryRepository()
 
     fun onNameChange(newText: String){
-        _name.value = newText
+        manageUIState = manageUIState.copy(productName = newText)
     }
     fun onCategoryChange(newText: String){
-        _category.value = newText
+        manageUIState = manageUIState.copy(category = newText)
     }
     fun onDescriptionChange(newText: String){
-        _description.value = newText
+        manageUIState = manageUIState.copy(description = newText)
     }
     fun onImageUriChange(newUri: Uri?){
-        _imageUri.value = newUri
+        manageUIState = manageUIState.copy(imageUri = newUri)
     }
     fun onBitmapChange(newBitmap: Bitmap?){
-        _bitmap.value = newBitmap
+        manageUIState = manageUIState.copy(bitmap = newBitmap)
     }
     fun onCameraSelected(cameraSelected: Boolean){
-        _isCameraSelected.value = cameraSelected
+        manageUIState = manageUIState.copy(isCameraSelected = cameraSelected)
     }
     fun onProductSaved(productName: String, categoryName: String, description: String):Boolean {
         // Add new Product and Category to DB
@@ -60,13 +60,14 @@ class ManageViewModel() : ViewModel() {
         onCategoryChange("")
         onDescriptionChange("")
     }
-    fun onProductDelete():Boolean {
-        //go into database and delete using the id that is loaded into the model
 
-        categoryRepo.getAllCategoriesAndProducts()
+    fun onProductDelete(context: Context, categoryName: String){
 
+    }
 
-        return true;
+    fun renameCategory(categoryName: String, newName: String): Boolean {
+        categoryRepo.renameCategory(categoryName, newName)
+        return true
     }
 
 }

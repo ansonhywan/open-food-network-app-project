@@ -49,13 +49,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountScreen(navController: NavController?, accountFormViewModel: AccountFormViewModel) {
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val name:String by accountFormViewModel.name.observeAsState("")
-    val email:String by accountFormViewModel.email.observeAsState("")
-    val phone:String by accountFormViewModel.phone.observeAsState("")
-    val imageUri:Uri? by accountFormViewModel.imageUri.observeAsState(null)
-    val bitmap:Bitmap? by accountFormViewModel.bitmap.observeAsState(null)
-    val isCameraSelected:Boolean by accountFormViewModel.isCameraSelected.observeAsState(false)
-
+    val accountFormUIState = accountFormViewModel.accountFormUIState
+    val isCameraSelected: Boolean = accountFormUIState.isCameraSelected
+    val imageUri: Uri? = accountFormUIState.imageUri
+    val bitmap: Bitmap? = accountFormUIState.bitmap
+    val userName: String = accountFormUIState.userName
+    val email: String = accountFormUIState.email
+    val phone: String = accountFormUIState.phone
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val galleryLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -177,22 +177,22 @@ fun AccountScreen(navController: NavController?, accountFormViewModel: AccountFo
                                 MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri!! )
                             })
                         )
-                        Image(
-                            bitmap = bitmap!!.asImageBitmap(),
-                            contentDescription = "Profile Image",
-                            alignment = Alignment.TopCenter,
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .size(200.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.Blue,
-                                    shape = CircleShape
-                                )
-                                .padding(4.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
+//                        Image(
+//                            bitmap = bitmap!!.asImageBitmap(),
+//                            contentDescription = "Profile Image",
+//                            alignment = Alignment.TopCenter,
+//                            modifier = Modifier
+//                                .wrapContentWidth()
+//                                .size(200.dp)
+//                                .border(
+//                                    width = 2.dp,
+//                                    color = Color.Blue,
+//                                    shape = CircleShape
+//                                )
+//                                .padding(4.dp)
+//                                .clip(CircleShape),
+//                            contentScale = ContentScale.Crop
+//                        )
                     }
                     else{
                         Image(
@@ -244,7 +244,7 @@ fun AccountScreen(navController: NavController?, accountFormViewModel: AccountFo
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         FormTextField(
-                            text = name,
+                            text = userName,
                             placeholder = "Name",
                             onValueChange = { accountFormViewModel.onNameChange(it) },
                             imeAction = ImeAction.Next,//Show next as IME button

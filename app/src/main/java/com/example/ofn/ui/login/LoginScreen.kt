@@ -26,9 +26,7 @@ import com.example.ofn.ui.navigation.Screen
 
 @Composable
 fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewModel) {
-    val email:String by loginFormViewModel.email.observeAsState("")
-    val password:String by loginFormViewModel.password.observeAsState("")
-    val rememberMe:Boolean by loginFormViewModel.rememberMe.observeAsState(false)
+    val loginUIState = loginFormViewModel.loginUIState
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     Surface{
@@ -44,7 +42,7 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
             )
             Spacer(modifier = Modifier.size(16.dp))
             FormTextField(
-                text = email,
+                text = loginUIState.email,
                 onValueChange = { loginFormViewModel.onUsernameChange(it) },
                 label = { Text(text = "UserName") },
                 leadingIcon = {
@@ -66,7 +64,7 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
             )
             Spacer(modifier = Modifier.size(10.dp))
             FormTextField(
-                text = password,
+                text = loginUIState.password,
                 onValueChange = { loginFormViewModel.onPasswordChange(it) },
                 label = { Text(text = "Password") },
                 leadingIcon = {
@@ -95,7 +93,7 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row {
-                    Checkbox(checked = rememberMe, onCheckedChange = { loginFormViewModel.onRememberMeChange(it)})
+                    Checkbox(checked = loginUIState.rememberMe, onCheckedChange = { loginFormViewModel.onRememberMeChange(it)})
                     Spacer(modifier = Modifier.size(4.dp))
                     Text(text = "Remember me")
                 }
@@ -108,11 +106,11 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
             }
             Button(
                 onClick = {
-                    loginFormViewModel.login(context, email, password) {
+//                    loginFormViewModel.login(context, loginUIState.email, loginUIState.password) {
                         navController.navigate(
                             HOME_GRAPH_ROUTE
                         )
-                    }
+//                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

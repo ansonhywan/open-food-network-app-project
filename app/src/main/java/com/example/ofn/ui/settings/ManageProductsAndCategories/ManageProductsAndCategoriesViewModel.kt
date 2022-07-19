@@ -1,39 +1,42 @@
 package com.example.ofn.ui.settings.ManageProductsAndCategories
 
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.ofn.data.model.Category
+import com.example.ofn.data.model.Product
 import com.example.ofn.data.repository.CategoryRepository
-import com.example.ofn.ui.inventory.Category
+import com.example.ofn.ui.inventory.InventoryUIState
+import kotlinx.coroutines.launch
 
-class ManageProductsAndCategoriesViewModel : ViewModel() {
-    var categories = listOf(
-        Category(
-            name = "Fruits",
-            productList = listOf(com.example.ofn.ui.inventory.Product("1","Bananas",1), com.example.ofn.ui.inventory.Product("2","Cherries",0), com.example.ofn.ui.inventory.Product("3","Blueberries",0))
-        ),
-        Category(
-            name = "Vegetables",
-            productList = listOf(com.example.ofn.ui.inventory.Product("4","Asparagus",0), com.example.ofn.ui.inventory.Product("5","Avocado",0), com.example.ofn.ui.inventory.Product("6","Broccoli",0))
-        ),
-        Category(
-            name = "Dairy",
-            productList = listOf(com.example.ofn.ui.inventory.Product("7","Butter",0), com.example.ofn.ui.inventory.Product("8","Cheese",0), com.example.ofn.ui.inventory.Product("9","Milk",0))
-        ),
-        Category(
-            name = "Meat",
-            productList = listOf(com.example.ofn.ui.inventory.Product("10","Bacon",0), com.example.ofn.ui.inventory.Product("11","Beef",0), com.example.ofn.ui.inventory.Product("12","Chicken",0))
-        )
-    )
+class ManageProductsAndCategoriesViewModel(private val categoryRepository: CategoryRepository = CategoryRepository()) : ViewModel() {
 
-    //list of cats
-    //list of cats and products
-    //do things
-    //ugh
-
-    @JvmName("getCategories1")
-    fun getCategories(): List<com.example.ofn.ui.inventory.Category> {
-        return categories;
+    var manageProductsAndCategoriesUIState by mutableStateOf(ManageProductsAndCategoriesUIState())
+    fun populateCategories()=viewModelScope.launch{
+        categoryRepository.getAllCategoriesProducts {
+            if (it.containsKey(true)){
+                val categoryInfo:Pair<String, Pair<String, Int>>  = it[true] as Pair<String, Pair<String, Int>>
+                val categoryName: String = categoryInfo.first
+                val productName: String = categoryInfo.second.first
+                val stock: Int = categoryInfo.second.second
+                Log.d("Populate", manageProductsAndCategoriesUIState.categoryUIMap.toString())
+                val newMap: HashMap<String, HashMap<String, Pair<Int, Int>>> = manageProductsAndCategoriesUIState.categoryUIMap.clone() as HashMap<String, HashMap<String, Pair<Int, Int>>>
+                if (manageProductsAndCategoriesUIState.categoryUIMap.containsKey(categoryName)) {
+                    newMap[categoryName]!!.put(productName, Pair(stock, 0))
+                }
+                else{
+                    val newProductEntry: HashMap<String, Pair<Int, Int>> =  hashMapOf(productName to Pair(stock, 0))
+                    newMap[categoryName] = newProductEntry
+                }
+                manageProductsAndCategoriesUIState  = manageProductsAndCategoriesUIState.copy(categoryUIMap = newMap)
+            }else{
+                Log.d("Populate", "Failed to populate all categories")
+            }
+        }
     }
-
     fun renameCategory(categoryName:String, newCategoryName:String):Boolean {
         var retval = true;
         //call function to renam category and get return value from it to determine if it was correct
@@ -49,4 +52,5 @@ class ManageProductsAndCategoriesViewModel : ViewModel() {
 
     data class Category(val name: String, val productList: List<Product>)
     data class Product(val id: String, val name: String, var amount: Int, var addNum: Int = 0)
+
 }

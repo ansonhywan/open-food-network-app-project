@@ -1,6 +1,6 @@
 package com.example.ofn.ui.inventory
 
-import android.util.Log
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,65 +23,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.ofn.data.repository.CategoryRepository
-import com.example.ofn.data.repository.InventoryRepository
+import com.example.ofn.data.model.Category
+import com.example.ofn.data.model.Product
 import com.example.ofn.ui.components.FilterDropdown
 import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
-import java.math.BigInteger
 import com.example.ofn.ui.theme.OFNButtonColors
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 
 // todo: save to local storage?
 // todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
 
-private val firestoreDB = Firebase.firestore //TODO: REMOVE THIS WHEN REPOSITORIES ARE IMPLEMENTED
-
-private val inventoryRepo = InventoryRepository()
-private val categoryRepo = CategoryRepository()
-
-fun updateInventory(productList: List<Product>) {
-    // Should update since if there is a product in the Inventory Page, it is already in the DB.
-    productList.forEach{
-        Log.i("updateInventory", "${it.name}, ${it.amount}")
-        firestoreDB.collection("inventory").document(it.name)
-            .update("stock", it.amount)
-            //.addOnSuccessListener { Log.d(TAG, "${it.name} stock successfully updated!") }
-            //.addOnFailureListener { e -> Log.w(TAG, "Error updating ${it.name}", e) }
-    }
-}
-
-
 @Composable
-fun InventoryScreen(navController: NavController) {
-    var exampleCategories = listOf(
-        Category(
-            name = "Fruits",
-            productList = listOf(Product("1","Bananas",1), Product("2","Cherries",0), Product("3","Blueberries",0))
-        ),
-        Category(
-            name = "Vegetables",
-            productList = listOf(Product("4","Asparagus",0), Product("5","Avocado",0), Product("6","Broccoli",0))
-        ),
-        Category(
-            name = "Dairy",
-            productList = listOf(Product("7","Butter",0), Product("8","Cheese",0), Product("9","Milk",0))
-        ),
-        Category(
-            name = "Meat",
-            productList = listOf(Product("10","Bacon",0), Product("11","Beef",0), Product("12","Chicken",0))
-        )
-    ).sortedWith(compareBy { it.name })
+fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryViewModel) {
+
+    val inventoryUIState: InventoryUIState = inventoryViewModel.inventoryUIState
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
         ExpandableCategories(
-            categories = exampleCategories,
+            inventoryViewModel = inventoryViewModel,
+            categories = inventoryUIState.categoryUIMap,
             modifier = Modifier
                 .padding(16.dp)
         ) {
@@ -108,7 +73,7 @@ fun InventoryScreen(navController: NavController) {
             ) {
                 SortDropdown(listOf("Name", "Price", "Amount"))
                 Spacer(modifier = Modifier.size(24.dp))
-                FilterDropdown(exampleCategories.map{ category -> category.name })
+                FilterDropdown(inventoryUIState.categoryUIMap.keys.toList())
             }
         }
     }
@@ -116,23 +81,24 @@ fun InventoryScreen(navController: NavController) {
 
 @Composable
 fun ExpandableCategories(
-    categories: List<Category>,
+    inventoryViewModel: InventoryViewModel,
+    categories: HashMap<String, HashMap<String, Pair<Int, Int>>>,
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
-    val expandedState = remember(categories) { categories.map { false }.toMutableStateList() }
-    val refresh = remember { mutableStateOf(true) }
+    val categoryNames: List<String> = categories.keys.toList()
+    val expandedState = remember(categoryNames) { categoryNames.map { false }.toMutableStateList() }
     val context = LocalContext.current
 
-    if(refresh.value) {
-        LazyColumn(modifier) {
-            item {
-                header()
-            }
+    Column(modifier) {
+        header()
+        LazyColumn(
+
+        ) {
             // -------------------- Categories --------------------
-            categories.forEachIndexed { i, categoryItem ->
+            categoryNames.forEachIndexed { i, categoryName ->
                 val expanded = expandedState[i]
-                val icon = if(expanded)
+                val icon = if (expanded)
                     Icons.Filled.KeyboardArrowDown
                 else
                     Icons.Filled.KeyboardArrowRight
@@ -145,7 +111,7 @@ fun ExpandableCategories(
                             }
                     ) {
                         Text(
-                            text = categoryItem.name,
+                            text = categoryName,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .padding(vertical = 25.dp)
@@ -167,17 +133,17 @@ fun ExpandableCategories(
 
                 // -------------------- Product --------------------
                 if (expanded) {
-                    categoryItem.productList.forEach { product ->
-                        item(key = product.id) {
-                            ProductItem(product)
-                        }
+                    item {
+                        CategoryItem(categoryName, inventoryViewModel)
                     }
                 }
             }
             // -------------------- Reset / Submit Buttons --------------------
+
             item {
                 Row(
-                    modifier = Modifier.fillMaxSize().padding(top=100.dp),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
@@ -185,11 +151,12 @@ fun ExpandableCategories(
                     Button(
                         colors = OFNButtonColors(),
                         onClick = {
-                            reset(categories)
-                            categories.forEachIndexed { i, categoryItem ->
+                            inventoryViewModel.resetAllAddNum()
+                            categoryNames.forEachIndexed { i, _ ->
                                 expandedState[i] = false
                             }
-                            Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Cleared all inputs!", Toast.LENGTH_SHORT)
+                                .show()
                         },
                     ) {
                         Text(
@@ -207,16 +174,7 @@ fun ExpandableCategories(
                         modifier = Modifier
                             .wrapContentSize(),
                         onClick = {
-                            refresh.value = false
-                            save(categories)
-                            reset(categories)
-                            refresh.value = true
-
-                            // Get number in the field and update backend database.
-                            categories.forEach { categoryItem ->
-                                updateInventory(categoryItem.productList)
-                            }
-
+                            inventoryViewModel.onSave()
                             Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
                         },
                     ) {
@@ -228,11 +186,20 @@ fun ExpandableCategories(
                 }
             }
         }
+
     }
 }
 
 @Composable
-fun ProductItem(product: Product) {
+fun CategoryItem(categoryName: String, inventoryViewModel: InventoryViewModel) {
+    inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!!.forEach { (productName, productInfo) ->
+        ProductItem(categoryName, productName, inventoryViewModel)
+    }
+}
+
+@Composable
+fun ProductItem(categoryName: String, productName: String, inventoryViewModel: InventoryViewModel) {
+    val productInfo: Pair<Int, Int> = inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]?.get(productName)!!
     Row (
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -241,7 +208,7 @@ fun ProductItem(product: Product) {
     ) {
         // Product Name
         Text(
-            text = product.name,
+            text = productName,
             modifier = Modifier
                 .padding(end = 30.dp)
                 .width(80.dp)
@@ -249,38 +216,29 @@ fun ProductItem(product: Product) {
 
         // Product amount available
         Text(
-            text = "${product.amount} available",
+            text = "${productInfo.first} available",
             fontSize = 10.sp,
             modifier = Modifier
                 .padding(end = 30.dp)
                 .width(50.dp)
         )
 
-        ProductButtons(product)
+        ProductButtons(categoryName, productName,  inventoryViewModel)
     }
     Divider()
 }
 
 @Composable
-fun ProductButtons(product: Product) {
-    val maxInt = BigInteger(Int.MAX_VALUE.toString())
-    var addNumStr by remember(product.amount) {
-        mutableStateOf(product.addNum.toString())
-    }
+fun ProductButtons(categoryName: String, productName: String,inventoryViewModel: InventoryViewModel) {
+    var addNum:Int by  remember {mutableStateOf(inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!![productName]!!.second)}
     val interactionSourceAdd = remember { MutableInteractionSource() }
     val interactionSourceRemove = remember { MutableInteractionSource() }
 
     if (interactionSourceRemove.collectIsPressedAsState().value) {
-        if (product.amount > Int.MIN_VALUE) {
-            product.addNum--
-            addNumStr = product.addNum.toString()
-        }
+        addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false).toInt()
     }
     if (interactionSourceAdd.collectIsPressedAsState().value) {
-        if (product.addNum < Int.MAX_VALUE) {
-            product.addNum++
-            addNumStr = product.addNum.toString()
-        }
+        addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, true).toInt()
     }
 
     // Button to remove product
@@ -289,10 +247,7 @@ fun ProductButtons(product: Product) {
         modifier = Modifier
             .size(45.dp),
         onClick = {
-            if (product.addNum > Int.MIN_VALUE) {
-                product.addNum--
-                addNumStr = product.addNum.toString()
-            }
+            addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false).toInt()
         },
         contentPadding = PaddingValues(
             start = 1.dp,
@@ -319,14 +274,10 @@ fun ProductButtons(product: Product) {
             .padding(5.dp),
     ) {
         TextField(
-            value = addNumStr,
+            value = addNum.toString(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
-                // todo: do more verification on the correctness of the input
-                if (it != "" && it != "-" && BigInteger(it) < maxInt) {
-                    product.addNum = it.toInt()
-                }
-                addNumStr = it
+                addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it).toInt()
             },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background,
@@ -345,10 +296,7 @@ fun ProductButtons(product: Product) {
         modifier = Modifier
             .size(45.dp),
         onClick = {
-            if (product.addNum < Int.MAX_VALUE) {
-                product.addNum++
-                addNumStr = product.addNum.toString()
-            }
+            addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, true).toInt()
         },
         contentPadding = PaddingValues(
             start = 1.dp,
@@ -367,21 +315,3 @@ fun ProductButtons(product: Product) {
     }
 }
 
-fun reset(sections: List<Category>) {
-    sections.forEach{ category: Category ->
-        category.productList.forEach{ product: Product ->
-            product.addNum = 0
-        }
-    }
-}
-
-fun save(sections: List<Category>) {
-    sections.forEach{ category: Category ->
-        category.productList.forEach{ product: Product ->
-            product.amount += product.addNum
-        }
-    }
-}
-
-data class Category(val name: String, val productList: List<Product>)
-data class Product(val id: String, val name: String, var amount: Int, var addNum: Int = 0)

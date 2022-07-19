@@ -13,57 +13,56 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.ofn.data.model.Category
+import com.example.ofn.data.model.Product
 import com.example.ofn.ui.navigation.Screen
 import com.example.ofn.ui.components.SearchBar
-import com.example.ofn.ui.inventory.Category
-import com.example.ofn.ui.inventory.Product
+import com.example.ofn.ui.inventory.InventoryUIState
 
 @Composable
-fun ManageProductsAndCategoriesScreen(navController: NavController?, viewModel: ManageProductsAndCategoriesViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun ManageProductsAndCategoriesScreen(navController: NavController, viewModel: ManageProductsAndCategoriesViewModel) {
+    val manageProductsAndCategoriesUIState: ManageProductsAndCategoriesUIState = viewModel.manageProductsAndCategoriesUIState
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        if (navController != null) {
-            Categories(
-                navController = navController,
-                categories = viewModel.getCategories(),
-                viewModel = viewModel,
+        Categories(
+            navController = navController,
+            categories = manageProductsAndCategoriesUIState.categoryUIMap,
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = "Manage",
+                fontSize = 35.sp,
+                fontWeight = FontWeight.Medium
+            )
+            SearchBar(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                placeholderText = "Search ..."
             ) {
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = "Manage",
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                SearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    placeholderText = "Search ..."
-                ) {
-                }
             }
         }
     }
-
 }
 
 
 @Composable
 fun Categories(
     navController: NavController,
-    categories: List<Category>,
     viewModel: ManageProductsAndCategoriesViewModel,
+    categories: HashMap<String, HashMap<String, Pair<Int, Int>>>,
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
+    val categoryNames: List<String> = categories.keys.toList()
     val expandedState = remember(categories) { categories.map { false }.toMutableStateList() }
     val dropdownState = remember(categories) { categories.map { false }.toMutableStateList() }
     val refresh = remember { mutableStateOf(true) }
@@ -76,11 +75,10 @@ fun Categories(
             item {
                 header()
             }
-            categories.forEachIndexed { i, categoryItem ->
+            categories.forEachIndexed { i, categoryName ->
                 val expanded = expandedState[i]
                 val dropdown = dropdownState[i]
                 val categoryMenuIcon = Icons.Filled.Menu
-                val name = categoryItem.name
                 val icon = if(expanded)
                     Icons.Filled.KeyboardArrowDown
                 else
@@ -104,7 +102,7 @@ fun Categories(
                                 .size(1.dp)
                         )
                         Text(
-                            text = categoryItem.name,
+                            text = categoryName,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .padding(vertical = 25.dp)
@@ -142,7 +140,7 @@ fun Categories(
                                         openDeleteDialog.value = false;
                                     },
                                     title = {
-                                        Text(text = "Are you sure you would like to delete the Category: " + categoryItem.name)
+                                        Text(text = "Are you sure you would like to delete the Category: " + categoryName)
                                     },
                                     buttons = {
                                         Row(
@@ -152,7 +150,7 @@ fun Categories(
                                         ) {
                                             Button(
                                                 onClick = {  openDeleteDialog.value = false;
-                                                    var retval = viewModel.deleteCategory(categoryItem.name);
+                                                    var retval = viewModel.deleteCategory(categoryName);
                                                     if (retval) {
                                                         Toast.makeText(context, "Delete Successfull", Toast.LENGTH_SHORT).show()
                                                     } else {
@@ -177,7 +175,7 @@ fun Categories(
                                 )
                             }
                             if (openRenameDialog.value) {;
-                                var text by remember { mutableStateOf(categoryItem.name) }
+                                var text by remember { mutableStateOf(categoryName) }
                                     AlertDialog(
                                         onDismissRequest = {
                                             openRenameDialog.value = false;
@@ -201,7 +199,7 @@ fun Categories(
                                             ) {
                                                 Button(
                                                     onClick = {  openRenameDialog.value = false;
-                                                        var retval = viewModel.renameCategory(categoryItem.name, text);
+                                                        var retval = viewModel.renameCategory(categoryName, text);
                                                         if (retval) {
                                                             Toast.makeText(context, "Rename Successfull", Toast.LENGTH_SHORT).show()
                                                         } else {
@@ -217,7 +215,7 @@ fun Categories(
                                                 )
                                                 Button(
                                                     onClick = {  openRenameDialog.value = false;
-                                                        var retval = viewModel.deleteCategory(categoryItem.name);
+                                                        var retval = viewModel.deleteCategory(categoryName);
                                                         if (retval) {
                                                             Toast.makeText(context, "Delete Successfull", Toast.LENGTH_SHORT).show()
                                                         } else {
@@ -235,24 +233,23 @@ fun Categories(
                     }
                     Divider()
                 }
+                Divider()
+            }
 
-                if (expanded) {
-                    categoryItem.productList.forEach { product ->
-                        item(key = product.id) {
-                            CategoryProducts(product)
-                        }
-                    }
+            if (expanded) {
+                item {
+                    CategoryProducts(categoryName, categories)
                 }
             }
-            item {
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 30.dp)
-                ) {
-                    addNewProductButton(navController)
-                }
+        }
+        item {
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 30.dp)
+            ) {
+                addNewProductButton(navController)
             }
         }
     }
@@ -268,38 +265,36 @@ fun addNewProductButton(navController: NavController) {
 }
 
 @Composable
-fun CategoryProducts(product: Product) {
-    Row (
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .padding(top = 5.dp, bottom = 5.dp, start = 5.dp)
-            .fillMaxSize()
-    ) {
-        Text(
-            text = product.name
-        )
-        IconButton(
-            onClick = {
-                      //go to new page
-            },
+fun CategoryProducts(categoryName: String, categories:HashMap<String, HashMap<String, Pair<Int, Int>>>) {
+    val allProducts: HashMap<String, Pair<Int, Int>> = categories[categoryName]!!
+    allProducts.keys.forEach {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .padding(top = 5.dp, bottom = 5.dp, start = 5.dp)
+                .fillMaxSize()
         ) {
-            Icon(
-                imageVector = Icons.Filled.KeyboardArrowRight,
-                contentDescription = "Got to product page"
+            Text(
+                text = it
             )
+            IconButton(
+                onClick = {
+                    //go to new page
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.KeyboardArrowRight,
+                    contentDescription = "Got to product page"
+                )
+            }
         }
     }
+
     Divider()
 }
 
+
 fun addNewProduct(navController: NavController) {
-    navController?.navigate(Screen.ManageProduct.route)
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ManageProductsAndCategoriesPreview() {
-    ManageProductsAndCategoriesScreen(navController = null)
+    navController.navigate(Screen.ManageProduct.route)
 }
