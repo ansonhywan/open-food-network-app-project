@@ -73,9 +73,10 @@ fun Categories(
         item {
             header()
         }
-        categoryNames.forEachIndexed { i, categoryName ->
+        categoryNames.forEachIndexed { i, categoryItem ->
             val expanded = expandedState[i]
             val dropdown = dropdownState[i]
+            val categoryName = categoryItem
             val categoryMenuIcon = Icons.Filled.Menu
             val icon = if(expanded)
                 Icons.Filled.KeyboardArrowDown
@@ -129,7 +130,7 @@ fun Categories(
                                 DropdownMenuItem(onClick = { openRenameDialog.value = true }) {
                                     Text(text = "Rename")
                                 };
-                            DropdownMenuItem(onClick = { openDeleteDialog.value = true }) {
+                                DropdownMenuItem(onClick = { openDeleteDialog.value = true }) {
                                         Text(text = "Delete")
                                     }
                                 }
@@ -175,6 +176,11 @@ fun Categories(
                                                 Button(
                                                     onClick = {
                                                         openDeleteDialog.value = false
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Category was not renamed",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
                                                     }
                                                 ) {
                                                     Text("Cancel")
@@ -237,21 +243,11 @@ fun Categories(
                                                 Button(
                                                     onClick = {
                                                         openRenameDialog.value = false;
-                                                        var retval =
-                                                            viewModel.deleteCategory(categoryName);
-                                                        if (retval) {
-                                                            Toast.makeText(
-                                                                context,
-                                                                "Delete Successfull",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                        } else {
-                                                            Toast.makeText(
-                                                                context,
-                                                                "Delete Unsucccessful",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                        }
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Category was not renamed",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
                                                     }
                                                 ) {
                                                     Text("Dismiss")
