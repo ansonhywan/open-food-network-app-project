@@ -20,9 +20,9 @@ import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ManageViewModel() : ViewModel() {
+class ManageViewModel(productName: String, category: String) : ViewModel() {
 
-    var manageUIState by mutableStateOf(ManageUIState())
+    var manageUIState by mutableStateOf(ManageUIState(productName=productName, category=category))
 
     private val categoryRepo = CategoryRepository()
 

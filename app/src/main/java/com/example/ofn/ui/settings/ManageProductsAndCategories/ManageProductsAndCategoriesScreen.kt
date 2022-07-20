@@ -1,5 +1,6 @@
 package com.example.ofn.ui.settings.ManageProductsAndCategories
 
+import android.widget.MediaController
 import androidx.compose.material.Icon
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -322,5 +323,9 @@ fun CategoryProducts(categoryName: String, categories:HashMap<String, HashMap<St
 
 
 fun addNewProduct(navController: NavController) {
+    navController.navigate(Screen.ManageProduct.route)
+}
+
+fun goToProductManageScreen(navController: NavController) {
     navController.navigate(Screen.ManageProduct.route)
 }
