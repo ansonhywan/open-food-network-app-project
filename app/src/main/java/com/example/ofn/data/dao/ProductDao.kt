@@ -2,6 +2,9 @@ package com.example.ofn.data.dao
 
 import android.util.Log
 import com.example.ofn.data.model.Product
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -55,5 +58,11 @@ class ProductDao() {
                 }
             }
         return allProductsList
+    }
+
+    fun getProductWithName(collection: CollectionReference, productName: String): Task<QuerySnapshot> {
+        return collection
+            .whereEqualTo("productName", productName)
+            .limit(1).get()
     }
 }

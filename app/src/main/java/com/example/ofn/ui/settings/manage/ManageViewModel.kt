@@ -62,7 +62,7 @@ class ManageViewModel() : ViewModel() {
     }
 
     fun onProductDelete(context: Context, categoryName: String){
-
+        categoryRepo.deleteCategory(categoryName)
     }
 
     fun renameCategory(categoryName: String, newName: String): Boolean {
