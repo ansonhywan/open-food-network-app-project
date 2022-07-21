@@ -22,6 +22,7 @@ import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.inventory.InventoryUIState
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.navArgument
 
 @Composable
 fun ManageProductsAndCategoriesScreen(navController: NavController, viewModel: ManageProductsAndCategoriesViewModel) {
@@ -326,6 +327,7 @@ fun addNewProduct(navController: NavController) {
     navController.navigate(Screen.ManageProduct.route)
 }
 
-fun goToProductManageScreen(navController: NavController) {
-    navController.navigate(Screen.ManageProduct.route)
+fun goToProductManageScreen(navController: NavController, productName: String, categoryName: String) {
+    val arguments = listOf<String>(productName, categoryName)
+    navController.navigate(Screen.ManageSpecifiedProduct.route)
 }

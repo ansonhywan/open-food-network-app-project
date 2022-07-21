@@ -17,5 +17,5 @@ sealed class Screen(var title:String, var icon:Int?, var route:String){
     object ManageProductsAndCategories: Screen("ManageProductsAndCategories", null,"ManageProductsAndCategories_screen")
     object Login: Screen("Login", null,"login_screen")
     object Signup: Screen("Signup", null,"signup_screen")
-    object ManageSpecifiedProduct: Screen("Manage/productName={productName}?category={category}", null, "help")
+    object ManageSpecifiedProduct: Screen("ManageSpecifiedProduct", null, "manage_screen/?productName={productName}?category={category}")
 }
