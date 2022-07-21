@@ -20,7 +20,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ManageViewModel(productName: String, category: String) : ViewModel() {
+class ManageViewModel(productName: String = "", category: String = "") : ViewModel() {
 
     var manageUIState by mutableStateOf(ManageUIState(productName=productName, category=category))
 
@@ -63,6 +63,17 @@ class ManageViewModel(productName: String, category: String) : ViewModel() {
 
     fun onProductDelete(context: Context, categoryName: String){
 
+    }
+
+    //if product exist
+    fun loadProductInfo()=viewModelScope.launch {
+        //if product and category exists in category repo
+        //edit manageuistate
+        //displays the info
+        //yeah idk? upside down question mark
+        manageUIState = manageUIState.copy(productName = "bad boy");
+        manageUIState = manageUIState.copy(category = "category things");
+        Log.d("ManageViewModel", manageUIState.toString())
     }
 
     fun renameCategory(categoryName: String, newName: String): Boolean {

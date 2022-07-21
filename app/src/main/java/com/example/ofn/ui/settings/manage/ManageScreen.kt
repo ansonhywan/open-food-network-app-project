@@ -7,6 +7,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.compose.material.Icon
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -292,6 +293,8 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                             ),
                             visualTransformation = VisualTransformation.None
                         )
+                            Log.d("ManageScreen", "help " + manageUIState.toString())
+
                     }
                     Row(
                         modifier = Modifier
