@@ -277,7 +277,7 @@ fun Categories(
                     .fillMaxSize()
                     .padding(top = 30.dp)
             ) {
-                addNewProductButton(navController)
+                goToProductManageScreen(navController, "sleepy", "boy")
             }
         }
     }
@@ -327,7 +327,6 @@ fun addNewProduct(navController: NavController) {
     navController.navigate(Screen.ManageProduct.route)
 }
 
-fun goToProductManageScreen(navController: NavController, productName: String, categoryName: String) {
-    val arguments = listOf<String>(productName, categoryName)
-    navController.navigate(Screen.ManageSpecifiedProduct.route)
+fun goToProductManageScreen(navController: NavController, productName: String, category: String) {
+    navController.navigate("manage_screen/?productName=$productName?category=$category")
 }
