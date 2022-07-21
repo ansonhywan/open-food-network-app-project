@@ -6,6 +6,7 @@ const val ROOT_GRAPH_ROUTE = "root"
 const val AUTH_GRAPH_ROUTE = "auth"
 const val HOME_GRAPH_ROUTE = "home"
 const val SETTING_GRAPH_ROUTE = "setting"
+const val MANAGE_GRAPH_ROUTE = "manage"
 
 sealed class Screen(var title:String, var icon:Int?, var route:String){
     object Dashboard : Screen("Dashboard", R.drawable.home,"dashboard_screen")

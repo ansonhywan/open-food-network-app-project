@@ -21,44 +21,15 @@ fun NavGraphBuilder.settingNavGraph(
     accountFormViewModel: AccountFormViewModel,
     manageViewModel: ManageViewModel,
     manageProductsAndCategoriesViewModel: ManageProductsAndCategoriesViewModel
-){
+) {
     navigation(
         startDestination = Screen.Account.route,
         route = SETTING_GRAPH_ROUTE
-    ){
+    ) {
         composable(Screen.Account.route) { AccountScreen(navController, accountFormViewModel) }
         composable(Screen.ManageProductsAndCategories.route) {
             ManageProductsAndCategoriesScreen(navController, manageProductsAndCategoriesViewModel)
         }
-        composable(Screen.ManageProduct.route) {
-            val manageViewModel:ManageViewModel = com.example.ofn.ui.settings.manage.ManageViewModel(
-                "",
-                ""
-            )
-            ManageScreen(navController, manageViewModel) }
-        composable(
-            route=Screen.ManageSpecifiedProduct.route,
-            arguments = listOf(
-                navArgument("productName") {
-                    // Make argument type safe
-                    type = NavType.StringType
-                } ,
-                navArgument("category") {
-                    // Make argument type safe
-                    type = NavType.StringType
-                }
-            )
-        ) {
-            val manageViewModel: ManageViewModel? = it.arguments?.getString("productName")?.let { it1 ->
-                com.example.ofn.ui.settings.manage.ManageViewModel(
-                    it1,
-                    it.arguments?.getString("category")!!
-                )
-            }
-            if (manageViewModel != null) {
-                ManageScreen(navController, manageViewModel)
-                Log.d("Settings", manageViewModel.toString())
-            }
-        }
+        manageNavGraph(navController, manageViewModel, manageProductsAndCategoriesViewModel)
     }
 }
