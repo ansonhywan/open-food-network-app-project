@@ -7,6 +7,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.compose.material.Icon
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -52,8 +53,9 @@ import kotlinx.coroutines.launch
 fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel) {
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val manageUIState:ManageUIState = manageViewModel.manageUIState
-    val name:String = manageUIState.productName
-    val category:String = manageUIState.category
+    Log.d("ManageScreen", "help " + manageUIState.toString())
+    var name:String = manageUIState.productName
+    var category:String = manageUIState.category
     val description:String = manageUIState.description
     val imageUri:Uri? = manageUIState.imageUri
     val bitmap:Bitmap? = manageUIState.bitmap
@@ -292,6 +294,7 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                             ),
                             visualTransformation = VisualTransformation.None
                         )
+
                     }
                     Row(
                         modifier = Modifier

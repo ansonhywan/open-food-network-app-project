@@ -1,5 +1,6 @@
 package com.example.ofn.ui.settings.ManageProductsAndCategories
 
+import android.widget.MediaController
 import androidx.compose.material.Icon
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -21,6 +22,7 @@ import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.inventory.InventoryUIState
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.navArgument
 
 @Composable
 fun ManageProductsAndCategoriesScreen(navController: NavController, viewModel: ManageProductsAndCategoriesViewModel) {
@@ -275,7 +277,7 @@ fun Categories(
                     .fillMaxSize()
                     .padding(top = 30.dp)
             ) {
-                addNewProductButton(navController)
+                goToProductManageScreen(navController, "sleepy", "boy")
             }
         }
     }
@@ -323,4 +325,8 @@ fun CategoryProducts(categoryName: String, categories:HashMap<String, HashMap<St
 
 fun addNewProduct(navController: NavController) {
     navController.navigate(Screen.ManageProduct.route)
+}
+
+fun goToProductManageScreen(navController: NavController, productName: String, category: String) {
+    navController.navigate("manage_screen/?productName=$productName?category=$category")
 }

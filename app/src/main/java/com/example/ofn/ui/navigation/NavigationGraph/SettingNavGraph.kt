@@ -1,8 +1,12 @@
 package com.example.ofn.ui.navigation.NavigationGraph
+import android.util.Log
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.NavType
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.ofn.ui.navigation.SETTING_GRAPH_ROUTE
 import com.example.ofn.ui.navigation.Screen
 import com.example.ofn.ui.settings.account.AccountScreen
@@ -17,13 +21,15 @@ fun NavGraphBuilder.settingNavGraph(
     accountFormViewModel: AccountFormViewModel,
     manageViewModel: ManageViewModel,
     manageProductsAndCategoriesViewModel: ManageProductsAndCategoriesViewModel
-){
+) {
     navigation(
         startDestination = Screen.Account.route,
         route = SETTING_GRAPH_ROUTE
-    ){
+    ) {
         composable(Screen.Account.route) { AccountScreen(navController, accountFormViewModel) }
-        composable(Screen.ManageProductsAndCategories.route) { ManageProductsAndCategoriesScreen(navController, manageProductsAndCategoriesViewModel) }
-        composable(Screen.ManageProduct.route) { ManageScreen(navController, manageViewModel) }
+        composable(Screen.ManageProductsAndCategories.route) {
+            ManageProductsAndCategoriesScreen(navController, manageProductsAndCategoriesViewModel)
+        }
+        manageNavGraph(navController, manageViewModel, manageProductsAndCategoriesViewModel)
     }
 }
