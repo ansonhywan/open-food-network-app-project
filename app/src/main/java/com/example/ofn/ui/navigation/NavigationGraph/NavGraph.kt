@@ -26,7 +26,6 @@ fun SetupNavGraph(
     inventoryViewModel.populateCategories()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
-    manageViewModel.loadProductInfo()
     val loginFormViewModel: LoginFormViewModel = viewModel(modelClass = LoginFormViewModel::class.java)
     val signupFormViewModel: SignupFormViewModel = viewModel()
     val manageProductsAndCategoriesViewModel: ManageProductsAndCategoriesViewModel = viewModel()

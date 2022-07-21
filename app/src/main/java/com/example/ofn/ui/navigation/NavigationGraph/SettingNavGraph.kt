@@ -1,4 +1,5 @@
 package com.example.ofn.ui.navigation.NavigationGraph
+import android.util.Log
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -26,7 +27,9 @@ fun NavGraphBuilder.settingNavGraph(
         route = SETTING_GRAPH_ROUTE
     ){
         composable(Screen.Account.route) { AccountScreen(navController, accountFormViewModel) }
-        composable(Screen.ManageProductsAndCategories.route) { ManageProductsAndCategoriesScreen(navController, manageProductsAndCategoriesViewModel) }
+        composable(Screen.ManageProductsAndCategories.route) {
+            ManageProductsAndCategoriesScreen(navController, manageProductsAndCategoriesViewModel)
+        }
         composable(Screen.ManageProduct.route) {
             val manageViewModel:ManageViewModel = com.example.ofn.ui.settings.manage.ManageViewModel(
                 "",
@@ -54,6 +57,7 @@ fun NavGraphBuilder.settingNavGraph(
             }
             if (manageViewModel != null) {
                 ManageScreen(navController, manageViewModel)
+                Log.d("Settings", manageViewModel.toString())
             }
         }
     }

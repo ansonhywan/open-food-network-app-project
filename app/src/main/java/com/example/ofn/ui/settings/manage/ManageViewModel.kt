@@ -65,16 +65,6 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
 
     }
 
-    //if product exist
-    fun loadProductInfo()=viewModelScope.launch {
-        //if product and category exists in category repo
-        //edit manageuistate
-        //displays the info
-        //yeah idk? upside down question mark
-        manageUIState = manageUIState.copy(productName = "bad boy");
-        manageUIState = manageUIState.copy(category = "category things");
-        Log.d("ManageViewModel", manageUIState.toString())
-    }
 
     fun renameCategory(categoryName: String, newName: String): Boolean {
         categoryRepo.renameCategory(categoryName, newName)
