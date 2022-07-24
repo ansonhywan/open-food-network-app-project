@@ -266,7 +266,7 @@ fun Categories(
 
             if (expanded) {
                 item {
-                    CategoryProducts(categoryName, categories)
+                    CategoryProducts(navController, categoryName, categories)
                 }
             }
         }
@@ -277,7 +277,7 @@ fun Categories(
                     .fillMaxSize()
                     .padding(top = 30.dp)
             ) {
-                goToProductManageScreen(navController, "sleepy", "boy")
+                addNewProductButton(navController)
             }
         }
     }
@@ -293,9 +293,10 @@ fun addNewProductButton(navController: NavController) {
 }
 
 @Composable
-fun CategoryProducts(categoryName: String, categories:HashMap<String, HashMap<String, Pair<Int, Int>>>) {
+fun CategoryProducts(navController: NavController, categoryName: String, categories:HashMap<String, HashMap<String, Pair<Int, Int>>>) {
     val allProducts: HashMap<String, Pair<Int, Int>> = categories[categoryName]!!
     allProducts.keys.forEach {
+        val pname = it;
         Row (
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -308,7 +309,7 @@ fun CategoryProducts(categoryName: String, categories:HashMap<String, HashMap<St
             )
             IconButton(
                 onClick = {
-                    //go to new page
+                    goToProductManageScreen(navController, pname, categoryName);
                 },
             ) {
                 Icon(
