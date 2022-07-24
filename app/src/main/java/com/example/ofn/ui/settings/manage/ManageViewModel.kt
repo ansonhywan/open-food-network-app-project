@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ofn.data.model.Category
+import com.example.ofn.data.model.Product
 import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.ui.login.LoginUIState
 import com.google.firebase.firestore.DocumentSnapshot
@@ -23,6 +24,14 @@ import kotlinx.coroutines.launch
 class ManageViewModel(productName: String = "", category: String = "") : ViewModel() {
 
     var manageUIState by mutableStateOf(ManageUIState(productName=productName, category=category))
+
+    fun populateManageScreen()=viewModelScope.launch{
+
+    }
+
+    fun popHelper() {
+
+    }
 
     private val categoryRepo = CategoryRepository()
 
