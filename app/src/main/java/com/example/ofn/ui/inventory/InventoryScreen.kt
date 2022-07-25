@@ -33,7 +33,6 @@ import com.example.ofn.ui.theme.OFNButtonColors
 // todo: save to local storage?
 // todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
-// todo: increase font size
 
 @Composable
 fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryViewModel) {
@@ -133,6 +132,7 @@ fun ExpandableCategories(
                         Text(
                             text = categoryName,
                             fontWeight = FontWeight.Bold,
+                            fontSize = 25.sp,
                             modifier = Modifier
                                 .padding(vertical = 25.dp)
                                 .weight(11f)
@@ -182,7 +182,7 @@ fun ExpandableCategories(
                     ) {
                         Text(
                             text = "Reset",
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                         )
                     }
                     Spacer(
@@ -201,7 +201,7 @@ fun ExpandableCategories(
                     ) {
                         Text(
                             text = "Save",
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                         )
                     }
                 }
@@ -230,6 +230,7 @@ fun ProductItem(categoryName: String, productName: String, inventoryViewModel: I
         // Product Name
         Text(
             text = productName,
+            fontSize = 25.sp,
             modifier = Modifier
                 .padding(end = 30.dp)
                 .width(80.dp)
@@ -238,10 +239,10 @@ fun ProductItem(categoryName: String, productName: String, inventoryViewModel: I
         // Product amount available
         Text(
             text = "${productInfo.first} available",
-            fontSize = 10.sp,
+            fontSize = 15.sp,
             modifier = Modifier
                 .padding(end = 30.dp)
-                .width(50.dp)
+                .width(60.dp)
         )
 
         ProductButtons(categoryName, productName,  inventoryViewModel)

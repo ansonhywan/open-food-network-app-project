@@ -152,6 +152,7 @@ fun ExpandablePlatforms(
                         Text(
                             text = platformItem.name,
                             fontWeight = FontWeight.Bold,
+                            fontSize = 25.sp,
                             modifier = Modifier
                                 .padding(vertical = 25.dp)
                                 .weight(11f)
@@ -200,7 +201,7 @@ fun ExpandablePlatforms(
                     ) {
                         Text(
                             text = "Approve",
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                         )
                     }
                 }
@@ -221,9 +222,10 @@ fun ProduceItemPlatform(produce: PlatformProduce) {
             // Produce Name
             Text(
                 text = produce.name,
+                fontSize = 25.sp,
                 modifier = Modifier.padding(end = 30.dp)
             )
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(50.dp))
             ProduceTextFieldsPlatform(produce)
         }
     }
@@ -275,8 +277,9 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
         Spacer(modifier = Modifier.size(30.dp))
         Text(
             text = "Amount",
-            modifier = Modifier.padding(end = 30.dp)
-        )
+            modifier = Modifier.padding(end = 30.dp),
+            fontSize = 15.sp,
+            )
         Column(
             modifier = Modifier
                 .width(80.dp)
