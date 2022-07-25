@@ -19,7 +19,9 @@ import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.ui.login.LoginUIState
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ManageViewModel(productName: String = "", category: String = "") : ViewModel() {
 
@@ -68,12 +70,15 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
     fun onCameraSelected(cameraSelected: Boolean){
         manageUIState = manageUIState.copy(isCameraSelected = cameraSelected)
     }
-    fun onProductSaved(productName: String, categoryName: String, description: String):Boolean {
+    fun onProductSaved(productName: String, categoryName: String, description: String) {
         // Add new Product and Category to DB
-        categoryRepo.addNewCategoryAndProduct(productName, categoryName, description)
+        runBlocking {
+            launch {
+                categoryRepo.addNewCategoryAndProduct(productName, categoryName, description)
 
-        // TODO: Error checking
-        return true
+
+            }
+        }
     }
 
     fun resetToDefault(){

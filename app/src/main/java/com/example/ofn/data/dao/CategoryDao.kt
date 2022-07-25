@@ -23,7 +23,7 @@ class CategoryDao() {
             .document(categoryId).collection("products").get()
     }
 
-    fun postNewCategoryAndProduct(productName: String, categoryName: String, description: String): Boolean {
+    suspend fun postNewCategoryAndProduct(productName: String, categoryName: String, description: String): Boolean {
 
         val newProduct = Product(
             productName = productName,
@@ -126,12 +126,12 @@ class CategoryDao() {
         return categoriesCollection
 
     }
-    fun addNewCategory(newCategory: Category): Task<DocumentReference> {
+     fun addNewCategory(newCategory: Category): Task<DocumentReference> {
         return firestoreDB.collection("categories")
             .add(newCategory)
     }
 
-    fun getCategoryWithName(categoryName: String): Task<QuerySnapshot> {
+    suspend fun getCategoryWithName(categoryName: String): Task<QuerySnapshot> {
         return firestoreDB.collection("categories")
             .whereEqualTo("categoryName", categoryName)
             .limit(1) // Limit 1 because there should only be one category with a given name.

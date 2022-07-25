@@ -45,6 +45,7 @@ import coil.request.ImageRequest
 import com.example.ofn.ui.navigation.Screen
 import com.example.ofn.ui.components.FormTextField
 import com.example.ofn.ui.components.bottomsheet.BottomSheetContent
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -375,14 +376,15 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                     ){
                         Button(
                             onClick = {
-                                val retval = manageViewModel.onProductSaved(name, category, description);
+                                val retval = true;
+                                manageViewModel.onProductSaved(name, category, description);
                                 if (retval) {
                                     manageViewModel.resetToDefault()
                                     Toast.makeText(context, "Product Saved!", Toast.LENGTH_SHORT).show()
                                 } else {
                                     Toast.makeText(context, "Product was not Saved.", Toast.LENGTH_SHORT).show()
                                 }
-                                navController?.navigate(Screen.ManageProductsAndCategories.route)
+                                //navController?.navigate(Screen.ManageProductsAndCategories.route)
                             },
                             modifier = Modifier
                                 .padding(5.dp)
@@ -414,7 +416,7 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                                 Icons.Outlined.Cancel,
                                 contentDescription = "Return Icon"
                             )
-                            Text(text = "Cancel")
+                            Text(text = "Return")
                         }
                     }
                 }

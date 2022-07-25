@@ -91,7 +91,7 @@ class CategoryRepository(){
             }
     }
 
-    fun addNewCategoryAndProduct(productName: String, categoryName: String, description: String): Boolean {
+    suspend fun addNewCategoryAndProduct(productName: String, categoryName: String, description: String): Category {
         val newProduct = Product(
             productName = productName,
             category = categoryName,
@@ -141,7 +141,7 @@ class CategoryRepository(){
             }
 
         // TODO: ERROR CHECKING, CURRENTLY ALWAYS RETURNS TRUE.
-        return true;
+        return newCategory;
     }
 
    /* suspend fun renameCategory(categoryName: String, newName: String): Task<QuerySnapshot> {
