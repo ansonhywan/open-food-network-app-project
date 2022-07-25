@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.ofn.data.model.Category
 import com.example.ofn.data.model.Product
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -118,35 +120,27 @@ class CategoryDao() {
 
         }
 
-    suspend fun renameCategory(categoryName: String, newName: String): Task<QuerySnapshot> {
+    suspend fun renameCategory(categoryName: String, newName: String): CollectionReference {
         val categoriesCollection = firestoreDB.collection("categories")
 
         return categoriesCollection
-            .whereEqualTo("categoryName", categoryName)
-            .limit(1).get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Query successful, category exists.
-                    val docId = task.result.documents[0].id
-                    categoriesCollection.document(docId)
-                        .update("categoryName", newName)
-                        .addOnSuccessListener {
-                            Log.d(
-                                "renameCategory",
-                                "$categoryName successfully renaned!"
-                            )
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w(
-                                "renameCategory",
-                                "Error renaming document",
-                                e
-                            )
-                        }
-                } else {
-                    // Category trying to be renamed does not exist.
-                }
 
-        }
     }
+    fun addNewCategory(newCategory: Category): Task<DocumentReference> {
+        return firestoreDB.collection("categories")
+            .add(newCategory)
+    }
+
+    fun getCategoryWithName(categoryName: String): Task<QuerySnapshot> {
+        return firestoreDB.collection("categories")
+            .whereEqualTo("categoryName", categoryName)
+            .limit(1) // Limit 1 because there should only be one category with a given name.
+            .get()
+    }
+
+    fun getCategoryWithId(id: String): DocumentReference {
+        return firestoreDB.collection("categories")
+            .document(id)
+    }
+
 }

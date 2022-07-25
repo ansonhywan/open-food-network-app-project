@@ -71,7 +71,7 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
     }
 
     fun onProductDelete(context: Context, categoryName: String){
-
+        categoryRepo.deleteCategory(categoryName)
     }
 
 
