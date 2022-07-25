@@ -46,6 +46,7 @@ class ManageProductsAndCategoriesViewModel(private val categoryRepository: Categ
     fun renameCategory(categoryName:String, newCategoryName:String) {
         runBlocking {
             launch {
+                manageProductsAndCategoriesUIState.categoryUIMap.clear()
                 categoryRepository.renameCategory(categoryName, newCategoryName)
                     .addOnCompleteListener({
                         Log.d("rename1 ", "aye");
@@ -60,6 +61,7 @@ class ManageProductsAndCategoriesViewModel(private val categoryRepository: Categ
     fun deleteCategory(categoryName: String) {
         runBlocking {
             launch {
+                manageProductsAndCategoriesUIState.categoryUIMap.clear()
                 categoryRepository.deleteCategory(categoryName)
                     .addOnCompleteListener({
                         Log.d("rename1 ", "aye");

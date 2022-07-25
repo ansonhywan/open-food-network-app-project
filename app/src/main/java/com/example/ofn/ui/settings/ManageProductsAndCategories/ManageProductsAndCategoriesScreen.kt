@@ -161,7 +161,6 @@ fun Categories(
                                                 ) {
                                                     Button(
                                                         onClick = {
-                                                            openRenameDialog.value = false;
                                                             viewModel.renameCategory(
                                                                 name,
                                                                 text
@@ -179,6 +178,7 @@ fun Categories(
                                                                     Toast.LENGTH_SHORT
                                                                 ).show()
                                                             }
+                                                            openRenameDialog.value = false;
                                                         }
                                                     ) {
                                                         Text("Confirm")
