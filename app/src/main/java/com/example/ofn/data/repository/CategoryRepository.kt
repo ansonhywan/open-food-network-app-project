@@ -219,11 +219,6 @@ class CategoryRepository(){
                                 }
                             }
                         }
-                    // Finished deleting products under the category. Now delete the category.
-                    categoryRef
-                        .delete()
-                        .addOnSuccessListener { Log.d("deleteCategory", "Successfully deleted Category: ${categoryRef.id}") }
-                        .addOnFailureListener { e -> Log.w("deleteCategory", "Error deleting document", e) }
                 } else {
                     Log.d("deleteCategory", "Query to find category unsuccessful.")
                 }
