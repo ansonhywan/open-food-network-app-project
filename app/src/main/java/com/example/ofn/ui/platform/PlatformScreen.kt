@@ -22,6 +22,8 @@ import androidx.navigation.NavController
 import com.example.ofn.ui.components.FilterDropdown
 import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
+import com.example.ofn.ui.components.SortType
+import com.example.ofn.ui.inventory.InventoryUIState
 import com.example.ofn.ui.theme.OFNButtonColors
 
 
@@ -29,26 +31,28 @@ import com.example.ofn.ui.theme.OFNButtonColors
 // todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
 @Composable
-fun PlatformScreen(navController: NavController) {
+fun PlatformScreen(navController: NavController, platformViewModel: PlatformViewModel) {
+    val platformUIState: PlatformUIState = platformViewModel.platformUIState
+
     var examplePlatforms = listOf(
         Platform(
-            name = "Platform 1",
+            name = "P1aa1latform 1",
             produceList = listOf(PlatformProduce("1","produce 0",1.5, 1), PlatformProduce("12","produce 0",1.5,0), PlatformProduce("13","produce 0",0.5))
         ),
         Platform(
-            name = "Platform 2",
+            name = "aaPlatform 2",
             produceList = listOf(PlatformProduce("2","produce 0",1.5,0), PlatformProduce("3","produce 0",1.5,0), PlatformProduce("4","produce 0",0.5))
         ),
         Platform(
-            name = "Platform 3",
+            name = "bbPlatform 3",
             produceList = listOf(PlatformProduce("5","produce 0",1.5,0), PlatformProduce("6","produce 0",1.5,0), PlatformProduce("7","produce 0",0.5), PlatformProduce("19","produce 0",0.5))
         ),
         Platform(
-            name = "Platform 4",
+            name = "vvvPlatform 4",
             produceList = listOf(PlatformProduce("14","produce 0",1.5,0), PlatformProduce("15","produce 0",1.5,0), PlatformProduce("16","produce 0",0.5))
         ),
         Platform(
-            name = "Platform 5",
+            name = "ccPlatform 5",
             produceList = listOf(PlatformProduce("17","produce 0",1.5,0), PlatformProduce("18","produce 0",1.5,0), PlatformProduce("19","produce 0",0.5))
         )
     )
@@ -58,7 +62,8 @@ fun PlatformScreen(navController: NavController) {
         color = MaterialTheme.colors.background
     ) {
         ExpandablePlatforms(
-            platforms = examplePlatforms,
+            platformViewModel = platformViewModel,
+            platforms = examplePlatforms.filter { !platformUIState.filterList.contains(it.name) && it.name.contains(platformUIState.searchStr.value) },
             modifier = Modifier
                 .padding(16.dp)
         ) {
@@ -76,16 +81,32 @@ fun PlatformScreen(navController: NavController) {
                     .padding(16.dp),
                 placeholderText = "Search platform..."
             ) {
-                // todo: function to search platform
+                platformUIState.searchStr.value = it
             }
             // sort + filter
             Row(
                 modifier = Modifier
                     .padding(vertical = 5.dp),
             ) {
-                SortDropdown(listOf("Name", "Price", "Amount"))
+                SortDropdown(listOf("A->Z", "Z->A")) {
+                    option -> run {
+                        if (option.equals("A->Z")) {
+                            platformUIState.sort.value = SortType.ASC
+                        } else {
+                            platformUIState.sort.value = SortType.DESC
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.size(24.dp))
-                FilterDropdown(examplePlatforms.map{platform -> platform.name })
+                FilterDropdown(examplePlatforms.map{platform -> platform.name }) { platName, isChecked ->
+                    run {
+                        if(isChecked) {
+                            platformUIState.filterList.remove(platName)
+                        } else {
+                            platformUIState.filterList.add(platName)
+                        }
+                    }
+                }
             }
         }
     }
@@ -93,11 +114,16 @@ fun PlatformScreen(navController: NavController) {
 
 @Composable
 fun ExpandablePlatforms(
+    platformViewModel: PlatformViewModel,
     platforms: List<Platform>,
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
-    val expandedState = remember(platforms) { platforms.map { false }.toMutableStateList() }
+    val sortedPlatforms = if (platformViewModel.platformUIState.sort.value == SortType.ASC)
+        platforms.sortedBy { it.name }
+    else platforms.sortedByDescending { it.name }
+
+    val expandedState = remember(sortedPlatforms) { sortedPlatforms.map { false }.toMutableStateList() }
     val refresh = remember { mutableStateOf(true) }
     val context = LocalContext.current
 
@@ -109,7 +135,7 @@ fun ExpandablePlatforms(
                 header()
             }
             // -------------------- Platforms --------------------
-            platforms.forEachIndexed { i, platformItem ->
+            sortedPlatforms.forEachIndexed { i, platformItem ->
                 val expanded = expandedState[i]
                 val icon = if(expanded)
                     Icons.Filled.KeyboardArrowDown
@@ -167,7 +193,7 @@ fun ExpandablePlatforms(
                             .padding(30.dp),
                         onClick = {
                             refresh.value = false
-                            approve(platforms)
+                            approve(sortedPlatforms)
                             refresh.value = true
                             Toast.makeText(context, "Approved!", Toast.LENGTH_SHORT).show()
                         },

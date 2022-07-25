@@ -1,6 +1,6 @@
 package com.example.ofn.ui.inventory
 
-import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,21 +23,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.ofn.data.model.Category
-import com.example.ofn.data.model.Product
 import com.example.ofn.ui.components.FilterDropdown
 import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
+import com.example.ofn.ui.components.SortType
 import com.example.ofn.ui.theme.OFNButtonColors
 
 
 // todo: save to local storage?
 // todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
+// todo: increase font size
 
 @Composable
 fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryViewModel) {
-
     val inventoryUIState: InventoryUIState = inventoryViewModel.inventoryUIState
 
     Surface(
@@ -46,7 +45,8 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
     ) {
         ExpandableCategories(
             inventoryViewModel = inventoryViewModel,
-            categories = inventoryUIState.categoryUIMap,
+            categories = inventoryUIState.categoryUIMap
+                .filterKeys { !inventoryUIState.filterList.contains(it) && it.contains(inventoryUIState.searchStr.value) } as HashMap<String, HashMap<String, Pair<Int, Int>>>,
             modifier = Modifier
                 .padding(16.dp)
         ) {
@@ -62,18 +62,36 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholderText = "Search product..."
+                placeholderText = "Search Categories..."
             ) {
-                // todo: function to search inventory
+                inventoryUIState.searchStr.value = it
             }
             // sort + filter
             Row(
                 modifier = Modifier
                     .padding(vertical = 5.dp),
             ) {
-                SortDropdown(listOf("Name", "Price", "Amount"))
+                SortDropdown(listOf("A->Z", "Z->A")) {
+                    option -> run {
+                        if (option.equals("A->Z")) {
+                            inventoryUIState.sort.value = SortType.ASC
+                        } else {
+                            inventoryUIState.sort.value = SortType.DESC
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.size(24.dp))
-                FilterDropdown(inventoryUIState.categoryUIMap.keys.toList())
+                FilterDropdown(
+                    inventoryUIState.categoryUIMap.keys.toList()
+                ) { catName, isChecked ->
+                    run {
+                        if(isChecked) {
+                            inventoryUIState.filterList.remove(catName)
+                        } else {
+                            inventoryUIState.filterList.add(catName)
+                        }
+                    }
+                }
             }
         }
     }
@@ -86,7 +104,9 @@ fun ExpandableCategories(
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
-    val categoryNames: List<String> = categories.keys.toList()
+    val categoryNames: List<String> = if (inventoryViewModel.inventoryUIState.sort.value == SortType.ASC)
+        categories.keys.toList().sorted()
+        else categories.keys.toList().sortedDescending()
     val expandedState = remember(categoryNames) { categoryNames.map { false }.toMutableStateList() }
     val context = LocalContext.current
 
@@ -143,7 +163,8 @@ fun ExpandableCategories(
             item {
                 Row(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(top = 100.dp),
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {

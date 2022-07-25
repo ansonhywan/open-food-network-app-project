@@ -15,6 +15,7 @@ import com.example.ofn.ui.settings.manage.ManageViewModel
 import com.example.ofn.ui.signup.SignupFormViewModel
 import com.example.ofn.ui.navigation.NavigationGraph.authNavGraph
 import com.example.ofn.ui.navigation.NavigationGraph.homeNavGraph
+import com.example.ofn.ui.platform.PlatformViewModel
 import com.example.ofn.ui.settings.ManageProductsAndCategories.ManageProductsAndCategoriesViewModel
 
 @Composable
@@ -24,6 +25,7 @@ fun SetupNavGraph(
 ) {
     val inventoryViewModel: InventoryViewModel = viewModel()
     inventoryViewModel.populateCategories()
+    val platformViewModel: PlatformViewModel = viewModel()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
     val loginFormViewModel: LoginFormViewModel = viewModel(modelClass = LoginFormViewModel::class.java)
@@ -36,7 +38,7 @@ fun SetupNavGraph(
         route = ROOT_GRAPH_ROUTE,
         modifier = modifier
     ) {
-        homeNavGraph(navController = navController, inventoryViewModel, accountFormViewModel, manageViewModel, manageProductsAndCategoriesViewModel)
+        homeNavGraph(navController = navController, inventoryViewModel, platformViewModel, accountFormViewModel, manageViewModel, manageProductsAndCategoriesViewModel)
         authNavGraph(navController = navController, loginFormViewModel, signupFormViewModel)
     }
 }
