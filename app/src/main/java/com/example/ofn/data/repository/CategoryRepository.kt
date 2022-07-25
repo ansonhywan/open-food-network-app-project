@@ -196,28 +196,13 @@ class CategoryRepository(){
                 if (it.isSuccessful) {
                     // Query successful, category to delete exists.
                     val categoryRef = categoriesDao.getCategoryWithId(it.result.documents[0].id)
-                    categoriesDao.getProductsUnderCategory(it.result.documents[0].id)
+                    productsDao.getProductWithName(categoryRef.collection("products"), productName)
                         .addOnSuccessListener { result ->
-                            for (doc in result) {
-                                val product = categoryRef.collection("products").document(doc.id)
-                                if (productName == "nuts" || productName == "orange" || productName == "apple") {
-                                    product
-                                        .delete()
-                                        .addOnSuccessListener {
-                                            Log.d(
-                                                "deleteCategory",
-                                                "Successfully deleted product: ${product.id}"
-                                            )
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.w(
-                                                "deleteCategory",
-                                                "Error deleting product",
-                                                e
-                                            )
-                                        }
-                                }
-                            }
+                            val productRef = categoryRef.collection("products").document(result.documents[0].id)
+                            productRef
+                                .delete()
+                                .addOnSuccessListener { Log.d("deleteProduct", "Successfully deleted Product: ${productRef.id}") }
+                                .addOnFailureListener { e -> Log.w("deleteProduct", "Error deleting document", e) }
                         }
                 } else {
                     Log.d("deleteCategory", "Query to find category unsuccessful.")
