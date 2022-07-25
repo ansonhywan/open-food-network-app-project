@@ -52,6 +52,42 @@ class CategoryRepository(){
             }
     }
 
+    suspend fun getAllCategoriesProductsNew(onComplete: (HashMap<Boolean, Pair<String, Product>?>?) -> Unit)= withContext(Dispatchers.Default){
+        categoriesDao.getAllCategories()
+            .addOnCompleteListener {
+                Log.d("Get All", "finished getting everything")
+                if (it.isSuccessful){
+                    for (category in it.result){
+                        val categoryName:String = category.get("categoryName") as String
+                        val categoryId: String = category.id
+                        categoriesDao.getProductsUnderCategory(categoryId).addOnCompleteListener { task->
+                            if (task.isSuccessful){
+                                for (product in task.result){
+                                    val productName: String = product.get("productName").toString()
+                                    val stock: Int = product.get("stock").toString().toInt()
+                                    val description: String = product.get("description").toString()
+                                    val imageUrl: String = product.get("imageUrl").toString()
+                                    val newProduct = Product(
+                                        productName,
+                                        categoryName,
+                                        description,
+                                        stock,
+                                        imageUrl
+                                    )
+                                    onComplete.invoke(hashMapOf(true to Pair(categoryName, newProduct)))
+                                }
+                            }else{
+                                onComplete.invoke(hashMapOf(false to null))
+                            }
+                        }
+                    }
+                }else{
+                    Log.d("Failed", "Failed to get all categories")
+                    onComplete.invoke(hashMapOf(false to null))
+                }
+            }
+    }
+
     fun addNewCategoryAndProduct(productName: String, categoryName: String, description: String): Boolean {
         val newProduct = Product(
             productName = productName,
