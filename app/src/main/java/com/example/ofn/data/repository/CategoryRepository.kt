@@ -2,10 +2,13 @@ package com.example.ofn.data.repository
 import android.util.Log
 import com.example.ofn.data.Constants
 import com.example.ofn.data.dao.CategoryDao
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.QuerySnapshot
 import com.example.ofn.data.dao.ProductDao
 import com.example.ofn.data.model.Category
 import com.example.ofn.data.model.Product
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 
@@ -88,7 +91,7 @@ class CategoryRepository(){
             }
     }
 
-    fun addNewCategoryAndProduct(productName: String, categoryName: String, description: String): Boolean {
+    suspend fun addNewCategoryAndProduct(productName: String, categoryName: String, description: String): Category {
         val newProduct = Product(
             productName = productName,
             category = categoryName,
@@ -138,11 +141,13 @@ class CategoryRepository(){
             }
 
         // TODO: ERROR CHECKING, CURRENTLY ALWAYS RETURNS TRUE.
-        return true;
+        return newCategory;
     }
 
-    fun renameCategory(categoryName: String, newName: String) {
-        categoriesDao.getCategoryWithName(categoryName)
+   /* suspend fun renameCategory(categoryName: String, newName: String): Task<QuerySnapshot> {
+        return categoriesDao.renameCategory(categoryName, newName)*/
+    suspend fun renameCategory(categoryName: String, newName: String):  Task<QuerySnapshot> {
+        return categoriesDao.getCategoryWithName(categoryName)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     // Query successful, category to rename exists.
@@ -157,8 +162,8 @@ class CategoryRepository(){
             }
     }
 
-    fun deleteCategory(categoryName: String){
-        categoriesDao.getCategoryWithName(categoryName)
+    suspend fun deleteCategory(categoryName: String): Task<QuerySnapshot> {
+        return categoriesDao.getCategoryWithName(categoryName)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     // Query successful, category to delete exists.

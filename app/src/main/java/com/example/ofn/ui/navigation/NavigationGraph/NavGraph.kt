@@ -28,6 +28,7 @@ fun SetupNavGraph(
     val platformViewModel: PlatformViewModel = viewModel()
     val accountFormViewModel: AccountFormViewModel = viewModel()
     val manageViewModel: ManageViewModel = viewModel()
+    manageViewModel.populateManageScreen()
     val loginFormViewModel: LoginFormViewModel = viewModel(modelClass = LoginFormViewModel::class.java)
     val signupFormViewModel: SignupFormViewModel = viewModel()
     val manageProductsAndCategoriesViewModel: ManageProductsAndCategoriesViewModel = viewModel()

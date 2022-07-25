@@ -14,15 +14,41 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ofn.data.model.Category
+import com.example.ofn.data.model.Product
 import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.ui.login.LoginUIState
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ManageViewModel(productName: String = "", category: String = "") : ViewModel() {
 
     var manageUIState by mutableStateOf(ManageUIState(productName=productName, category=category))
+
+    fun populateManageScreen()=viewModelScope.launch{
+        categoryRepo.getAllCategoriesProductsNew {
+            if (it != null) {
+                if (it.containsKey(true)){
+                    val categoryInfo:Pair<String,Product>  = it?.get(true) as Pair<String, Product>
+                    val cName: String = categoryInfo.first
+                    val pInfo: Product = categoryInfo.second
+                    val pName: String = pInfo.productName
+                    if (manageUIState.productName == pName && manageUIState.category == cName) {
+                        onDescriptionChange(pInfo.description);
+                        onImageUriChange(Uri.parse(pInfo.imageUrl))
+                    }
+                }else{
+                    Log.d("Populate", "Failed to populate all categories")
+                }
+            }
+        }
+    }
+
+    fun popHelper() {
+
+    }
 
     private val categoryRepo = CategoryRepository()
 
@@ -44,12 +70,15 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
     fun onCameraSelected(cameraSelected: Boolean){
         manageUIState = manageUIState.copy(isCameraSelected = cameraSelected)
     }
-    fun onProductSaved(productName: String, categoryName: String, description: String):Boolean {
+    fun onProductSaved(productName: String, categoryName: String, description: String) {
         // Add new Product and Category to DB
-        categoryRepo.addNewCategoryAndProduct(productName, categoryName, description)
+        runBlocking {
+            launch {
+                categoryRepo.addNewCategoryAndProduct(productName, categoryName, description)
 
-        // TODO: Error checking
-        return true
+
+            }
+        }
     }
 
     fun resetToDefault(){
@@ -61,12 +90,11 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
         onDescriptionChange("")
     }
 
-    fun onProductDelete(context: Context, categoryName: String){
-        categoryRepo.deleteCategory(categoryName)
+    fun onProductDelete(productName: String, categoryName: String){
     }
 
 
-    fun renameCategory(categoryName: String, newName: String): Boolean {
+    suspend fun renameCategory(categoryName: String, newName: String): Boolean {
         categoryRepo.renameCategory(categoryName, newName)
         return true
     }
