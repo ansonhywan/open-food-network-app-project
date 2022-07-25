@@ -90,7 +90,12 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
         onDescriptionChange("")
     }
 
-    fun onProductDelete(productName: String, categoryName: String){
+     fun onProductDelete(productName: String, categoryName: String){
+         runBlocking {
+             launch {
+                 categoryRepo.deleteProduct(productName, categoryName)
+             }
+         }
     }
 
 

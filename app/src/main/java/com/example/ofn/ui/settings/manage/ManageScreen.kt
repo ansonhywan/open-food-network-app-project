@@ -339,22 +339,23 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                     ){
                         Button(
                             onClick = {
+                                var retval = true;
                                 manageViewModel.onProductDelete(name, category)
-//                                    if (retval) {
-//                                        Toast.makeText(
-//                                            context,
-//                                            "Product Deleted!",
-//                                            Toast.LENGTH_SHORT
-//                                        ).show()
-//                                        manageViewModel.resetToDefault()
-//                                    } else {
-//                                        Toast.makeText(
-//                                            context,
-//                                            "Product was not Deleted. Try Again",
-//                                            Toast.LENGTH_SHORT
-//                                        ).show()
-//                                    }
-//                                    navController?.navigate(Screen.ManageProductsAndCategories.route)
+                                if (retval) {
+                                    manageViewModel.resetToDefault()
+                                    Toast.makeText(
+                                        context,
+                                        "Product Deleted!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Product was not Deleted. Try Again",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
                                 //return
                             },
                             modifier = Modifier

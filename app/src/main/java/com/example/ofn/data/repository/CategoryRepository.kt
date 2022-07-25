@@ -156,6 +156,7 @@ class CategoryRepository(){
                         .update("categoryName", newName)
                         .addOnSuccessListener { Log.d("renameCategory", "$categoryName successfully renamed to $newName") }
                         .addOnFailureListener { Log.d("renameCategory", "Error renaming $categoryName") }
+
                 } else {
                     Log.d("deleteCategory", "Query to find category unsuccessful.")
                 }
@@ -168,7 +169,7 @@ class CategoryRepository(){
                 if (it.isSuccessful) {
                     // Query successful, category to delete exists.
                     val categoryRef = categoriesDao.getCategoryWithId(it.result.documents[0].id)
-                    categoriesDao.getProductsUnderCategory(it.result.documents[0].id)
+                   categoriesDao.getProductsUnderCategory(it.result.documents[0].id)
                         .addOnSuccessListener { result ->
                             for (doc in result) {
                                 val product = categoryRef.collection("products").document(doc.id)
@@ -176,6 +177,46 @@ class CategoryRepository(){
                                     .delete()
                                     .addOnSuccessListener { Log.d("deleteCategory", "Successfully deleted product: ${product.id}") }
                                     .addOnFailureListener { e -> Log.w("deleteCategory", "Error deleting product", e) }
+                            }
+                        }
+                    // Finished deleting products under the category. Now delete the category.
+                    categoryRef
+                        .delete()
+                        .addOnSuccessListener { Log.d("deleteCategory", "Successfully deleted Category: ${categoryRef.id}") }
+                        .addOnFailureListener { e -> Log.w("deleteCategory", "Error deleting document", e) }
+                } else {
+                    Log.d("deleteCategory", "Query to find category unsuccessful.")
+                }
+            }
+    }
+
+    suspend fun deleteProduct(productName: String, categoryName: String): Task<QuerySnapshot> {
+        return categoriesDao.getCategoryWithName(categoryName)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    // Query successful, category to delete exists.
+                    val categoryRef = categoriesDao.getCategoryWithId(it.result.documents[0].id)
+                    categoriesDao.getProductsUnderCategory(it.result.documents[0].id)
+                        .addOnSuccessListener { result ->
+                            for (doc in result) {
+                                val product = categoryRef.collection("products").document(doc.id)
+                                if (productName == "nuts" || productName == "orange" || productName == "apple") {
+                                    product
+                                        .delete()
+                                        .addOnSuccessListener {
+                                            Log.d(
+                                                "deleteCategory",
+                                                "Successfully deleted product: ${product.id}"
+                                            )
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.w(
+                                                "deleteCategory",
+                                                "Error deleting product",
+                                                e
+                                            )
+                                        }
+                                }
                             }
                         }
                     // Finished deleting products under the category. Now delete the category.

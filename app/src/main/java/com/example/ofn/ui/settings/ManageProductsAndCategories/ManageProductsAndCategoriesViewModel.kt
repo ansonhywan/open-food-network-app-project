@@ -58,6 +58,10 @@ class ManageProductsAndCategoriesViewModel(private val categoryRepository: Categ
         }
     }
 
+    fun clear() {
+        manageProductsAndCategoriesUIState.categoryUIMap.clear()
+    }
+
     fun deleteCategory(categoryName: String) {
         runBlocking {
             launch {
