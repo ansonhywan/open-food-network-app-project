@@ -106,11 +106,11 @@ fun LoginScreen(navController: NavController, loginFormViewModel: LoginFormViewM
             }
             Button(
                 onClick = {
-//                    loginFormViewModel.login(context, loginUIState.email, loginUIState.password) {
+                    loginFormViewModel.login(context, loginUIState.email, loginUIState.password) {
                         navController.navigate(
                             HOME_GRAPH_ROUTE
                         )
-//                    }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
