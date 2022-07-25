@@ -56,6 +56,10 @@ class ProductDao() {
 //        }
     }
 
+    fun updateProductDescription(description: String, productName: String){
+        val categoriesCollection = firestoreDB.collection("categories")
+    }
+
     fun getAllProductsInCategory(categoryName: String, callback: () -> Unit): List<Product> {
         val allProductsList = mutableListOf<Product>()
 
