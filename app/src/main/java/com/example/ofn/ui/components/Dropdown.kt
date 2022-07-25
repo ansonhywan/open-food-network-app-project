@@ -14,8 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+enum class SortType {
+    ASC, DESC
+}
+
 @Composable
-fun SortDropdown(options: List<String>) {
+fun SortDropdown(options: List<String>, doSort: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(0) }
     val icon = if (expanded)
@@ -66,7 +70,7 @@ fun SortDropdown(options: List<String>) {
                 onClick = {
                     selectedOption = i
                     expanded = false
-                    //todo: sort results
+                    doSort(option)
                 }
             ) {
                 Text(
@@ -78,7 +82,7 @@ fun SortDropdown(options: List<String>) {
 }
 
 @Composable
-fun FilterDropdown(options: List<String>) {
+fun FilterDropdown(options: List<String>, doFilter: (String, Boolean) -> Unit) {
     val optionCheckedState = remember { options.map { true }.toMutableStateList() }
     var expanded by remember { mutableStateOf(false) }
     val icon = if (expanded)
@@ -127,6 +131,7 @@ fun FilterDropdown(options: List<String>) {
                 DropdownMenuItem(
                     onClick = {
                         optionCheckedState[i] = !optionCheckedState[i]
+                        doFilter(option, optionCheckedState[i])
                     },
                 ) {
                     Row {
@@ -134,7 +139,7 @@ fun FilterDropdown(options: List<String>) {
                             checked = optionCheckedState[i],
                             onCheckedChange = {
                                 optionCheckedState[i] = !optionCheckedState[i]
-                                // todo: filter results
+                                doFilter(option, it)
                             },
                             colors = CheckboxDefaults.colors(
                                 checkedColor = MaterialTheme.colors.onPrimary,

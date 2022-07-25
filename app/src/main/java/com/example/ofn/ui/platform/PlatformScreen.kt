@@ -22,33 +22,38 @@ import androidx.navigation.NavController
 import com.example.ofn.ui.components.FilterDropdown
 import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
+import com.example.ofn.ui.components.SortType
+import com.example.ofn.ui.inventory.InventoryUIState
 import com.example.ofn.ui.theme.OFNButtonColors
+import java.math.BigInteger
 
 
 // todo: save to local storage?
 // todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
 @Composable
-fun PlatformScreen(navController: NavController) {
+fun PlatformScreen(navController: NavController, platformViewModel: PlatformViewModel) {
+    val platformUIState: PlatformUIState = platformViewModel.platformUIState
+
     var examplePlatforms = listOf(
         Platform(
-            name = "Platform 1",
+            name = "P1aa1latform 1",
             produceList = listOf(PlatformProduce("1","produce 0",1.5, 1), PlatformProduce("12","produce 0",1.5,0), PlatformProduce("13","produce 0",0.5))
         ),
         Platform(
-            name = "Platform 2",
+            name = "aaPlatform 2",
             produceList = listOf(PlatformProduce("2","produce 0",1.5,0), PlatformProduce("3","produce 0",1.5,0), PlatformProduce("4","produce 0",0.5))
         ),
         Platform(
-            name = "Platform 3",
+            name = "bbPlatform 3",
             produceList = listOf(PlatformProduce("5","produce 0",1.5,0), PlatformProduce("6","produce 0",1.5,0), PlatformProduce("7","produce 0",0.5), PlatformProduce("19","produce 0",0.5))
         ),
         Platform(
-            name = "Platform 4",
+            name = "vvvPlatform 4",
             produceList = listOf(PlatformProduce("14","produce 0",1.5,0), PlatformProduce("15","produce 0",1.5,0), PlatformProduce("16","produce 0",0.5))
         ),
         Platform(
-            name = "Platform 5",
+            name = "ccPlatform 5",
             produceList = listOf(PlatformProduce("17","produce 0",1.5,0), PlatformProduce("18","produce 0",1.5,0), PlatformProduce("19","produce 0",0.5))
         )
     )
@@ -58,7 +63,8 @@ fun PlatformScreen(navController: NavController) {
         color = MaterialTheme.colors.background
     ) {
         ExpandablePlatforms(
-            platforms = examplePlatforms,
+            platformViewModel = platformViewModel,
+            platforms = examplePlatforms.filter { !platformUIState.filterList.contains(it.name) && it.name.contains(platformUIState.searchStr.value) },
             modifier = Modifier
                 .padding(16.dp)
         ) {
@@ -76,16 +82,32 @@ fun PlatformScreen(navController: NavController) {
                     .padding(16.dp),
                 placeholderText = "Search platform..."
             ) {
-                // todo: function to search platform
+                platformUIState.searchStr.value = it
             }
             // sort + filter
             Row(
                 modifier = Modifier
                     .padding(vertical = 5.dp),
             ) {
-                SortDropdown(listOf("Name", "Price", "Amount"))
+                SortDropdown(listOf("A->Z", "Z->A")) {
+                    option -> run {
+                        if (option.equals("A->Z")) {
+                            platformUIState.sort.value = SortType.ASC
+                        } else {
+                            platformUIState.sort.value = SortType.DESC
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.size(24.dp))
-                FilterDropdown(examplePlatforms.map{platform -> platform.name })
+                FilterDropdown(examplePlatforms.map{platform -> platform.name }) { platName, isChecked ->
+                    run {
+                        if(isChecked) {
+                            platformUIState.filterList.remove(platName)
+                        } else {
+                            platformUIState.filterList.add(platName)
+                        }
+                    }
+                }
             }
         }
     }
@@ -93,11 +115,16 @@ fun PlatformScreen(navController: NavController) {
 
 @Composable
 fun ExpandablePlatforms(
+    platformViewModel: PlatformViewModel,
     platforms: List<Platform>,
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
-    val expandedState = remember(platforms) { platforms.map { false }.toMutableStateList() }
+    val sortedPlatforms = if (platformViewModel.platformUIState.sort.value == SortType.ASC)
+        platforms.sortedBy { it.name }
+    else platforms.sortedByDescending { it.name }
+
+    val expandedState = remember(sortedPlatforms) { sortedPlatforms.map { false }.toMutableStateList() }
     val refresh = remember { mutableStateOf(true) }
     val context = LocalContext.current
 
@@ -109,7 +136,7 @@ fun ExpandablePlatforms(
                 header()
             }
             // -------------------- Platforms --------------------
-            platforms.forEachIndexed { i, platformItem ->
+            sortedPlatforms.forEachIndexed { i, platformItem ->
                 val expanded = expandedState[i]
                 val icon = if(expanded)
                     Icons.Filled.KeyboardArrowDown
@@ -126,6 +153,7 @@ fun ExpandablePlatforms(
                         Text(
                             text = platformItem.name,
                             fontWeight = FontWeight.Bold,
+                            fontSize = 25.sp,
                             modifier = Modifier
                                 .padding(vertical = 25.dp)
                                 .weight(11f)
@@ -167,14 +195,14 @@ fun ExpandablePlatforms(
                             .padding(30.dp),
                         onClick = {
                             refresh.value = false
-                            approve(platforms)
+                            approve(sortedPlatforms)
                             refresh.value = true
                             Toast.makeText(context, "Approved!", Toast.LENGTH_SHORT).show()
                         },
                     ) {
                         Text(
                             text = "Approve",
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                         )
                     }
                 }
@@ -195,9 +223,10 @@ fun ProduceItemPlatform(produce: PlatformProduce) {
             // Produce Name
             Text(
                 text = produce.name,
+                fontSize = 25.sp,
                 modifier = Modifier.padding(end = 30.dp)
             )
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(50.dp))
             ProduceTextFieldsPlatform(produce)
         }
     }
@@ -212,6 +241,7 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
     var amountStr by remember(produce.amount) {
         mutableStateOf(produce.amount.toString())
     }
+    val context = LocalContext.current
 
     // Price text field
     Row(
@@ -222,7 +252,7 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
         Text(
             text = "Price",
             modifier = Modifier.padding(end = 20.dp),
-            fontSize = 15.sp,
+            fontSize = 20.sp,
         )
         Column(
             modifier = Modifier
@@ -232,9 +262,16 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
                 value = priceStr,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = {
-                    // todo: do more verification on the correctness of the input
-                    priceStr = it
-                    produce.price = priceStr.toDouble()
+                    if (it.equals("")) {
+                        priceStr = it
+                        produce.price = 0.0 // treat empty string like 0.0
+                    } else if(!it.contains(Regex("^[0-9]*\\.?[0-9]+$"))) {
+                        Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT)
+                            .show()
+                    } else if (!it.equals(("-"))) {
+                        priceStr = it
+                        produce.price = priceStr.toDouble()
+                    }
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = MaterialTheme.colors.background,
@@ -243,14 +280,15 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
                 ),
                 maxLines = 1,
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 20.sp),
             )
         }
         Spacer(modifier = Modifier.size(30.dp))
         Text(
             text = "Amount",
-            modifier = Modifier.padding(end = 30.dp)
-        )
+            modifier = Modifier.padding(end = 30.dp),
+            fontSize = 20.sp,
+            )
         Column(
             modifier = Modifier
                 .width(80.dp)
@@ -259,9 +297,16 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
                 value = amountStr,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = {
-                    // todo: do more verification on the correctness of the input
-                    amountStr = it
-                    produce.amount = amountStr.toInt()
+                    if (it.equals("")) {
+                        amountStr = it
+                        produce.amount = 0 // treat empty string like 0
+                    } else if(!it.contains(Regex("^[-]?[0-9]*$")) || BigInteger(it) > BigInteger(Int.MAX_VALUE.toString()) || BigInteger(it) < BigInteger(Int.MIN_VALUE.toString())) {
+                        Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT)
+                            .show()
+                    } else if (!it.equals(("-"))) {
+                        amountStr = it
+                        produce.amount = amountStr.toInt()
+                    }
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = MaterialTheme.colors.background,
@@ -270,7 +315,7 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
                 ),
                 maxLines = 1,
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 20.sp),
             )
         }
     }

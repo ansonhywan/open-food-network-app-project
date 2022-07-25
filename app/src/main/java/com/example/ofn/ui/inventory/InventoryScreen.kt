@@ -1,6 +1,6 @@
 package com.example.ofn.ui.inventory
 
-import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,21 +23,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.ofn.data.model.Category
-import com.example.ofn.data.model.Product
 import com.example.ofn.ui.components.FilterDropdown
 import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
+import com.example.ofn.ui.components.SortType
 import com.example.ofn.ui.theme.OFNButtonColors
+import java.math.BigInteger
 
 
 // todo: save to local storage?
-// todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
 
 @Composable
 fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryViewModel) {
-
     val inventoryUIState: InventoryUIState = inventoryViewModel.inventoryUIState
 
     Surface(
@@ -46,7 +44,8 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
     ) {
         ExpandableCategories(
             inventoryViewModel = inventoryViewModel,
-            categories = inventoryUIState.categoryUIMap,
+            categories = inventoryUIState.categoryUIMap
+                .filterKeys { !inventoryUIState.filterList.contains(it) && it.contains(inventoryUIState.searchStr.value) } as HashMap<String, HashMap<String, Pair<Int, Int>>>,
             modifier = Modifier
                 .padding(16.dp)
         ) {
@@ -62,18 +61,36 @@ fun InventoryScreen(navController: NavController, inventoryViewModel: InventoryV
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholderText = "Search product..."
+                placeholderText = "Search Categories..."
             ) {
-                // todo: function to search inventory
+                inventoryUIState.searchStr.value = it
             }
             // sort + filter
             Row(
                 modifier = Modifier
                     .padding(vertical = 5.dp),
             ) {
-                SortDropdown(listOf("Name", "Price", "Amount"))
+                SortDropdown(listOf("A->Z", "Z->A")) {
+                    option -> run {
+                        if (option.equals("A->Z")) {
+                            inventoryUIState.sort.value = SortType.ASC
+                        } else {
+                            inventoryUIState.sort.value = SortType.DESC
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.size(24.dp))
-                FilterDropdown(inventoryUIState.categoryUIMap.keys.toList())
+                FilterDropdown(
+                    inventoryUIState.categoryUIMap.keys.toList()
+                ) { catName, isChecked ->
+                    run {
+                        if(isChecked) {
+                            inventoryUIState.filterList.remove(catName)
+                        } else {
+                            inventoryUIState.filterList.add(catName)
+                        }
+                    }
+                }
             }
         }
     }
@@ -86,7 +103,9 @@ fun ExpandableCategories(
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
-    val categoryNames: List<String> = categories.keys.toList()
+    val categoryNames: List<String> = if (inventoryViewModel.inventoryUIState.sort.value == SortType.ASC)
+        categories.keys.toList().sorted()
+        else categories.keys.toList().sortedDescending()
     val expandedState = remember(categoryNames) { categoryNames.map { false }.toMutableStateList() }
     val context = LocalContext.current
 
@@ -113,6 +132,7 @@ fun ExpandableCategories(
                         Text(
                             text = categoryName,
                             fontWeight = FontWeight.Bold,
+                            fontSize = 25.sp,
                             modifier = Modifier
                                 .padding(vertical = 25.dp)
                                 .weight(11f)
@@ -143,7 +163,8 @@ fun ExpandableCategories(
             item {
                 Row(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(top = 100.dp),
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
@@ -161,7 +182,7 @@ fun ExpandableCategories(
                     ) {
                         Text(
                             text = "Reset",
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                         )
                     }
                     Spacer(
@@ -180,7 +201,7 @@ fun ExpandableCategories(
                     ) {
                         Text(
                             text = "Save",
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                         )
                     }
                 }
@@ -209,18 +230,19 @@ fun ProductItem(categoryName: String, productName: String, inventoryViewModel: I
         // Product Name
         Text(
             text = productName,
+            fontSize = 25.sp,
             modifier = Modifier
-                .padding(end = 30.dp)
+                .padding(end = 20.dp)
                 .width(80.dp)
         )
 
         // Product amount available
         Text(
             text = "${productInfo.first} available",
-            fontSize = 10.sp,
+            fontSize = 20.sp,
             modifier = Modifier
-                .padding(end = 30.dp)
-                .width(50.dp)
+                .padding(end = 20.dp)
+                .width(80.dp)
         )
 
         ProductButtons(categoryName, productName,  inventoryViewModel)
@@ -233,6 +255,7 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
     var addNum:Int by  remember {mutableStateOf(inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!![productName]!!.second)}
     val interactionSourceAdd = remember { MutableInteractionSource() }
     val interactionSourceRemove = remember { MutableInteractionSource() }
+    val context = LocalContext.current
 
     if (interactionSourceRemove.collectIsPressedAsState().value) {
         addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false).toInt()
@@ -271,13 +294,21 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
         horizontalAlignment = Alignment.End,
         modifier = Modifier
             .width(80.dp)
-            .padding(5.dp),
+            .padding(0.dp),
     ) {
         TextField(
             value = addNum.toString(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
-                addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it).toInt()
+                if (it.equals("")) {
+                    addNum = inventoryViewModel.onAddNumChange(categoryName, productName, "0")
+                        .toInt() // treat empty string like 0
+                } else if(!it.contains(Regex("^[-]?[0-9]*$")) || BigInteger(it) > BigInteger(Int.MAX_VALUE.toString()) || BigInteger(it) < BigInteger(Int.MIN_VALUE.toString())) {
+                    Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT)
+                        .show()
+                } else if (!it.equals(("-"))) {
+                    addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it).toInt()
+                }
             },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background,
@@ -286,7 +317,7 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
             ),
             maxLines = 1,
             singleLine = true,
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 20.sp),
         )
     }
 

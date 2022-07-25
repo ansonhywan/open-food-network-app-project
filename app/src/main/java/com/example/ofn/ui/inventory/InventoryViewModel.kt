@@ -1,8 +1,6 @@
 package com.example.ofn.ui.inventory
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -80,7 +78,6 @@ class InventoryViewModel(
     }
 
     fun onAddNumChange(categoryName: String, productName: String, input: String):String{
-        // todo: do more verification on the correctness of the input
         val maxInt = BigInteger(Int.MAX_VALUE.toString())
         val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
         if (input != "" && input != "-" && BigInteger(input) < maxInt) {
