@@ -28,10 +28,10 @@ import com.example.ofn.ui.components.SearchBar
 import com.example.ofn.ui.components.SortDropdown
 import com.example.ofn.ui.components.SortType
 import com.example.ofn.ui.theme.OFNButtonColors
+import java.math.BigInteger
 
 
 // todo: save to local storage?
-// todo: check if values are valid (e.g. no negative available amounts, values don't go out of bounds and crash)
 // todo: make it look good on horizontal view
 
 @Composable
@@ -232,17 +232,17 @@ fun ProductItem(categoryName: String, productName: String, inventoryViewModel: I
             text = productName,
             fontSize = 25.sp,
             modifier = Modifier
-                .padding(end = 30.dp)
+                .padding(end = 20.dp)
                 .width(80.dp)
         )
 
         // Product amount available
         Text(
             text = "${productInfo.first} available",
-            fontSize = 15.sp,
+            fontSize = 20.sp,
             modifier = Modifier
-                .padding(end = 30.dp)
-                .width(60.dp)
+                .padding(end = 20.dp)
+                .width(80.dp)
         )
 
         ProductButtons(categoryName, productName,  inventoryViewModel)
@@ -255,6 +255,7 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
     var addNum:Int by  remember {mutableStateOf(inventoryViewModel.inventoryUIState.categoryUIMap[categoryName]!![productName]!!.second)}
     val interactionSourceAdd = remember { MutableInteractionSource() }
     val interactionSourceRemove = remember { MutableInteractionSource() }
+    val context = LocalContext.current
 
     if (interactionSourceRemove.collectIsPressedAsState().value) {
         addNum = inventoryViewModel.onProductButtonPress(categoryName, productName, false).toInt()
@@ -293,13 +294,21 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
         horizontalAlignment = Alignment.End,
         modifier = Modifier
             .width(80.dp)
-            .padding(5.dp),
+            .padding(0.dp),
     ) {
         TextField(
             value = addNum.toString(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
-                addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it).toInt()
+                if (it.equals("")) {
+                    addNum = inventoryViewModel.onAddNumChange(categoryName, productName, "0")
+                        .toInt() // treat empty string like 0
+                } else if(!it.contains(Regex("^[-]?[0-9]*$")) || BigInteger(it) > BigInteger(Int.MAX_VALUE.toString()) || BigInteger(it) < BigInteger(Int.MIN_VALUE.toString())) {
+                    Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT)
+                        .show()
+                } else if (!it.equals(("-"))) {
+                    addNum = inventoryViewModel.onAddNumChange(categoryName, productName, it).toInt()
+                }
             },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background,
@@ -308,7 +317,7 @@ fun ProductButtons(categoryName: String, productName: String,inventoryViewModel:
             ),
             maxLines = 1,
             singleLine = true,
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 20.sp),
         )
     }
 

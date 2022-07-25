@@ -25,6 +25,7 @@ import com.example.ofn.ui.components.SortDropdown
 import com.example.ofn.ui.components.SortType
 import com.example.ofn.ui.inventory.InventoryUIState
 import com.example.ofn.ui.theme.OFNButtonColors
+import java.math.BigInteger
 
 
 // todo: save to local storage?
@@ -240,6 +241,7 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
     var amountStr by remember(produce.amount) {
         mutableStateOf(produce.amount.toString())
     }
+    val context = LocalContext.current
 
     // Price text field
     Row(
@@ -250,7 +252,7 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
         Text(
             text = "Price",
             modifier = Modifier.padding(end = 20.dp),
-            fontSize = 15.sp,
+            fontSize = 20.sp,
         )
         Column(
             modifier = Modifier
@@ -260,9 +262,16 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
                 value = priceStr,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = {
-                    // todo: do more verification on the correctness of the input
-                    priceStr = it
-                    produce.price = priceStr.toDouble()
+                    if (it.equals("")) {
+                        priceStr = it
+                        produce.price = 0.0 // treat empty string like 0.0
+                    } else if(!it.contains(Regex("^[0-9]*\\.?[0-9]+$"))) {
+                        Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT)
+                            .show()
+                    } else if (!it.equals(("-"))) {
+                        priceStr = it
+                        produce.price = priceStr.toDouble()
+                    }
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = MaterialTheme.colors.background,
@@ -271,14 +280,14 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
                 ),
                 maxLines = 1,
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 20.sp),
             )
         }
         Spacer(modifier = Modifier.size(30.dp))
         Text(
             text = "Amount",
             modifier = Modifier.padding(end = 30.dp),
-            fontSize = 15.sp,
+            fontSize = 20.sp,
             )
         Column(
             modifier = Modifier
@@ -288,9 +297,16 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
                 value = amountStr,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = {
-                    // todo: do more verification on the correctness of the input
-                    amountStr = it
-                    produce.amount = amountStr.toInt()
+                    if (it.equals("")) {
+                        amountStr = it
+                        produce.amount = 0 // treat empty string like 0
+                    } else if(!it.contains(Regex("^[-]?[0-9]*$")) || BigInteger(it) > BigInteger(Int.MAX_VALUE.toString()) || BigInteger(it) < BigInteger(Int.MIN_VALUE.toString())) {
+                        Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT)
+                            .show()
+                    } else if (!it.equals(("-"))) {
+                        amountStr = it
+                        produce.amount = amountStr.toInt()
+                    }
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = MaterialTheme.colors.background,
@@ -299,7 +315,7 @@ fun ProduceTextFieldsPlatform(produce: PlatformProduce) {
                 ),
                 maxLines = 1,
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center, fontSize = 20.sp),
             )
         }
     }
