@@ -42,13 +42,17 @@ class InventoryViewModel(
         }
     }
 
-    fun resetAllAddNum() {
+    fun resetAllAddNum(save: Boolean) {
         val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
         var newMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = categoryMap.clone() as HashMap<String, HashMap<String, Pair<Int, Int>>>
         for (categoryName:String in newMap.keys){
             val products: HashMap<String, Pair<Int, Int>> = newMap[categoryName]!!
             for (productName in products.keys){
-                products[productName] = Pair(products[productName]!!.first, 0)
+                var stock = products[productName]!!.first
+                if(save) {
+                    stock += products[productName]!!.second
+                }
+                products[productName] = Pair(stock, 0)
             }
         }
         inventoryUIState  = inventoryUIState.copy(categoryUIMap = newMap)
@@ -56,6 +60,7 @@ class InventoryViewModel(
     fun onSave() {
         var productsToUpdate: MutableList<Product> = mutableListOf()
         val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
+        resetAllAddNum(true)
         categoryMap.toList().forEach { catPair ->
             catPair.second.toList().forEach {
                 productsToUpdate.add(Product(it.first, catPair.first,"", it.second.first, ""))

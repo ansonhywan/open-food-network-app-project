@@ -172,7 +172,7 @@ fun ExpandableCategories(
                     Button(
                         colors = OFNButtonColors(),
                         onClick = {
-                            inventoryViewModel.resetAllAddNum()
+                            inventoryViewModel.resetAllAddNum(false)
                             categoryNames.forEachIndexed { i, _ ->
                                 expandedState[i] = false
                             }
