@@ -309,7 +309,7 @@ fun ManageScreen(navController: NavController?, manageViewModel: ManageViewModel
                             Text("Description")
                         }
                         FormTextField(
-                            modifier = Modifier.height(200.dp),
+                            modifier = Modifier.height(180.dp),
                             text = description,
                             placeholder = "Description",
                             onValueChange = { manageViewModel.onDescriptionChange(it) },
