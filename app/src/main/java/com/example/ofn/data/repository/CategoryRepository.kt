@@ -2,7 +2,10 @@ package com.example.ofn.data.repository
 import android.util.Log
 import com.example.ofn.data.Constants
 import com.example.ofn.data.dao.CategoryDao
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 
@@ -52,8 +55,8 @@ class CategoryRepository(){
     }
 
 
-    fun renameCategory(categoryName: String, newName: String) {
-        categoriesDao.renameCategory(categoryName, newName)
+    suspend fun renameCategory(categoryName: String, newName: String): Task<QuerySnapshot> {
+        return categoriesDao.renameCategory(categoryName, newName)
     }
 
     fun deleteCategory(categoryName: String){

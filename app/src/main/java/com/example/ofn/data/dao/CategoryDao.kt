@@ -118,10 +118,10 @@ class CategoryDao() {
 
         }
 
-    fun renameCategory(categoryName: String, newName: String) {
+    suspend fun renameCategory(categoryName: String, newName: String): Task<QuerySnapshot> {
         val categoriesCollection = firestoreDB.collection("categories")
 
-        categoriesCollection
+        return categoriesCollection
             .whereEqualTo("categoryName", categoryName)
             .limit(1).get()
             .addOnCompleteListener { task ->

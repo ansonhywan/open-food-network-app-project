@@ -75,7 +75,7 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
     }
 
 
-    fun renameCategory(categoryName: String, newName: String): Boolean {
+    suspend fun renameCategory(categoryName: String, newName: String): Boolean {
         categoryRepo.renameCategory(categoryName, newName)
         return true
     }

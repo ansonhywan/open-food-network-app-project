@@ -65,11 +65,12 @@ fun Categories(
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit
 ) {
-    val categoryNames: List<String> = categories.keys.toList()
+    val categoryNames: MutableList<String> = categories.keys.toMutableStateList()
     val expandedState = remember(categories) { categories.map { false }.toMutableStateList() }
     val dropdownState = remember(categories) { categories.map { false }.toMutableStateList() }
     val openRenameDialog = remember { mutableStateOf(false)  }
     val openDeleteDialog = remember { mutableStateOf(false)  }
+    var change by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     LazyColumn(modifier) {
@@ -139,6 +140,7 @@ fun Categories(
                                         AlertDialog(
                                             onDismissRequest = {
                                                 openRenameDialog.value = false;
+                                                change = text;
                                             },
                                             title = {
                                                 Text(text = "Rename")
@@ -160,11 +162,11 @@ fun Categories(
                                                     Button(
                                                         onClick = {
                                                             openRenameDialog.value = false;
-                                                            var retval = viewModel.renameCategory(
+                                                            viewModel.renameCategory(
                                                                 name,
                                                                 text
                                                             );
-                                                            if (retval) {
+                                                            if (true) {
                                                                 Toast.makeText(
                                                                     context,
                                                                     "Rename Successfull",

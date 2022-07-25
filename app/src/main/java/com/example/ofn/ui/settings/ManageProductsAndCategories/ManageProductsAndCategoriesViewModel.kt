@@ -3,6 +3,7 @@ package com.example.ofn.ui.settings.ManageProductsAndCategories
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,8 +12,11 @@ import com.example.ofn.data.model.Product
 import com.example.ofn.data.repository.CategoryRepository
 import com.example.ofn.ui.inventory.InventoryUIState
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 
 class ManageProductsAndCategoriesViewModel(private val categoryRepository: CategoryRepository = CategoryRepository()) : ViewModel() {
+
 
     var manageProductsAndCategoriesUIState by mutableStateOf(ManageProductsAndCategoriesUIState())
     fun populateCategories()=viewModelScope.launch{
@@ -37,13 +41,20 @@ class ManageProductsAndCategoriesViewModel(private val categoryRepository: Categ
             }
         }
     }
-    fun renameCategory(categoryName:String, newCategoryName:String):Boolean {
-        var retval = true;
-        categoryRepository.renameCategory(categoryName, newCategoryName);
-        populateCategories();
-        //call function to renam category and get return value from it to determine if it was correct
-        return retval;
 
+
+    fun renameCategory(categoryName:String, newCategoryName:String) {
+        runBlocking {
+            launch {
+                categoryRepository.renameCategory(categoryName, newCategoryName)
+                    .addOnCompleteListener({
+                        Log.d("rename1 ", "aye");
+                        populateCategories();
+                        Log.d("rename2 ", "aye");
+                        //call function to renam category and get return value from it to determine if it was correct
+                    })
+            }
+        }
     }
 
     fun deleteCategory(categoryName: String):Boolean {
