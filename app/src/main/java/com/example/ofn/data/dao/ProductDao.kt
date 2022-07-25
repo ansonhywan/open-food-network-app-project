@@ -38,22 +38,6 @@ class ProductDao() {
                         }
                 }
         }
-
-        
-        
-        
-        
-        
-        
-        
-        // Should update since if there is a product in the Inventory Page, it is already in the DB.
-//        productList.forEach{
-//            Log.i("updateProductStock", "${it.productName}: ${it.stock}")
-//            firestoreDB.collection("inventory").document(it.productName)
-//                .update("stock", it.stock)
-//                .addOnSuccessListener { Log.d("updateProductStock", "Stock successfully updated!") }
-//                .addOnFailureListener { e -> Log.w("updateProductStock", "Error updating stock", e) }
-//        }
     }
 
     fun updateProductDescription(description: String, productName: String){
