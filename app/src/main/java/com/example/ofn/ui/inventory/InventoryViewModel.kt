@@ -1,6 +1,8 @@
 package com.example.ofn.ui.inventory
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -42,7 +44,7 @@ class InventoryViewModel(
         }
     }
 
-    fun resetAllAddNum(save: Boolean) {
+    fun resetAllAddNum(save: Boolean): Boolean {
         val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
         var newMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = categoryMap.clone() as HashMap<String, HashMap<String, Pair<Int, Int>>>
         for (categoryName:String in newMap.keys){
@@ -52,15 +54,23 @@ class InventoryViewModel(
                 if(save) {
                     stock += products[productName]!!.second
                 }
+                if (stock < 0 ){
+                    return false
+                }
                 products[productName] = Pair(stock, 0)
+
             }
         }
         inventoryUIState  = inventoryUIState.copy(categoryUIMap = newMap)
+        return true
     }
-    fun onSave() {
+    fun onSave(context: Context) {
         var productsToUpdate: MutableList<Product> = mutableListOf()
         val categoryMap:HashMap<String, HashMap<String, Pair<Int, Int>>> = inventoryUIState.categoryUIMap
-        resetAllAddNum(true)
+        if (resetAllAddNum(true) == false){
+            Toast.makeText(context, "Remove stock with invalid amount, please try again!", Toast.LENGTH_SHORT).show()
+            return
+        }
         categoryMap.toList().forEach { catPair ->
             catPair.second.toList().forEach {
                 productsToUpdate.add(Product(it.first, catPair.first,"", it.second.first, ""))

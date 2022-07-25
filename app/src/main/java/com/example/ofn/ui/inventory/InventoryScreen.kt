@@ -195,7 +195,7 @@ fun ExpandableCategories(
                         modifier = Modifier
                             .wrapContentSize(),
                         onClick = {
-                            inventoryViewModel.onSave()
+                            inventoryViewModel.onSave(context)
                             categoryNames.forEachIndexed { i, _ ->
                                 expandedState[i] = false
                             }
