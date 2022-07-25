@@ -130,11 +130,11 @@ fun SignupScreen(navController: NavController,  signupFormViewModel: SignupFormV
             }
             Button(
                 onClick = {
-                    //signupFormViewModel.signUp(context, email, password) {
+                    signupFormViewModel.signUp(context, email, password) {
                     navController.navigate(
                             HOME_GRAPH_ROUTE
                         )
-                    //}
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
