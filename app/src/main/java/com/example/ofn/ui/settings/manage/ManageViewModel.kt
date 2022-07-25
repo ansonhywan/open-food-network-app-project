@@ -26,7 +26,22 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
     var manageUIState by mutableStateOf(ManageUIState(productName=productName, category=category))
 
     fun populateManageScreen()=viewModelScope.launch{
-
+        categoryRepo.getAllCategoriesProductsNew {
+            if (it != null) {
+                if (it.containsKey(true)){
+                    val categoryInfo:Pair<String,Product>  = it?.get(true) as Pair<String, Product>
+                    val cName: String = categoryInfo.first
+                    val pInfo: Product = categoryInfo.second
+                    val pName: String = pInfo.productName
+                    if (manageUIState.productName == pName && manageUIState.category == cName) {
+                        onDescriptionChange(pInfo.description);
+                        onImageUriChange(Uri.parse(pInfo.imageUrl))
+                    }
+                }else{
+                    Log.d("Populate", "Failed to populate all categories")
+                }
+            }
+        }
     }
 
     fun popHelper() {
@@ -70,7 +85,7 @@ class ManageViewModel(productName: String = "", category: String = "") : ViewMod
         onDescriptionChange("")
     }
 
-    fun onProductDelete(context: Context, categoryName: String){
+    fun onProductDelete(productName: String, categoryName: String){
     }
 
 
