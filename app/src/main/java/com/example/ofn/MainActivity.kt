@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
 fun MainApplication(){
 
     val screens = listOf<Screen>(
-        Screen.Dashboard,
+//        Screen.Dashboard,
         Screen.Inventory,
         Screen.Platform,
         Screen.Settings

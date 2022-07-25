@@ -26,7 +26,7 @@ fun NavGraphBuilder.homeNavGraph(
     manageProductsAndCategoriesViewModel: ManageProductsAndCategoriesViewModel
 ){
     navigation(
-        startDestination = Screen.Dashboard.route,
+        startDestination = Screen.Inventory.route,
         route = HOME_GRAPH_ROUTE,
     ){
         composable(Screen.Dashboard.route) { DashboardScreen(navController) }
