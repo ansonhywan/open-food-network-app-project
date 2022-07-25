@@ -61,7 +61,7 @@ class InventoryViewModel(
                 productsToUpdate.add(Product(it.first, catPair.first,"", it.second.first, ""))
             }
         }
-//        productRepo.addStockToProduct(productsToUpdate) //todo: this should update the category collection?
+        productRepo.addStockToProduct(productsToUpdate) //todo: this should update the category collection?
     }
 
     fun onProductButtonPress(categoryName:String, productName:String, add: Boolean):String{

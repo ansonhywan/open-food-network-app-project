@@ -13,14 +13,47 @@ class ProductDao() {
     private val firestoreDB = Firebase.firestore
 
     fun updateProductStock(productList: List<Product>) {
-        // Should update since if there is a product in the Inventory Page, it is already in the DB.
+
+
+        val categoriesCollection = firestoreDB.collection("categories")
         productList.forEach{
-            Log.i("updateProductStock", "${it.productName}: ${it.stock}")
-            firestoreDB.collection("inventory").document(it.productName)
-                .update("stock", it.stock)
-                .addOnSuccessListener { Log.d("updateProductStock", "Stock successfully updated!") }
-                .addOnFailureListener { e -> Log.w("updateProductStock", "Error updating stock", e) }
+            categoriesCollection
+                .whereEqualTo("categoryName", it.category)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { result ->
+                    Log.d("updateProductStock", "$it.stock")
+                    val catRef = categoriesCollection.document(result.documents[0].id)
+                    catRef
+                        .collection("products")
+                        .whereEqualTo("productName", it.productName)
+                        .limit(1)
+                        .get()
+                        .addOnSuccessListener { result2 ->
+                            val productRef = catRef.collection("products").document(result2.documents[0].id)
+                            productRef
+                                .update("stock", it.stock)
+                                .addOnSuccessListener { Log.d("updateProductStock", "${productRef.id} successfully updated!") }
+                                .addOnFailureListener { e -> Log.w("updateProductStock", "Error updating stock", e) }
+                        }
+                }
         }
+
+        
+        
+        
+        
+        
+        
+        
+        // Should update since if there is a product in the Inventory Page, it is already in the DB.
+//        productList.forEach{
+//            Log.i("updateProductStock", "${it.productName}: ${it.stock}")
+//            firestoreDB.collection("inventory").document(it.productName)
+//                .update("stock", it.stock)
+//                .addOnSuccessListener { Log.d("updateProductStock", "Stock successfully updated!") }
+//                .addOnFailureListener { e -> Log.w("updateProductStock", "Error updating stock", e) }
+//        }
     }
 
     fun getAllProductsInCategory(categoryName: String, callback: () -> Unit): List<Product> {
