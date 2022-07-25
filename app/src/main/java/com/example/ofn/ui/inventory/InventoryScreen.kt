@@ -196,6 +196,9 @@ fun ExpandableCategories(
                             .wrapContentSize(),
                         onClick = {
                             inventoryViewModel.onSave()
+                            categoryNames.forEachIndexed { i, _ ->
+                                expandedState[i] = false
+                            }
                             Toast.makeText(context, "Inventory Saved!", Toast.LENGTH_SHORT).show()
                         },
                     ) {
