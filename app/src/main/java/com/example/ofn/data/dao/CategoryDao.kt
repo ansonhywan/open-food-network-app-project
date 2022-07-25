@@ -82,7 +82,7 @@ class CategoryDao() {
         return true;
         }
 
-    fun deleteCategory(categoryName: String) {
+    suspend fun deleteCategory(categoryName: String): CollectionReference {
             // Delete category from db. This entails deleting all products wtihin it as well.
 
             val categoriesCollection = firestoreDB.collection("categories")
@@ -117,7 +117,7 @@ class CategoryDao() {
                         // Category trying to be deleted does not exist.
                     }
                 }
-
+        return categoriesCollection
         }
 
     suspend fun renameCategory(categoryName: String, newName: String): CollectionReference {

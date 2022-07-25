@@ -162,8 +162,8 @@ class CategoryRepository(){
             }
     }
 
-    fun deleteCategory(categoryName: String){
-        categoriesDao.getCategoryWithName(categoryName)
+    suspend fun deleteCategory(categoryName: String): Task<QuerySnapshot> {
+        return categoriesDao.getCategoryWithName(categoryName)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     // Query successful, category to delete exists.

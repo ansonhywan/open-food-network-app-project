@@ -223,8 +223,8 @@ fun Categories(
                                                     ) {
                                                         Button(onClick = {
                                                             openDeleteDialog.value = false;
-                                                            var retval =
-                                                                viewModel.deleteCategory(name);
+                                                            var retval = true;
+                                                            viewModel.deleteCategory(name);
                                                             if (retval) {
                                                                 Toast.makeText(
                                                                     context,
